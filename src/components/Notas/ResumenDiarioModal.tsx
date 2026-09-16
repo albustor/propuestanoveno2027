@@ -58,6 +58,7 @@ export const ResumenDiarioModal: React.FC<ResumenDiarioModalProps> = ({
   const allSaberes = MODULOS_NOVENO_OFICIAL.flatMap((m) => m.areas.flatMap((a) => a.saberes));
   const allNotas = getAllNotasSaberes();
   const allEntradas = getAllEntradasDiarias();
+  const [ideasLibresUsuario, setIdeasLibresUsuario] = useState<string>('');
 
   // Saberes que tienen notas registradas
   const saberesConNotas = allSaberes.filter((s) => allNotas[s.id] && allNotas[s.id].trim().length > 0);
@@ -65,8 +66,12 @@ export const ResumenDiarioModal: React.FC<ResumenDiarioModalProps> = ({
   const generarSintesisIA = async () => {
     setLoading(true);
 
-    // Compilar todas las anotaciones y entradas registradas
+    // Compilar todas las anotaciones, entradas registradas y reuniones
     const lineasAnotaciones: string[] = [];
+
+    if (ideasLibresUsuario.trim()) {
+      lineasAnotaciones.push(`- **Aportes e Ideas Clave Ingresadas:**\n  ${ideasLibresUsuario.trim()}`);
+    }
 
     allSaberes.forEach((s) => {
       const nota = allNotas[s.id];
@@ -77,21 +82,24 @@ export const ResumenDiarioModal: React.FC<ResumenDiarioModalProps> = ({
 
     const entradasDeFecha = allEntradas.filter((e) => e.fecha === selectedFecha);
     entradasDeFecha.forEach((e) => {
-      lineasAnotaciones.push(`- **Registro Específico [${e.hora}]: ${e.saberNombre}**\n  ${e.textoNota}`);
+      lineasAnotaciones.push(`- **Registro de Bitácora [${e.hora} - ${e.saberNombre}]:** ${e.textoNota}`);
     });
 
     const promptContext = lineasAnotaciones.length > 0
-      ? `Anotaciones registradas por el equipo docente para la fecha ${selectedFecha}:\n\n${lineasAnotaciones.join('\n\n')}`
-      : `No se han redactado notas libres adicionales para la fecha ${selectedFecha}. Genera una síntesis ejecutiva basada en los saberes curriculares activos de 9° Año.`;
+      ? lineasAnotaciones.join('\n\n')
+      : `Revisión y articulación curricular de los saberes de 9° Año (Módulos 1 y 2).`;
 
     try {
       const response = await processAICascade({
-        prompt: `Sintetiza y resume de forma ejecutiva los avances pedagógicos y acciones de mediación para Noveno Año:\n${promptContext}`,
+        prompt: `Actúa como un redactor ejecutivo pedagógico oficial de alto nivel. Redacta y contextualiza un Reporte Ejecutivo de Avances Diarios con base en las siguientes ideas, reflexiones y anotaciones ingresadas por el equipo docente:\n\n${promptContext}`,
         tipo: 'resumen_avances_diarios_ia',
         contexto: {
-          tema: 'Bitácora y Avances Diarios de Formación Tecnológica MEP',
-          areas: saberesConNotas.length > 0 ? saberesConNotas.map((s) => s.nombre) : ['Robótica', 'Algoritmos', 'Ciencia de Datos', 'IA'],
+          fecha: selectedFecha,
+          tema: 'Reporte Ejecutivo y Relatoría de Avances Diarios (9° Año MEP)',
+          areas: saberesConNotas.length > 0 ? saberesConNotas.map((s) => s.nombre) : ['Robótica y Computación Física', 'Algoritmos', 'Ciencia de Datos', 'IA'],
           indicadores: saberesConNotas.map((s) => s.indicador),
+          avancesEspecificos: promptContext,
+          temasTratados: ideasLibresUsuario.trim() || 'Desarrollo curricular, software de programación, simuladores y mediación contextual'
         }
       });
 
@@ -234,12 +242,40 @@ export const ResumenDiarioModal: React.FC<ResumenDiarioModalProps> = ({
                 </button>
               </div>
 
+              {/* Caja para ingresar ideas y notas clave del día */}
+              <div className="bg-white border border-zinc-200 rounded-xl p-3.5 space-y-2 shadow-2xs">
+                <label className="font-bold text-zinc-800 flex items-center justify-between text-xs">
+                  <span className="flex items-center space-x-1.5 text-zinc-900">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Ideas clave, acuerdos o temas del día (para alimentar la redacción ejecutiva):</span>
+                  </span>
+                  <span className="text-[10px] text-zinc-500 font-normal">Opcional</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={ideasLibresUsuario}
+                  onChange={(e) => setIdeasLibresUsuario(e.target.value)}
+                  placeholder="Ej: Hoy con Allan acordamos priorizar simuladores como Tinkercad para no perder lecciones de robótica, y definimos trabajar prototipos físicos o digitales según el equipo disponible..."
+                  className="w-full p-2.5 bg-zinc-50 border border-zinc-200 rounded-lg text-xs text-zinc-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+                />
+                <div className="flex justify-end">
+                  <button
+                    onClick={generarSintesisIA}
+                    disabled={loading}
+                    className="px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white font-bold flex items-center space-x-1.5 transition-all text-xs shadow-2xs"
+                  >
+                    <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                    <span>{loading ? 'Redactando Informe...' : 'Redactar Reporte Ejecutivo con IA'}</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Caja de Texto del Resumen Generado */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="font-bold text-zinc-700 flex items-center space-x-1">
                     <Bot className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Informe Ejecutivo Oficial de Avances (Editable):</span>
+                    <span>Reporte Ejecutivo de Avances y Mediación Curricular (Editable):</span>
                   </label>
                   {providerInfo && (
                     <span className="text-[10px] text-zinc-500 font-medium">{providerInfo}</span>

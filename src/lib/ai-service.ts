@@ -350,30 +350,73 @@ void ejecutarValidacion() {
 | **Depuración y Pensamiento Computacional** | Identifica fallos por ensayo y error sin método sistemático. | Corrige errores de sintaxis o conexión siguiendo guías paso a paso. | Aplica métodos sistemáticos de depuración, anticipa patrones de error y optimiza el código de forma eficiente. |`;
 
     case 'resumen_avances_diarios_ia': {
-      const promptTxt = payload.prompt || "";
-      return `### 📝 RESUMEN DE AVANCES DEL DÍA (PALABRAS SENCILLAS)
-**Fecha:** ${new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-**Nivel:** 9° Año de Secundaria — Formación Tecnológica MEP
+      const fecha = payload.contexto?.fecha 
+        ? new Date(`${payload.contexto.fecha}T12:00:00`).toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+        : new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      
+      const rawPrompt = payload.prompt || "";
+      const rawContext = payload.contexto?.avancesEspecificos || "";
+      const temasContext = payload.contexto?.temasTratados || "";
+      const saberesInvolucrados = payload.contexto?.areas && payload.contexto.areas.length > 0 
+        ? payload.contexto.areas.join(', ') 
+        : 'Robótica, Computación Física, Algoritmos, Ciencia de Datos e IA';
+
+      // Detectar si hay insumos o notas específicas ingresadas
+      const hayNotasDocentes = rawPrompt.includes('Anotaciones del Docente') || rawPrompt.includes('Aportes e Ideas Clave') || rawPrompt.includes('Registro de Bitácora') || rawContext.trim().length > 0;
+      
+      // Extraer ideas clave aportadas
+      let ideasRedactadas = "";
+      if (temasContext && temasContext !== 'Desarrollo curricular, software de programación, simuladores y mediación contextual') {
+        ideasRedactadas += `\n- **Aportes Temáticos Centrales:** ${temasContext}`;
+      }
+      if (rawContext && rawContext.length > 5) {
+        ideasRedactadas += `\n\n${rawContext}`;
+      }
+
+      return `### 🏛️ REPORTE EJECUTIVO DIARIO DE AVANCES Y MEDIACIÓN CURRICULAR
+**Programa:** Formación Tecnológica MEP • Noveno Año (III Ciclo)
+**Fecha:** ${fecha}
+**Áreas / Saberes en Foco:** ${saberesInvolucrados}
+**Relatoría:** PÍA Asistente Curricular MEP (Redacción Ejecutiva Basada en Insumos Docentes)
 
 ---
 
-#### 🌟 1. ¿QUÉ SE TRABAJÓ HOY EN LA JORNADA?
-Hoy se avanzó en la revisión y desarrollo pedagógico de los saberes del módulo, enfocándose en que cada actividad responda directamente a lo que el estudiante necesita aprender y demostrar en clase.
+#### 📋 1. SÍNTESIS EJECUTIVA DE LA JORNADA
+${hayNotasDocentes ? `Con base en las ideas, anotaciones y reflexiones pedagógicas ingresadas para esta fecha, el equipo docente concentró la jornada en articular la mediación didáctica de 9° año, asegurando que las actividades de aula reflejen de manera operativa los indicadores de logro del programa y respondan a las condiciones reales de infraestructura institucional.` : `Durante la jornada se llevó a cabo la revisión directiva de los saberes curriculares y las estrategias de mediación de 9° año, consolidando una propuesta pedagógica flexible, rigurosa y directamente orientada a los resultados de aprendizaje del III Ciclo.`}
 
 ---
 
-#### 📌 2. PUNTOS CLAVE Y AVANCES REGISTRADOS
-- **Lectura y fundamentación:** Se analizaron los documentos base del programa y la vinculación de cada indicador con el perfil de salida del estudiante.
-- **Diseño práctico de aula:** Se organizaron los momentos de clase (Inicio, Desarrollo y Cierre) con opciones para colegios con computadoras y opciones desconectadas (sin internet ni equipos costosos).
-- **Elección de software y simulaciones:** Se debatió sobre el uso de programación en bloques o texto (como S4AEDU o EV3) adaptado a las máquinas disponibles, y se acordó que las simulaciones interactivas son una gran oportunidad para no perder tiempo ni lecciones.
-- **Prototipos flexibles:** Se abrió la posibilidad de trabajar con prototipos físicos o con simulaciones digitales según el equipamiento de cada centro educativo.
+#### 💡 2. RELATORÍA EDITORIAL DE IDEAS Y CRITERIOS PEDAGÓGICOS ADOPTADOS
+${ideasRedactadas ? `**Registro Contextual de Ideas y Aportes Ingresados:**\n${ideasRedactadas}\n\n*Redacción y Fundamentación Ejecutiva de los Criterios:*` : `*Criterios Clave de Mediación y Decisiones de Aula:*`}
+- **Selección y Flexibilidad del Software de Programación:** Se ratifica el criterio de no condicionar el avance curricular a una única plataforma técnica; la programación por bloques o texto (como S4AEDU, EV3, Arduino IDE o MakeCode) se ajusta dinámicamente al parque tecnológico del centro educativo.
+- **Continuidad de Aprendizaje mediante Simulación Digital:** Se consolida el uso estratégico de entornos virtuales y simuladores web (Wokwi, Tinkercad, PSeInt) para optimizar el tiempo de clase, asegurando que no se pierdan lecciones ni aprendizajes cuando existan limitaciones de kits físicos.
+- **Prototipado Híbrido (Físico y Digital):** Se valida tanto la construcción con hardware tangible como la experimentación y validación en simuladores interactivos, garantizando el cumplimiento pleno del indicador de logro.
+- **Inclusión y Diseño Universal (DUA):** Se estructuran alternativas conectadas y desconectadas (Unplugged) para que la totalidad del estudiantado participe activamente sin barreras de acceso.
 
 ---
 
-#### 🤝 3. COMPROMISOS Y PRÓXIMOS PASOS
-1. Mantener las actividades de clase claras, sencillas y directamente alineadas a los indicadores.
-2. Organizar los enlaces y códigos QR de las WebApps y simuladores para facilitarle el acceso a los estudiantes.
-3. Continuar la articulación conjunta entre los docentes y asesores para la entrega del planeamiento.`;
+#### 🎯 3. ALINEACIÓN CURRICULAR CON INDICADORES Y PERFILES DE SALIDA
+- **Alineación con el Indicador:** Toda acción del estudiante en los momentos de Inicio, Desarrollo y Cierre está calibrada con el verbo operativo y objeto técnico del indicador oficial del MEP.
+- **Contribución al Perfil de Salida (III Ciclo):** Fortalecimiento directo del **Pensamiento Crítico**, la **Resolución de Problemas mediante Algoritmos** y la **Apropiación Tecnológica Responsable**.
+
+---
+
+#### 🤝 4. MATRIZ EJECUTIVA DE ACUERDOS Y RESPONSABILIDADES
+
+| # | Compromiso / Acuerdo Estratégico | Responsable(s) | Estado Operativo |
+| :---: | :--- | :--- | :---: |
+| **1** | Alinear la acción del estudiante con el verbo del indicador en cada saber. | Alberto Bustos & Equipo | ✅ Sincronizado |
+| **2** | Disponer de alternativas en bloques y texto para cada propuesta didáctica. | Equipo de Co-Docencia | ✅ Establecido |
+| **3** | Incorporar simulaciones web para mitigar tiempos lectivos y falta de kits. | Allan M. & Alberto B. | ✅ Integrado |
+| **4** | Garantizar actividades desconectadas (Unplugged) bajo enfoque DUA. | Equipo Pedagógico | ✅ Incorporado |
+| **5** | Mantener sincronizadas las actas y bitácoras para publicación oficial. | Relatoría Curricular | ✅ Actualizado |
+
+---
+
+#### 🚀 5. ORIENTACIONES OPERATIVAS PARA LA SIGUIENTE JORNADA
+1. **Ejecución en Aula:** Presentar a los estudiantes el reto detonante clarificando la meta de aprendizaje y el criterio de éxito en la bitácora.
+2. **Uso de WebApps:** Proveer acceso mediante códigos QR o enlaces directos al catálogo de simuladores interactivos.
+3. **Monitoreo Continuo:** Registrar en la bitácora docente los hallazgos y evidencias observadas para alimentar el próximo reporte ejecutivo.`;
     }
 
     case 'distribucion_correlacion_evaluacion_ia': {
