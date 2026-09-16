@@ -38,6 +38,8 @@ import { WebAppAddEditModal } from '../WebApps/WebAppAddEditModal';
 import { RecursoApoyoModal } from '../RecursoApoyo/RecursoApoyoModal';
 import { EditorActividadMediacionModal } from '../Mediacion/EditorActividadMediacionModal';
 import { AnotacionesIndicador } from '../Notas/AnotacionesIndicador';
+import { PanelSaberesProcedimentalesActitudinales } from './PanelSaberesProcedimentalesActitudinales';
+import { ModalDistribucionGlobalSaberes } from './ModalDistribucionGlobalSaberes';
 
 export const Modulo1View: React.FC = () => {
   const modulo1 = MODULOS_NOVENO_OFICIAL.find((m) => m.id === 1);
@@ -50,6 +52,7 @@ export const Modulo1View: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string>('todas');
   const [expandedSaberId, setExpandedSaberId] = useState<string | null>('movimiento_mecanismos');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [mostrarModalDistribucionGlobal, setMostrarModalDistribucionGlobal] = useState<boolean>(false);
 
   // Modales de WebApps y QR
   const [qrModalData, setQrModalData] = useState<{
@@ -186,6 +189,14 @@ export const Modulo1View: React.FC = () => {
                 <span className="font-bold text-zinc-800">Eje de III Ciclo:</span> {modulo1.ejeCiclo}
               </div>
             )}
+
+            <button
+              onClick={() => setMostrarModalDistribucionGlobal(true)}
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-700 hover:to-sky-700 text-white rounded-2xl text-xs font-extrabold flex items-center justify-center space-x-2 shadow-xs transition-all"
+            >
+              <Layers className="w-4 h-4" />
+              <span>📊 Matriz & Balance de Saberes (13 Procedimentales + 4 Actitudinales)</span>
+            </button>
           </div>
         </div>
 
@@ -533,6 +544,13 @@ export const Modulo1View: React.FC = () => {
                               );
                             })()}
 
+                            {/* Panel Interactivo de Saberes Procedimentales y Actitudinales Asignados */}
+                            <PanelSaberesProcedimentalesActitudinales 
+                              saberId={saber.id} 
+                              saberNombre={saber.nombre} 
+                              modoDetallado={true} 
+                            />
+
                             {/* Bitácora y Anotaciones */}
                             <AnotacionesIndicador saberId={saber.id} saberNombre={saber.nombre} />
                           </div>
@@ -711,6 +729,14 @@ export const Modulo1View: React.FC = () => {
                               </div>
                             </div>
 
+                            {/* Panel Interactivo de Saberes Procedimentales y Actitudinales Asignados */}
+                            <div className="pt-2">
+                              <PanelSaberesProcedimentalesActitudinales 
+                                saberId={saber.id} 
+                                saberNombre={saber.nombre} 
+                              />
+                            </div>
+
                             <AnotacionesIndicador saberId={saber.id} saberNombre={saber.nombre} />
                           </div>
                         )}
@@ -772,6 +798,12 @@ export const Modulo1View: React.FC = () => {
           onClose={() => setEditorMediacionData(null)}
         />
       )}
+
+      {/* Modal Matriz y Balance Global de Saberes Procedimentales y Actitudinales */}
+      <ModalDistribucionGlobalSaberes
+        isOpen={mostrarModalDistribucionGlobal}
+        onClose={() => setMostrarModalDistribucionGlobal(false)}
+      />
     </div>
   );
 };

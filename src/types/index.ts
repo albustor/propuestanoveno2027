@@ -172,6 +172,18 @@ export interface SaberActitudinal {
   observable: string;
 }
 
+export type EstadoSeguimientoSaber = 'trabajado' | 'en_proceso' | 'pendiente' | 'descartado';
+
+export interface RegistroSeguimientoSaber {
+  saberCurricularId: string;
+  saberTipo: 'procedimental' | 'actitudinal';
+  saberId: string;
+  estado: EstadoSeguimientoSaber;
+  fechaActualizacion: string;
+}
+
+export type MapaSeguimientoSaberes = Record<string, Record<string, EstadoSeguimientoSaber>>;
+
 // -------------------------------------------------------------
 // MODELO DEL PROYECTO: 3 FASES Y 5 ETAPAS (Design Thinking / ABP)
 // -------------------------------------------------------------

@@ -492,6 +492,50 @@ export const toggleAcuerdoReunionLocal = (
   }
 };
 
+// -------------------------------------------------------------
+// SEGUIMIENTO DE SABERES PROCEDIMENTALES Y ACTITUDINALES (MEP 2026)
+// -------------------------------------------------------------
+const KEY_SEGUIMIENTO_SABERES = 'mep_noveno_seguimiento_saberes_2026';
 
+export const getMapaSeguimientoSaberesLocal = (): Record<string, Record<string, 'trabajado' | 'en_proceso' | 'pendiente' | 'descartado'>> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(KEY_SEGUIMIENTO_SABERES);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch (e) {
+    return {};
+  }
+};
 
+export const saveEstadoSaberLocal = (
+  saberCurricularId: string,
+  saberId: string,
+  estado: 'trabajado' | 'en_proceso' | 'pendiente' | 'descartado'
+): Record<string, Record<string, 'trabajado' | 'en_proceso' | 'pendiente' | 'descartado'>> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const mapa = getMapaSeguimientoSaberesLocal();
+    if (!mapa[saberCurricularId]) {
+      mapa[saberCurricularId] = {};
+    }
+    mapa[saberCurricularId][saberId] = estado;
+    localStorage.setItem(KEY_SEGUIMIENTO_SABERES, JSON.stringify(mapa));
 
+    registrarEventoTelemetria(
+      'NOTAS_INDICADOR',
+      'ESTADO_SABER_ACTUALIZADO',
+      `Saber "${saberId}" en "${saberCurricularId}" actualizado a estado ${estado.toUpperCase()}.`,
+      { saberCurricularId, saberId, estado }
+    );
+
+    // Disparar evento para reactividad entre componentes
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('seguimiento_saberes_actualizado', { detail: { saberCurricularId, saberId, estado } }));
+    }
+
+    return mapa;
+  } catch (e) {
+    return {};
+  }
+};

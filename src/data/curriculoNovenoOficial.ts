@@ -4,7 +4,7 @@ import { ModuloCurricular } from '../types';
 export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
   {
     "id": 1,
-    "nombre": "Módulo 1: Computación Física, Robótica y Algoritmos para la Solución de Problemas",
+    "nombre": "Módulo 1: Robótica y Algoritmos para la Solución de Problemas",
     "periodo": "I Semestre / I Periodo (9° Año)",
     "descripcion": "Desarrollo de competencias en computación física, robótica, formulación algorítmica y gestión responsable del dato. El estudiantado diseña prototipos automatizados mediante microcontroladores, sensores y actuadores con aplicación en domótica y retos comunitarios.",
     "entrelazamientoAreas": "En el Módulo 1, el área de Computación Física y Robótica se entrelaza de forma directa y bidireccional con Algoritmos y Programación: los sensores capturan variables del entorno físico escolar o comunitario que alimentan las estructuras condicionales y de control en el código, el cual procesa las señales lógicas y comanda los actuadores y mecanismos mecánicos para generar respuestas automatizadas y domóticas. A su vez, el área de Ciencia de Datos aporta el principio de confiabilidad y trazabilidad en la captura de mediciones y telemetría de los dispositivos IoT.",
