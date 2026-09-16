@@ -142,21 +142,45 @@ export const SistematizacionEquipoView: React.FC = () => {
     notificar('Reunión guardada exitosamente');
   };
 
-  // Generar Síntesis IA de la sesión
-  const handleGenerarSintesisIA = async (tema: string = 'Jornada de Trabajo Curricular con Allan') => {
+  // Generar Informe Pedagógico / Síntesis IA de la sesión
+  const handleGenerarSintesisIA = async (reunionData?: ReunionEquipoNivel | string) => {
     setModalIAAbierto(true);
     setCargandoIA(true);
+
+    let prompt = '';
+    let contexto: any = {};
+
+    if (typeof reunionData === 'object' && reunionData !== null) {
+      prompt = `Genera un informe pedagógico exhaustivo y estructurado para la sesión de trabajo: "${reunionData.titulo}", analizando los temas tratados ("${reunionData.temasTratados}"), los avances logrados ("${reunionData.avancesConAllan || ''}") y los acuerdos tomados (${reunionData.acuerdos.map(a => a.acuerdo).join('; ')}), con un enfoque pedagógico riguroso alineado a los programas MEP de 9° año.`;
+      contexto = {
+        tituloSesion: reunionData.titulo,
+        fecha: reunionData.fecha,
+        hora: reunionData.hora,
+        participantes: reunionData.participantes,
+        avancesEspecificos: reunionData.avancesConAllan,
+        temasTratados: reunionData.temasTratados,
+        acuerdos: reunionData.acuerdos,
+        enfoque: reunionData.tipo === 'trabajo_allan' ? 'co_docencia' : 'pedagogico_curricular'
+      };
+    } else {
+      const temaStr = typeof reunionData === 'string' ? reunionData : 'Jornada de Trabajo Curricular con Allan';
+      prompt = `Genera un informe pedagógico y síntesis de acuerdos para la reunión de diseño curricular de 9° año: "${temaStr}", con el equipo conformado por Alberto Bustos Ortega y Allan M., coordinado por Kevin Sánchez Bogarín.`;
+      contexto = {
+        tema: temaStr,
+        participantes: ['Alberto Bustos Ortega', 'Allan M.'],
+        enfoque: 'co_docencia'
+      };
+    }
+
     try {
       const res = await processAICascade({
-        prompt: `Genera un acta ejecutiva y síntesis de acuerdos para la reunión de diseño curricular de 9° año: "${tema}", con el equipo conformado por Alberto Bustos Ortega y Allan M., coordinado por Kevin Sánchez Bogarín.`,
-        tipo: 'sintesis_reunion_acuerdos_ia',
-        contexto: {
-          tema
-        }
+        prompt,
+        tipo: 'informe_pedagogico_sesion_ia',
+        contexto
       });
       setSintesisIAGenerada(res.content);
     } catch (e) {
-      setSintesisIAGenerada('Error al generar la síntesis de la reunión.');
+      setSintesisIAGenerada('Error al generar el informe pedagógico de la reunión.');
     } finally {
       setCargandoIA(false);
     }
@@ -434,7 +458,15 @@ export const SistematizacionEquipoView: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center space-x-1 shrink-0">
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      <button
+                        onClick={() => handleGenerarSintesisIA(r)}
+                        className="px-2.5 py-1 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-lg text-[10px] font-bold flex items-center space-x-1 transition-all shadow-2xs"
+                        title="Generar resumen e informe pedagógico con IA para esta sesión"
+                      >
+                        <Sparkles className="w-3 h-3 text-purple-600" />
+                        <span>Informe Pedagógico IA</span>
+                      </button>
                       <button
                         onClick={() => {
                           setReunionEditando(r);
@@ -561,7 +593,15 @@ export const SistematizacionEquipoView: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center space-x-1 shrink-0">
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      <button
+                        onClick={() => handleGenerarSintesisIA(r)}
+                        className="px-2.5 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-[10px] font-bold flex items-center space-x-1 transition-all shadow-2xs"
+                        title="Generar resumen e informe pedagógico con IA para esta reunión"
+                      >
+                        <Sparkles className="w-3 h-3 text-indigo-600" />
+                        <span>Informe Pedagógico IA</span>
+                      </button>
                       <button
                         onClick={() => {
                           setReunionEditando(r);
@@ -891,6 +931,12 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   const [estado, setEstado] = useState<'Completado' | 'En Proceso' | 'Pendiente'>(reunion.estado);
   const [acuerdos, setAcuerdos] = useState<AcuerdoReunion[]>(reunion.acuerdos);
 
+  // Estados de Informe IA
+  const [cargandoInformeIA, setCargandoInformeIA] = useState<boolean>(false);
+  const [mostrarInformeIA, setMostrarInformeIA] = useState<boolean>(false);
+  const [informeIAGenerado, setInformeIAGenerado] = useState<string>('');
+  const [copiadoInforme, setCopiadoInforme] = useState<boolean>(false);
+
   // Nuevo acuerdo temporal
   const [nuevoAcuerdoTexto, setNuevoAcuerdoTexto] = useState<string>('');
   const [nuevoResponsable, setNuevoResponsable] = useState<string>('Alberto & Allan');
@@ -909,6 +955,67 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
   const handleEliminarAcuerdo = (id: string) => {
     setAcuerdos(acuerdos.filter((a) => a.id !== id));
+  };
+
+  const handleGenerarInformeFormulario = async () => {
+    if (!titulo.trim() && !temasTratados.trim() && !avancesConAllan.trim()) {
+      alert('Por favor complete al menos el título, temas tratados o avances de la sesión para generar el informe con IA.');
+      return;
+    }
+
+    setCargandoInformeIA(true);
+    setMostrarInformeIA(true);
+
+    const participantes = participantesTexto
+      .split(',')
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+
+    try {
+      const res = await processAICascade({
+        prompt: `Genera un informe pedagógico exhaustivo y estructurado a partir de los datos ingresados en el formulario:
+- Título: ${titulo}
+- Fecha y Hora: ${fecha} ${hora}
+- Participantes: ${participantes.join(', ')}
+- Avances y Logros del Día: ${avancesConAllan}
+- Temas Tratados y Agenda: ${temasTratados}
+- Acuerdos: ${acuerdos.map((a) => a.acuerdo).join('; ')}
+Enfócate en la relación pedagógica entre los indicadores de logro, indicadores de evaluación, mediación didáctica y el trabajo conjunto de co-docencia.`,
+        tipo: 'informe_pedagogico_sesion_ia',
+        contexto: {
+          tituloSesion: titulo,
+          fecha,
+          hora,
+          participantes: participantes.length > 0 ? participantes : ['Alberto Bustos Ortega', 'Allan M.'],
+          avancesEspecificos: avancesConAllan,
+          temasTratados,
+          acuerdos,
+          enfoque: tipo === 'trabajo_allan' ? 'co_docencia' : 'pedagogico_curricular'
+        }
+      });
+
+      setInformeIAGenerado(res.content);
+    } catch (e) {
+      setInformeIAGenerado('Ocurrió un error al generar el informe con IA.');
+    } finally {
+      setCargandoInformeIA(false);
+    }
+  };
+
+  const handleCopiarInforme = () => {
+    navigator.clipboard.writeText(informeIAGenerado);
+    setCopiadoInforme(true);
+    setTimeout(() => setCopiadoInforme(false), 2000);
+  };
+
+  const handleDescargarInformeMD = () => {
+    const blob = new Blob([informeIAGenerado], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Informe_Pedagogico_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${fecha}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -942,7 +1049,7 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-zinc-200 overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-zinc-200 overflow-hidden relative">
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
           <div className="flex items-center space-x-2">
             <UserCheck className="w-5 h-5 text-purple-600" />
@@ -950,9 +1057,21 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
               {tipo === 'trabajo_allan' ? 'Registro de Sesión de Trabajo con Allan' : 'Registro de Reunión de Coordinación / Nivel'}
             </h3>
           </div>
-          <button onClick={onCerrar} className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-lg">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={handleGenerarInformeFormulario}
+              disabled={cargandoInformeIA}
+              className="px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs"
+              title="Resumir y estructurar todos los datos ingresados en un informe pedagógico con IA"
+            >
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+              <span>{cargandoInformeIA ? 'Generando...' : '✨ Resumen e Informe IA'}</span>
+            </button>
+            <button onClick={onCerrar} className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-lg">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
@@ -1034,11 +1153,21 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
           {tipo === 'trabajo_allan' && (
             <div>
-              <label className="block font-semibold text-purple-900 mb-1">
-                🌟 Avances y Logros Específicos del Día con Allan:
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="font-semibold text-purple-900">
+                  🌟 Avances y Logros Específicos del Día con Allan:
+                </label>
+                <button
+                  type="button"
+                  onClick={handleGenerarInformeFormulario}
+                  className="text-[10px] text-purple-700 font-bold hover:underline flex items-center space-x-1"
+                >
+                  <Sparkles className="w-3 h-3 text-purple-600" />
+                  <span>Resumir con IA</span>
+                </button>
+              </div>
               <textarea
-                rows={2}
+                rows={3}
                 value={avancesConAllan}
                 onChange={(e) => setAvancesConAllan(e.target.value)}
                 placeholder="¿Qué diseñamos hoy? (Ej: Se consolidaron las actividades de desarrollo de sensores y simulador Tinkercad)..."
@@ -1048,7 +1177,17 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
           )}
 
           <div>
-            <label className="block font-semibold text-zinc-700 mb-1">Temas Tratados / Agenda:</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="font-semibold text-zinc-700">Temas Tratados / Agenda:</label>
+              <button
+                type="button"
+                onClick={handleGenerarInformeFormulario}
+                className="text-[10px] text-indigo-700 font-bold hover:underline flex items-center space-x-1"
+              >
+                <Sparkles className="w-3 h-3 text-indigo-600" />
+                <span>Analizar Pedagógicamente</span>
+              </button>
+            </div>
             <textarea
               rows={3}
               value={temasTratados}
@@ -1105,22 +1244,106 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
             </div>
           </div>
 
-          <div className="pt-3 border-t border-zinc-100 flex items-center justify-end space-x-2">
+          <div className="pt-3 border-t border-zinc-100 flex items-center justify-between gap-2">
             <button
               type="button"
-              onClick={onCerrar}
-              className="px-3.5 py-2 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-medium"
+              onClick={handleGenerarInformeFormulario}
+              disabled={cargandoInformeIA}
+              className="px-3.5 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-2xs"
             >
-              Cancelar
+              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+              <span>✨ Generar Informe Pedagógico con IA</span>
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
-            >
-              Guardar Registro
-            </button>
+
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                onClick={onCerrar}
+                className="px-3.5 py-2 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
+              >
+                Guardar Registro
+              </button>
+            </div>
           </div>
         </form>
+
+        {/* SUB-MODAL VISUALIZADOR DEL INFORME PEDAGÓGICO GENERADO */}
+        {mostrarInformeIA && (
+          <div className="absolute inset-0 z-60 bg-white/95 backdrop-blur-md flex flex-col p-6 animate-fadeIn">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
+              <div className="flex items-center space-x-2.5">
+                <div className="p-2 bg-purple-100 text-purple-700 rounded-xl">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-zinc-900">
+                    Informe Pedagógico y Síntesis de Sesión IA
+                  </h4>
+                  <p className="text-[11px] text-zinc-500">
+                    Estructurado a partir de todos los datos ingresados en el formulario
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setMostrarInformeIA(false)}
+                className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-lg hover:bg-zinc-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto py-4 text-xs">
+              {cargandoInformeIA ? (
+                <div className="py-16 text-center space-y-3">
+                  <div className="animate-spin w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full mx-auto" />
+                  <p className="font-semibold text-zinc-700">Analizando todos los aspectos tratados y generando síntesis pedagógica...</p>
+                  <p className="text-[11px] text-zinc-400">Vinculando con indicadores de logro, evaluación y pautas de co-docencia MEP.</p>
+                </div>
+              ) : (
+                <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 whitespace-pre-line text-zinc-800 leading-relaxed font-sans shadow-2xs">
+                  {informeIAGenerado}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-zinc-200 flex items-center justify-between">
+              <span className="text-[11px] text-zinc-400 font-medium">PÍA Asistente Curricular MEP • Resiliencia en Cascada</span>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={handleCopiarInforme}
+                  disabled={cargandoInformeIA}
+                  className="px-3.5 py-1.5 bg-white border border-zinc-300 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-2xs"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{copiadoInforme ? '¡Copiado!' : 'Copiar Texto'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDescargarInformeMD}
+                  disabled={cargandoInformeIA}
+                  className="px-3.5 py-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-2xs"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Descargar (.md)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMostrarInformeIA(false)}
+                  className="px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
+                >
+                  Volver al Formulario
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

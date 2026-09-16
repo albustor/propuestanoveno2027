@@ -33,10 +33,19 @@ export interface AIRequestPayload {
     | 'sistematizacion_resumen'
     | 'resumen_avances_diarios_ia'
     | 'distribucion_correlacion_evaluacion_ia'
+    | 'informe_pedagogico_sesion_ia'
     | 'sintesis_reunion_acuerdos_ia';
   contexto?: {
     modulo?: number;
     tema?: string;
+    tituloSesion?: string;
+    fecha?: string;
+    hora?: string;
+    participantes?: string[];
+    avancesEspecificos?: string;
+    temasTratados?: string;
+    acuerdos?: Array<{ id?: string; acuerdo: string; responsable: string; completado?: boolean }>;
+    enfoque?: 'pedagogico_curricular' | 'co_docencia' | 'evaluacion_indicadores' | 'general';
     saberId?: string;
     saberNombre?: string;
     indicadorTexto?: string;
@@ -413,40 +422,53 @@ Durante la sesión de trabajo, el estudiantado demostró un nivel satisfactorio 
 3. **Flexibilidad DUA:** Permita que las evidencias de tareas y proyectos puedan ser demostradas mediante prototipo físico, simulación interactiva en línea o sustentación oral.`;
     }
 
+    case 'informe_pedagogico_sesion_ia':
     case 'sintesis_reunion_acuerdos_ia': {
-      const temaReunion = payload.contexto?.tema || "Sesión de Trabajo y Coordinación Curricular";
-      return `### 🤝 ACTA EJECUTIVA Y SÍNTESIS DE REUNIÓN / JORNADA DE TRABAJO (MEP 2026)
-**Nivel:** Noveno Año (III Ciclo de Secundaria)
-**Tema / Eje:** ${temaReunion}
-**Fecha:** ${new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-**Participantes Registrados:** Alberto Bustos Ortega & Allan M. (Diseñadores Curriculares) | Kevin Sánchez Bogarín (Coordinador)
+      const titulo = payload.contexto?.tituloSesion || payload.contexto?.tema || "Sesión de Trabajo y Co-Docencia Curricular";
+      const fecha = payload.contexto?.fecha || new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const hora = payload.contexto?.hora || "08:00 a. m.";
+      const participantes = payload.contexto?.participantes && payload.contexto.participantes.length > 0 
+        ? payload.contexto.participantes.join(', ')
+        : "Alberto Bustos Ortega & Allan M. (Diseñadores Curriculares) | Kevin Sánchez Bogarín (Coordinador)";
+      const avances = payload.contexto?.avancesEspecificos?.trim() || "";
+      const temas = payload.contexto?.temasTratados?.trim() || "";
+      const acuerdos = payload.contexto?.acuerdos || [];
+      const enfoque = payload.contexto?.enfoque || "pedagogico_curricular";
+
+      return `### 📋 INFORME PEDAGÓGICO EJECUTIVO Y SÍNTESIS DE SESIÓN (MEP 2026)
+**Programa:** Formación Tecnológica — Tercer Ciclo (Noveno Año)
+**Sesión:** ${titulo}
+**Fecha:** ${fecha} | **Hora:** ${hora}
+**Equipo Participante:** ${participantes}
+**Enfoque de Análisis:** ${enfoque === 'co_docencia' ? 'Co-Diseño y Práctica Docente Compartida' : enfoque === 'evaluacion_indicadores' ? 'Alineación de Indicadores y Evaluación Formativa' : 'Articulación Curricular, Mediación Pedagógica y DUA'}
 
 ---
 
-#### 📌 1. SÍNTESIS DE TEMAS Y ANÁLISIS DE LA SESIÓN
-Durante la jornada de trabajo conjunto, se llevó a cabo una exhaustiva revisión de los componentes pedagógicos de 9° año, logrando articular las estrategias metodológicas de los 3 momentos didácticos (Inicio, Desarrollo y Cierre) con la matriz de evaluación y el banco de recursos interactivos.
+#### 📌 1. SÍNTESIS DE TEMAS TRATADOS Y DIAGNÓSTICO DE LA SESIÓN
+${temas ? `**Puntos Abordados:**\n${temas}\n\n*Análisis Pedagógico:* Se analizaron los componentes medulares de la Guía Docente y el perfil del educador tecnológico, estableciendo una correlación directa entre los Resultados de Aprendizaje (RdA) por ciclo y los Indicadores de Logro e Indicadores de Evaluación para fundamentar las estrategias de mediación didáctica en el aula.` : `Durante la jornada se revisaron las directrices curriculares oficiales para 9° año, concentrando el análisis en la coherencia entre el perfil de salida, los indicadores de logro y la mediación en 3 momentos didácticos.`}
 
 ---
 
-#### 🎯 2. PRINCIPALES AVANCES Y LOGROS ALCANZADOS
-1. **Consolidación de Indicadores y Mediación:** Estandarización de las actividades de mediación asegurando coherencia técnica y enfoque multi-escenario (conectado y desconectado).
-2. **Articulación del Proyecto Semestral:** Vinculación directa de los saberes técnicos (sensores, microcontroladores y algoritmos) a las 5 etapas de *Design Thinking*.
-3. **Optimización de Recursos para el Estudiante:** Integración de códigos QR y simuladores web en el banco oficial de WebApps.
+#### 🌟 2. AVANCES Y LOGROS ESPECÍFICOS ALCANZADOS
+${avances ? `**Avances del Equipo:**\n${avances}\n\n*Impacto Curricular:* La articulación entre el indicador de logro (apropiación del saber) y el indicador de evaluación (criterio de desempeño observable) garantiza que las actividades de aula no sean meramente operativas, sino que promuevan el pensamiento computacional y la resolución de problemas contextuales.` : `1. **Alineación de Indicadores:** Clarificación de la distinción funcional entre el indicador de logro y el indicador de evaluación en el planeamiento didáctico.\n2. **Coherencia Metodológica:** Estructuración de los 3 momentos de mediación (Inicio, Desarrollo y Cierre) con pautas DUA.\n3. **Integración Transversal:** Enlace de los saberes de robótica, programación y datos con los ejes transversales del MEP.`}
 
 ---
 
-#### 📋 3. MATRIZ DE ACUERDOS Y COMPROMISOS OPERATIVOS
-
-| # | Acuerdo / Tarea Específica | Responsable(s) | Plazo / Entrega | Estado |
-| :---: | :--- | :--- | :---: | :---: |
-| **1** | Revisión final de pautas DUA en estrategias de Módulo 1 | Alberto Bustos | Próxima sesión | En Proceso |
-| **2** | Curaduría de simuladores y WebApps para Módulo 2 | Allan M. | Próxima sesión | En Proceso |
-| **3** | Preparación de evidencias para el 1° Corte Valorativo | Allan M. & Alberto Bustos | 16 de Octubre | Programado |
+#### 🔍 3. ANÁLISIS DE LA PRÁCTICA DOCENTE Y CORRELACIÓN CURRICULAR
+- **Alineación RdA $\rightarrow$ Indicador de Logro $\rightarrow$ Indicador de Evaluación:** Cada experiencia de aprendizaje debe partir del Resultado de Aprendizaje del ciclo, desagregarse en el indicador de logro del saber específico y evaluarse mediante criterios de desempeño observables en trabajo cotidiano o proyecto.
+- **Sinergia en Co-Docencia:** El intercambio de criterios y estrategias entre zonas de asesoría fortalece la propuesta técnica, asegurando adaptabilidad a diversos contextos institucionales (conectados y desconectados).
+- **Enfoque en Procesos (Cero Placeholders):** Énfasis en la depuración constructiva del error y el andamiaje pedagógico continuo.
 
 ---
 
-#### 💡 4. OBSERVACIONES Y RECOMENDACIONES PARA EL SIGUIENTE ENCUENTRO
-- Mantener el registro continuo de telemetría y bitácora diaria para sustentar las decisiones pedagógicas en los cortes de coordinación con Kevin Sánchez.`;
+#### 📋 4. MATRIZ DE ACUERDOS, COMPROMISOS Y PRÓXIMOS PASOS
+${acuerdos.length > 0 ? `\n| # | Acuerdo / Compromiso Pedagógico | Responsable(s) | Estado |\n| :---: | :--- | :--- | :---: |\n${acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Equipo Diseñador'} | ${a.completado ? '✅ Cumplido' : '⏳ En Proceso'} |`).join('\n')}\n` : `\n- [x] Continuar la articulación de estrategias compartidas desde ambas zonas de asesoría (Alberto & Allan).\n- [x] Consolidar la matriz de correlación entre indicadores de logro y de evaluación para la mediación.\n- [x] Registrar evidencias y bitácora de co-diseño para la coordinación con Kevin Sánchez.\n`}
+
+---
+
+#### 💡 5. RECOMENDACIONES PEDAGÓGICAS PARA EL SEGUIMIENTO
+1. **Modelado en la Mediación:** Trasladar los acuerdos sobre el perfil docente a consignas claras para el estudiantado en los momentos de Inicio y Desarrollo.
+2. **Registro Sistemático:** Mantener actualizado el historial de encuentros para sustentar la entrega de cortes valorativos oficiales ante la jefatura curricular.`;
     }
 
     default:
