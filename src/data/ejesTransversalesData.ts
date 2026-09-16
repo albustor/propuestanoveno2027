@@ -127,14 +127,16 @@ export const PERFIL_SALIDA_NOVENO_RASGOS: PerfilSalidaRasgoNoveno[] = [
 export const MAPEO_EJES_POR_SABER: Record<string, EjeTransversalTipo[]> = {
   // Módulo 1
   movimiento_mecanismos: ['sostenibilidad_ambiental', 'salud_bienestar_digital'],
-  microcontrolador: ['sostenibilidad_ambiental', 'inclusion_derechos'],
+  microcontrolador: ['inclusion_derechos', 'sostenibilidad_ambiental'],
   sensor: ['sostenibilidad_ambiental', 'salud_bienestar_digital'],
-  actuador: ['sostenibilidad_ambiental', 'inclusion_derechos'],
+  actuador: ['inclusion_derechos', 'sostenibilidad_ambiental'],
   domotica: ['sostenibilidad_ambiental', 'inclusion_derechos'],
-  algoritmo: ['etica_paz_ciudadania'],
-  entorno_programacion: ['salud_bienestar_digital', 'etica_paz_ciudadania'],
-  estructuras_control: ['etica_paz_ciudadania'],
+  prototipos: ['inclusion_derechos', 'sostenibilidad_ambiental'],
+  algoritmo: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
+  entorno_programacion: ['inclusion_derechos', 'etica_paz_ciudadania'],
+  estructuras_control: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
   dato: ['etica_paz_ciudadania', 'inclusion_derechos'],
+  iot: ['sostenibilidad_ambiental', 'etica_paz_ciudadania'],
   practicas_actitudes_m1: ['salud_bienestar_digital', 'etica_paz_ciudadania'],
   
   // Módulo 2
@@ -149,3 +151,81 @@ export const MAPEO_EJES_POR_SABER: Record<string, EjeTransversalTipo[]> = {
   herramientas_generativas: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
   practicas_actitudes_m2: ['salud_bienestar_digital', 'etica_paz_ciudadania']
 };
+
+// Mapeo Específico Principal con Justificación Pedagógica por Indicador
+export interface EjeEspecificoDetalle {
+  ejePrincipal: EjeTransversalTipo;
+  justificacion: string;
+  aplicacionAula: string;
+}
+
+export const MAPEO_EJE_ESPECIFICO_DETALLE: Record<string, EjeEspecificoDetalle> = {
+  // --- MÓDULO 1 ---
+  movimiento_mecanismos: {
+    ejePrincipal: 'sostenibilidad_ambiental',
+    justificacion: 'Eficiencia energética mecánica: optimización de torque y reducción de fricción en sistemas de transmisión.',
+    aplicacionAula: 'Cálculo de relación de transmisión (engranajes y poleas) para maximizar la fuerza con el menor consumo de energía mecánica.'
+  },
+  microcontrolador: {
+    ejePrincipal: 'inclusion_derechos',
+    justificacion: 'Accesibilidad e interactividad universal: interfaz programable capaz de accionar dispositivos de asistencia física y sensorial.',
+    aplicacionAula: 'Mapeo de pines I/O para conectar alertas lumínicas y sonoras que atienden necesidades de accesibilidad escolar.'
+  },
+  sensor: {
+    ejePrincipal: 'sostenibilidad_ambiental',
+    justificacion: 'Monitoreo ambiental y uso racional de recursos: detección precisa de variables físicas para evitar consumos innecesarios.',
+    aplicacionAula: 'Calibración de sensores LDR (luz) y PIR (presencia) para encendido automático solo cuando se requiere iluminación.'
+  },
+  actuador: {
+    ejePrincipal: 'inclusion_derechos',
+    justificacion: 'Diseño universal y respuesta adaptada: transformación de señales en acciones físicas que eliminan barreras arquitectónicas.',
+    aplicacionAula: 'Accionamiento de servomotores para puertas automáticas y zumbadores para timbres escolares multisensoriales.'
+  },
+  domotica: {
+    ejePrincipal: 'sostenibilidad_ambiental',
+    justificacion: 'Cultura ambiental y desarrollo sostenible: automatización integral para la reducción de la huella de carbono en el hogar y colegio.',
+    aplicacionAula: 'Diseño de maqueta de aula inteligente con gestión eficiente de iluminación y ventilación automatizada.'
+  },
+  prototipos: {
+    ejePrincipal: 'inclusion_derechos',
+    justificacion: 'Prototipado inclusivo: integración de subsistemas para responder a necesidades reales identificadas en la comunidad.',
+    aplicacionAula: 'Construcción y prueba en equipo de prototipos domóticos con materiales reusables y enfoque de accesibilidad universal.'
+  },
+  algoritmo: {
+    ejePrincipal: 'etica_paz_ciudadania',
+    justificacion: 'Pensamiento algorítmico y rigor lógico: formulación estructurada de pasos sin ambigüedad ni sesgos en la toma de decisiones.',
+    aplicacionAula: 'Diagramas de flujo con simbología normalizada que definen con exactitud el comportamiento del sistema automatizado.'
+  },
+  entorno_programacion: {
+    ejePrincipal: 'inclusion_derechos',
+    justificacion: 'Diseño Universal para el Aprendizaje (DUA): entornos flexibles (bloques o texto) que eliminan barreras de entrada a la programación.',
+    aplicacionAula: 'Codificación modular en IDEs visuales/textuales permitiendo diversas formas de expresión y andamiaje según el estudiante.'
+  },
+  estructuras_control: {
+    ejePrincipal: 'etica_paz_ciudadania',
+    justificacion: 'Juicio lógico y control condicional: toma de decisiones segura ante condiciones límite y prevención de fallos críticos.',
+    aplicacionAula: 'Programación de condicionales (if/else) y bucles para regular con precisión y seguridad el arranque y paro de mecanismos.'
+  },
+  dato: {
+    ejePrincipal: 'etica_paz_ciudadania',
+    justificacion: 'Privacidad, integridad y confiabilidad del dato: tratamiento responsable de mediciones recolectadas por sensores IoT.',
+    aplicacionAula: 'Validación de mediciones sensoriales y protocolo de registro seguro sin vulnerar la privacidad de los usuarios.'
+  },
+  iot: {
+    ejePrincipal: 'sostenibilidad_ambiental',
+    justificacion: 'Automatización y telemática comunitaria: interconexión de dispositivos para la gestión inteligente del entorno escolar.',
+    aplicacionAula: 'Simulación de lectura y respuesta remota de variables ambientales para optimización de recursos institucionales.'
+  },
+  practicas_actitudes_m1: {
+    ejePrincipal: 'salud_bienestar_digital',
+    justificacion: 'Resiliencia ante el error, persistencia y bienestar socioemocional durante la depuración técnica y el trabajo colaborativo.',
+    aplicacionAula: 'Bitácora metacognitiva de debugging donde el error se aborda constructivamente como oportunidad de aprendizaje.'
+  }
+};
+
+export function getEjeEspecificoParaSaber(saberId: string): { ejeConfig: any; detalle: EjeEspecificoDetalle } | null {
+  const detalle = MAPEO_EJE_ESPECIFICO_DETALLE[saberId];
+  if (!detalle) return null;
+  const ejeConfig = EJES_TRANSVERSALES_OFICIALES[detalle.ejePrincipal];
+  return { ejeConfig, detalle };
+}

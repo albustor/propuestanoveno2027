@@ -10,41 +10,41 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
       {
         "id": "fase1_investigacion",
         "numero": 1,
-        "nombre": "Fase I: Investigación y Diagnóstico del Contexto",
-        "descripcion": "Identificación de necesidades del entorno, delimitación del reto tecnológico y análisis del ciclo de vida del dato.",
+        "nombre": "Fase I: Comprensión y Diagnóstico del Contexto",
+        "descripcion": "Observación directa de necesidades del entorno, escucha activa de los usuarios y delimitación clara del reto tecnológico.",
         "etapas": [
           "etapa1_empatizar",
           "etapa2_definir"
         ],
         "evidenciasEsperadas": [
-          "Bitácora de necesidades comunitarias",
-          "Ficha técnica de requerimientos y planteamiento del reto"
+          "Mapa de empatía y registro de necesidades del entorno",
+          "Ficha de requerimientos técnicos y declaración del reto de diseño"
         ]
       },
       {
         "id": "fase2_desarrollo",
         "numero": 2,
         "nombre": "Fase II: Ideación, Diseño y Construcción Técnica",
-        "descripcion": "Generación de alternativas, formulación de algoritmos en pseudocódigo y construcción del prototipo físico/simulado.",
+        "descripcion": "Generación creativa de alternativas, formulación de algoritmos en pseudocódigo/flujogramas y ensamble del prototipo domótico.",
         "etapas": [
           "etapa3_idear",
           "etapa4_prototipar"
         ],
         "evidenciasEsperadas": [
-          "Diagramas de flujo y esquemas de conexión",
-          "Prototipo domótico funcional (físico o simulado)"
+          "Diagramas de flujo y esquemas de conexionado de pines",
+          "Prototipo domótico funcional operativo (físico o simulado)"
         ]
       },
       {
         "id": "fase3_evaluacion",
         "numero": 3,
         "nombre": "Fase III: Validación, Depuración y Socialización",
-        "descripcion": "Pruebas de estrés, calibración de sensores, corrección de fallas y demostración pública ante la comunidad escolar.",
+        "descripcion": "Pruebas de funcionamiento, calibración de sensores, depuración sistemática de fallas y sustentación pública ante la comunidad escolar.",
         "etapas": [
           "etapa5_evaluar_testear"
         ],
         "evidenciasEsperadas": [
-          "Instrumento de pruebas y depuración",
+          "Matriz de pruebas y bitácora de depuración de errores",
           "Presentación demostrativa (Demostración de lo Aprendido)"
         ]
       }
@@ -55,15 +55,15 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "numero": 1,
         "nombre": "Etapa 1: Empatizar",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Investigación y Diagnóstico",
-        "proposito": "Comprender las necesidades reales de los usuarios e identificar puntos críticos en el uso de la energía o accesibilidad.",
+        "faseNombre": "Fase I: Comprensión y Diagnóstico",
+        "proposito": "Comprender las necesidades reales de los usuarios mediante observación directa y escucha activa en el entorno escolar o comunal.",
         "accionesClave": [
-          "Observar y registrar situaciones de desperdicio de luz o barreras arquitectónicas en el colegio.",
-          "Realizar entrevistas breves a conserjes, docentes y familiares sobre retos cotidianos."
+          "Observar y registrar de forma directa situaciones de consumo eléctrico o barreras de accesibilidad en el colegio.",
+          "Conversar y escuchar activamente a conserjes, docentes y compañeros sobre retos y necesidades cotidianas."
         ],
         "entregablesSugeridos": [
-          "Mapa de empatía del usuario",
-          "Registro de observaciones en bitácora"
+          "Mapa de empatía de las personas usuarias",
+          "Bitácora de observación directa de necesidades"
         ],
         "semanaSugeridaModulo1": [
           3,
@@ -74,13 +74,13 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
           4
         ],
         "criteriosEvaluacionMEP": [
-          "Identifica situaciones problemáticas pertinentes en su contexto sociocultural.",
-          "Registra información cualitativa relevante y con respeto ético."
+          "Identifica con sensibilidad y respeto situaciones problemáticas reales en su contexto educativo.",
+          "Registra información cualitativa relevante de los usuarios sin sesgos ni suposiciones."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Lluvia de ideas sobre problemas que la tecnología puede mitigar en el colegio.",
-          "desarrollo": "Trabajo de campo: Levantamiento de datos en equipos y construcción del mapa de empatía.",
-          "cierre": "Plenaria: Socialización de los principales hallazgos diagnósticos."
+          "inicio": "Focalización: Diálogo guiado sobre situaciones cotidianas que requieren soluciones automatizadas o accesibles en la institución.",
+          "desarrollo": "Recorrido de observación guiada en equipos y construcción colaborativa del mapa de empatía.",
+          "cierre": "Plenaria: Puesta en común de los principales hallazgos y dolores identificados en las personas usuarias."
         }
       },
       {
@@ -88,15 +88,15 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "numero": 2,
         "nombre": "Etapa 2: Definir",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Investigación y Diagnóstico",
-        "proposito": "Formular el problema de diseño de manera precisa mediante una pregunta reto: ¿Cómo podríamos...?",
+        "faseNombre": "Fase I: Comprensión y Diagnóstico",
+        "proposito": "Sintetizar las observaciones del entorno y formular el desafío tecnológico central mediante la pregunta detonante de diseño: ¿Cómo podríamos...?",
         "accionesClave": [
-          "Sintetizar los datos recolectados y redactar la declaración del problema.",
-          "Definir los requerimientos técnicos mínimos (sensores, actuadores, presupuesto)."
+          "Sintetizar los hallazgos de la empatía y redactar la declaración precisa del problema.",
+          "Establecer la lista de requerimientos técnicos y funcionales del reto (sensores, actuadores, condiciones de operación)."
         ],
         "entregablesSugeridos": [
           "Declaración del reto de diseño (Problem Statement)",
-          "Lista de especificaciones técnicas"
+          "Lista de especificaciones y requerimientos funcionales"
         ],
         "semanaSugeridaModulo1": [
           5,
@@ -107,13 +107,13 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
           6
         ],
         "criteriosEvaluacionMEP": [
-          "Delimita el reto técnico con claridad y viabilidad pedagógica.",
-          "Establece requerimientos funcionales coherentes con los saberes del nivel."
+          "Delimita el reto técnico con claridad, pertinencia contextual y viabilidad pedagógica.",
+          "Establece requerimientos funcionales coherentes con los indicadores curriculares del nivel."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de declaraciones de problemas bien vs. mal delimitadas.",
-          "desarrollo": "Redacción colaborativa del reto y la lista de especificaciones del prototipo.",
-          "cierre": "Validación con el docente para asegurar pertinencia curricular."
+          "inicio": "Focalización: Análisis de declaraciones de problemas amplias vs. retos de diseño bien focalizados.",
+          "desarrollo": "Redacción colaborativa de la pregunta '¿Cómo podríamos...?' y definición de especificaciones técnicas.",
+          "cierre": "Validación formativa con el docente para asegurar la alineación con los indicadores oficiales."
         }
       },
       {

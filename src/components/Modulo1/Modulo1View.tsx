@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { MODULOS_NOVENO_OFICIAL } from '../../data/curriculoNovenoOficial';
 import { PROYECTOS_SEMESTRALES_NOVENO } from '../../data/proyectoFasesEtapasData';
-import { EJES_TRANSVERSALES_OFICIALES, MAPEO_EJES_POR_SABER } from '../../data/ejesTransversalesData';
+import { EJES_TRANSVERSALES_OFICIALES, MAPEO_EJES_POR_SABER, getEjeEspecificoParaSaber } from '../../data/ejesTransversalesData';
 import { 
   Cpu, 
   Code, 
@@ -410,24 +410,26 @@ export const Modulo1View: React.FC = () => {
                             </div>
                           </div>
 
-                          {/* Ejes Transversales */}
-                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Ejes:</span>
-                            {(MAPEO_EJES_POR_SABER[saber.id] || []).map((ejeId) => {
-                              const cfg = EJES_TRANSVERSALES_OFICIALES[ejeId];
-                              if (!cfg) return null;
-                              return (
-                                <span
-                                  key={ejeId}
-                                  className={`px-2 py-0.5 rounded-lg text-[9px] font-bold border flex items-center gap-1 ${cfg.bgLight}`}
-                                  title={cfg.nombre}
-                                >
-                                  <span>{ejeId === 'sostenibilidad_ambiental' ? '🌿' : ejeId === 'inclusion_derechos' ? '♿' : ejeId === 'salud_bienestar_digital' ? '🍎' : '🛡️'}</span>
-                                  <span>{cfg.nombreCorto}</span>
-                                </span>
-                              );
-                            })}
-                          </div>
+                          {/* Eje Transversal Principal Específico y Secundarios */}
+                          {(() => {
+                            const ejeEsp = getEjeEspecificoParaSaber(saber.id);
+                            if (!ejeEsp) return null;
+                            const { ejeConfig, detalle } = ejeEsp;
+                            const iconoEje = detalle.ejePrincipal === 'sostenibilidad_ambiental' ? '🌿' : detalle.ejePrincipal === 'inclusion_derechos' ? '♿' : detalle.ejePrincipal === 'salud_bienestar_digital' ? '🍎' : '🛡️';
+                            return (
+                              <div className={`p-3 rounded-2xl border text-xs space-y-1.5 ${ejeConfig.bgLight}`}>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                                    <span>{iconoEje}</span>
+                                    <span>Eje Transversal Principal: {ejeConfig.nombreCorto}</span>
+                                  </span>
+                                </div>
+                                <p className="text-[11px] leading-snug font-medium">
+                                  <strong className="font-bold text-zinc-900">Asociación Específica:</strong> {detalle.justificacion}
+                                </p>
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Desglose Completo si se expande la tarjeta */}
@@ -512,6 +514,24 @@ export const Modulo1View: React.FC = () => {
                                 </ul>
                               </div>
                             </div>
+
+                            {/* Detalle Eje Transversal Principal */}
+                            {(() => {
+                              const ejeEsp = getEjeEspecificoParaSaber(saber.id);
+                              if (!ejeEsp) return null;
+                              const { ejeConfig, detalle } = ejeEsp;
+                              const iconoEje = detalle.ejePrincipal === 'sostenibilidad_ambiental' ? '🌿' : detalle.ejePrincipal === 'inclusion_derechos' ? '♿' : detalle.ejePrincipal === 'salud_bienestar_digital' ? '🍎' : '🛡️';
+                              return (
+                                <div className={`p-4 rounded-2xl border space-y-1.5 text-xs ${ejeConfig.bgLight}`}>
+                                  <div className="flex items-center space-x-2 font-bold text-xs">
+                                    <span>{iconoEje}</span>
+                                    <span>Eje Transversal Integrado: {ejeConfig.nombre}</span>
+                                  </div>
+                                  <p className="text-[11px] leading-relaxed"><strong className="font-semibold">Fundamentación Pedagógica:</strong> {detalle.justificacion}</p>
+                                  <p className="text-[11px] leading-relaxed"><strong className="font-semibold">Aplicación Directa en el Aula:</strong> {detalle.aplicacionAula}</p>
+                                </div>
+                              );
+                            })()}
 
                             {/* Bitácora y Anotaciones */}
                             <AnotacionesIndicador saberId={saber.id} saberNombre={saber.nombre} />
@@ -601,6 +621,19 @@ export const Modulo1View: React.FC = () => {
                                   <span>Mediación Personalizada</span>
                                 </span>
                               )}
+
+                              {(() => {
+                                const ejeEsp = getEjeEspecificoParaSaber(saber.id);
+                                if (!ejeEsp) return null;
+                                const { ejeConfig, detalle } = ejeEsp;
+                                const iconoEje = detalle.ejePrincipal === 'sostenibilidad_ambiental' ? '🌿' : detalle.ejePrincipal === 'inclusion_derechos' ? '♿' : detalle.ejePrincipal === 'salud_bienestar_digital' ? '🍎' : '🛡️';
+                                return (
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 ${ejeConfig.bgLight}`} title={detalle.justificacion}>
+                                    <span>{iconoEje}</span>
+                                    <span>{ejeConfig.nombreCorto}</span>
+                                  </span>
+                                );
+                              })()}
 
                               <button
                                 onClick={(e) => {
