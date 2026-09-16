@@ -435,44 +435,34 @@ export const DistribucionEvaluacionView: React.FC = () => {
             Todos ({saberesModuloActual.length})
           </button>
           <button
-            onClick={() => setEjeFiltro('sostenibilidad_ambiental')}
+            onClick={() => setEjeFiltro('pensamiento_computacional')}
             className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
-              ejeFiltro === 'sostenibilidad_ambiental'
-                ? 'bg-emerald-600 text-white shadow-xs'
-                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/60'
-            }`}
-          >
-            <span>🌿</span> Sostenibilidad
-          </button>
-          <button
-            onClick={() => setEjeFiltro('inclusion_derechos')}
-            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
-              ejeFiltro === 'inclusion_derechos'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200/60'
-            }`}
-          >
-            <span>♿</span> Inclusión & DUA
-          </button>
-          <button
-            onClick={() => setEjeFiltro('salud_bienestar_digital')}
-            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
-              ejeFiltro === 'salud_bienestar_digital'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60'
-            }`}
-          >
-            <span>🍎</span> Salud & Bienestar
-          </button>
-          <button
-            onClick={() => setEjeFiltro('etica_paz_ciudadania')}
-            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
-              ejeFiltro === 'etica_paz_ciudadania'
+              ejeFiltro === 'pensamiento_computacional'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200/60'
             }`}
           >
-            <span>🛡️</span> Ética & Ciberseguridad
+            <span>💻</span> Pensamiento Computacional
+          </button>
+          <button
+            onClick={() => setEjeFiltro('ciudadania_etica_digital')}
+            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
+              ejeFiltro === 'ciudadania_etica_digital'
+                ? 'bg-purple-600 text-white shadow-xs'
+                : 'bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200/60'
+            }`}
+          >
+            <span>🛡️</span> Ciudadanía y Ética Digital
+          </button>
+          <button
+            onClick={() => setEjeFiltro('emprendimiento_innovacion')}
+            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold flex items-center gap-1 transition-all ${
+              ejeFiltro === 'emprendimiento_innovacion'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/60'
+            }`}
+          >
+            <span>🚀</span> Emprendimiento e Innovación
           </button>
         </div>
       </div>
@@ -753,7 +743,7 @@ export const DistribucionEvaluacionView: React.FC = () => {
                                 className={`px-1 py-0.2 rounded text-[8px] font-bold border ${cfg.bgLight}`}
                                 title={cfg.nombre}
                               >
-                                {ejeId === 'sostenibilidad_ambiental' ? '🌿 Sostenibilidad' : ejeId === 'inclusion_derechos' ? '♿ Inclusión' : ejeId === 'salud_bienestar_digital' ? '🍎 Bienestar' : '🛡️ Ética'}
+                                {ejeId === 'pensamiento_computacional' ? '💻 Computacional' : ejeId === 'ciudadania_etica_digital' ? '🛡️ Ética Digital' : '🚀 Emprendimiento'}
                               </span>
                             );
                           })}
@@ -1110,7 +1100,7 @@ const TarjetaIndicadorKanban: React.FC<TarjetaIndicadorKanbanProps> = ({
               className={`px-1.5 py-0.5 rounded-md text-[9px] font-bold border flex items-center gap-1 ${cfg.bgLight}`}
               title={cfg.nombre}
             >
-              <span>{ejeId === 'sostenibilidad_ambiental' ? '🌿' : ejeId === 'inclusion_derechos' ? '♿' : ejeId === 'salud_bienestar_digital' ? '🍎' : '🛡️'}</span>
+              <span>{ejeId === 'pensamiento_computacional' ? '💻' : ejeId === 'ciudadania_etica_digital' ? '🛡️' : '🚀'}</span>
               <span>{cfg.nombreCorto}</span>
             </span>
           );
@@ -1519,7 +1509,7 @@ const ModalPerfilSalidaNoveno: React.FC<ModalPerfilSalidaProps> = ({ onCerrar })
                             key={ejeId}
                             className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${cfg.bgLight}`}
                           >
-                            {ejeId === 'sostenibilidad_ambiental' ? '🌿' : ejeId === 'inclusion_derechos' ? '♿' : ejeId === 'salud_bienestar_digital' ? '🍎' : '🛡️'} {cfg.nombreCorto}
+                            {ejeId === 'pensamiento_computacional' ? '💻' : ejeId === 'ciudadania_etica_digital' ? '🛡️' : '🚀'} {cfg.nombreCorto}
                           </span>
                         );
                       })}
@@ -1534,10 +1524,10 @@ const ModalPerfilSalidaNoveno: React.FC<ModalPerfilSalidaProps> = ({ onCerrar })
             <div className="space-y-4">
               <div className="bg-teal-50/60 border border-teal-200/80 rounded-2xl p-4 text-zinc-700">
                 <h4 className="font-extrabold text-teal-950 text-sm mb-1 flex items-center gap-1.5">
-                  <span>🌿</span> Ejes Transversales Oficiales del Currículo MEP
+                  <span>💻</span> Ejes Transversales Oficiales del Currículo MEP
                 </h4>
                 <p className="leading-relaxed text-zinc-600">
-                  Los ejes transversales orientan el propósito ético y contextual de cada saber. En 9° año, se manifiestan en los retos de domótica, interfaces accesibles, ciberseguridad y análisis de impacto de la IA.
+                  Los ejes transversales orientan el propósito ético y contextual de cada saber. En 9° año, se manifiestan en el Pensamiento Computacional, la Ciudadanía y Ética Digital, y el Emprendimiento e Innovación.
                 </p>
               </div>
 
@@ -1549,7 +1539,7 @@ const ModalPerfilSalidaNoveno: React.FC<ModalPerfilSalidaProps> = ({ onCerrar })
                   >
                     <div className="flex items-center space-x-2">
                       <span className="text-xl">
-                        {eje.id === 'sostenibilidad_ambiental' ? '🌿' : eje.id === 'inclusion_derechos' ? '♿' : eje.id === 'salud_bienestar_digital' ? '🍎' : '🛡️'}
+                        {eje.id === 'pensamiento_computacional' ? '💻' : eje.id === 'ciudadania_etica_digital' ? '🛡️' : '🚀'}
                       </span>
                       <div>
                         <h5 className="font-extrabold text-xs text-zinc-900 leading-snug">

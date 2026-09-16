@@ -3,9 +3,44 @@
 import React, { useState, useEffect } from 'react';
 import { MODULOS_NOVENO_OFICIAL } from '../../data/curriculoNovenoOficial';
 import { PROYECTOS_SEMESTRALES_NOVENO } from '../../data/proyectoFasesEtapasData';
-import { SemanaPlaneamiento, EtapaProyectoTipo, EstrategiaMetodologicaIndicador } from '../../types';
-import { Calendar, Plus, Trash2, Clock, Sparkles, Save, CheckCircle2, ChevronRight, FileText, Layers, QrCode, Edit3, ShieldCheck } from 'lucide-react';
-import { WebAppRecurso } from '../../types';
+import { 
+  SemanaPlaneamiento, 
+  EtapaProyectoTipo, 
+  EstrategiaMetodologicaIndicador,
+  WebAppRecurso,
+  EjeTransversalTipo
+} from '../../types';
+import { 
+  DISTRIBUCION_SABERES_M1, 
+  DICCIONARIO_PROCEDIMENTALES, 
+  DICCIONARIO_ACTITUDINALES 
+} from '../../data/saberesPensamientoCompData';
+import { 
+  EJES_TRANSVERSALES_OFICIALES, 
+  getEjeEspecificoParaSaber 
+} from '../../data/ejesTransversalesData';
+import { 
+  Calendar, 
+  Plus, 
+  Trash2, 
+  Clock, 
+  Sparkles, 
+  Save, 
+  CheckCircle2, 
+  ChevronRight, 
+  FileText, 
+  Layers, 
+  QrCode, 
+  Edit3, 
+  ShieldCheck,
+  Brain,
+  Award,
+  CheckSquare,
+  BookOpen,
+  Compass,
+  Zap,
+  Target
+} from 'lucide-react';
 import { useWebApps } from '../../lib/useWebApps';
 import { getCustomEstrategiaForSaber } from '../../lib/storage';
 import { MomentoWebAppsSection } from '../WebApps/MomentoWebAppsSection';
@@ -14,12 +49,16 @@ import { WebAppAddEditModal } from '../WebApps/WebAppAddEditModal';
 import { RecursoApoyoModal } from '../RecursoApoyo/RecursoApoyoModal';
 import { EditorActividadMediacionModal } from '../Mediacion/EditorActividadMediacionModal';
 import { AnotacionesIndicador } from '../Notas/AnotacionesIndicador';
+import { ModalPerfilesSalidaOficiales } from '../ModalPerfilesSalidaOficiales';
+import { processAICascade } from '../../lib/ai-service';
 
 export const PlaneamientoView: React.FC = () => {
   const [selectedModuloId, setSelectedModuloId] = useState<1 | 2>(1);
   const [semanas, setSemanas] = useState<SemanaPlaneamiento[]>([]);
   const [selectedSemanaNum, setSelectedSemanaNum] = useState<number>(1);
   const [isSaved, setIsSaved] = useState(false);
+  const [generandoIA, setGenerandoIA] = useState(false);
+  const [mostrarModalPerfiles, setMostrarModalPerfiles] = useState(false);
 
   const { getWebapps, saveWebapp, deleteWebapp } = useWebApps();
 
@@ -58,30 +97,16 @@ export const PlaneamientoView: React.FC = () => {
 
   const modulo = MODULOS_NOVENO_OFICIAL.find((m) => m.id === selectedModuloId);
   const proyecto = PROYECTOS_SEMESTRALES_NOVENO.find((p) => p.moduloId === selectedModuloId);
+  const allSaberes = modulo ? modulo.areas.flatMap((a) => a.saberes) : [];
 
-  // Inicializar 18 semanas preconfiguradas con los saberes oficiales
-  useEffect(() => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}`;
-    const saved = localStorage.getItem(storageKey);
-
-    if (saved) {
-      try {
-        setSemanas(JSON.parse(saved));
-        return;
-      } catch (e) {
-        console.error('Error loading saved planeamiento', e);
-      }
-    }
-
-    // Si no hay datos guardados, generar semanas por defecto
-    const initialSemanas: SemanaPlaneamiento[] = [];
-    const allSaberes = modulo ? modulo.areas.flatMap((a) => a.saberes) : [];
+  // Helper para armar semanas con actividades preconfiguradas completas
+  const generarSemanasCompletas = (): SemanaPlaneamiento[] => {
+    const list: SemanaPlaneamiento[] = [];
 
     for (let i = 1; i <= 18; i++) {
       const saberIndex = (i - 1) % allSaberes.length;
       const saber = allSaberes[saberIndex];
 
-      // Determinar si la semana coincide con una etapa del proyecto
       let etapaAsoc: EtapaProyectoTipo | undefined;
       let esSemanaProyecto = false;
       let actProyecto = '';
@@ -100,41 +125,103 @@ export const PlaneamientoView: React.FC = () => {
         }
       }
 
-      initialSemanas.push({
+      const distM1 = saber ? DISTRIBUCION_SABERES_M1[saber.id] : null;
+      const ejeInfo = saber ? getEjeEspecificoParaSaber(saber.id) : null;
+
+      list.push({
         id: `sem_${selectedModuloId}_${i}`,
         numeroSemana: i,
         moduloId: selectedModuloId,
-        tituloSemana: `Semana ${i}: ${saber ? saber.nombre : 'Consolidación de Aprendizajes'}`,
+        tituloSemana: `Semana ${i}: ${saber ? saber.nombre : 'Consolidación y Prototipado'}`,
         saberesSeleccionados: saber ? [saber.id] : [],
         esSemanaDedicadaAProyecto: esSemanaProyecto,
         etapaProyectoAsociada: etapaAsoc,
         actividadProyectoEnSemana: actProyecto,
         momentoInicio: {
-          estrategia: saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de conocimientos previos y contextualización.',
+          estrategia: saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de conocimientos previos y planteamiento de reto detonante contextualizado.',
           tiempo: '15 min'
         },
         momentoDesarrollo: {
-          estrategia: saber ? saber.estrategiaMetodologica.desarrollo.descripcion : 'Construcción guiada, laboratorio práctico y resolución de retos.',
+          estrategia: saber ? `${saber.estrategiaMetodologica.desarrollo.descripcion} Acciones del estudiante: ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : 'Construcción guiada, laboratorio práctico, depuración colaborativa y ensamblaje de prototipo.',
           tiempo: '50 min'
         },
         momentoCierre: {
-          estrategia: saber ? saber.estrategiaMetodologica.cierre.descripcion : 'Sistematización de aprendizajes y evaluación formativa entre pares.',
+          estrategia: saber ? `${saber.estrategiaMetodologica.cierre.descripcion} Evaluación docente: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : 'Sistematización de aprendizajes en bitácora digital, coevaluación y reflexión metacognitiva.',
           tiempo: '15 min'
         },
-        escenarioConectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : 'Simuladores y software educativo.',
-        escenarioDesconectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.desconectado.join(', ') : 'Guías impresas y material concreto.',
-        evidenciaAprendizaje: `Registro de desempeño y bitácora técnica de la semana ${i}.`,
-        instrumentoEvaluacion: 'Escala de Desempeño Formativa MEP',
-        pautaDUAAplicada: 'Representación visual y opciones flexibles de expresión.'
+        escenarioConectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : 'Simulador Wokwi, Tinkercad Circuits, IDE de programación, microcontrolador físico.',
+        escenarioDesconectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.desconectado.join(', ') : 'Guía de laboratorio impresa, diagramas de flujo en papel milimetrado, material concreto.',
+        
+        // Los 3 Componentes Oficiales de Evaluación MEP
+        componentesEvaluacion: {
+          proyecto: etapaAsoc 
+            ? `Avance en ${actProyecto}. Verificación de entregables y bitácora de diseño.` 
+            : 'Integración paulatina de los componentes desarrollados hacia la maqueta del proyecto semestral.',
+          cotidiano: `Observación sistemática del desempeño práctico en aula: aplicación de ${saber?.nombre || 'saber curricular'} y resolución de retos de clase.`,
+          tareasAsistencia: `Bitácora técnica individual, persistencia ante el error, tolerancia a la frustración y entrega puntual del reporte.`
+        },
+
+        evidenciaAprendizaje: `Registro de desempeño técnico, código depurado y reporte en bitácora estudiantil de la semana ${i}.`,
+        instrumentoEvaluacion: 'Rúbrica Analítica de Proceso y Escala de Calificación MEP',
+        pautaDUAAplicada: 'Principio de Representación: Opciones múltiples de lenguaje visual/textual. Principio de Acción y Expresión: Uso de simulador interactivo o montaje físico.',
+        
+        saberesProcedimentales: distM1 ? distM1.saberesProcedimentalesIds : ['modulariza', 'depura', 'programa'],
+        saberesActitudinales: distM1 ? distM1.saberesActitudinalesIds : ['precision', 'aprender_error'],
+        ejeTransversalDetalle: ejeInfo ? {
+          ejeId: ejeInfo.detalle.ejePrincipal,
+          ejeNombre: ejeInfo.ejeConfig.nombre,
+          dimensionNombre: ejeInfo.detalle.dimensionNombre,
+          descriptor: ejeInfo.detalle.descriptorOficial
+        } : undefined
       });
     }
 
-    setSemanas(initialSemanas);
+    return list;
+  };
+
+  // Inicializar o cargar semanas
+  useEffect(() => {
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
+    const saved = localStorage.getItem(storageKey);
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (
+          Array.isArray(parsed) && 
+          parsed.length === 18 && 
+          parsed[0]?.momentoInicio?.actividad &&
+          parsed[0]?.componentesEvaluacion &&
+          parsed[0]?.saberesProcedimentales
+        ) {
+          setSemanas(parsed);
+          return;
+        }
+      } catch (e) {
+        console.error('Error loading saved planeamiento', e);
+      }
+    }
+
+    // Si no hay datos guardados o son de una versión anterior incompleta, generar la mediación oficial
+    const initial = generarSemanasCompletas();
+    setSemanas(initial);
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(initial));
+    } catch (e) {}
   }, [selectedModuloId]);
 
   const handleSave = () => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
     localStorage.setItem(storageKey, JSON.stringify(semanas));
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2500);
+  };
+
+  const handleRestablecerOficial = () => {
+    const fresh = generarSemanasCompletas();
+    setSemanas(fresh);
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
+    localStorage.setItem(storageKey, JSON.stringify(fresh));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
   };
@@ -147,222 +234,370 @@ export const PlaneamientoView: React.FC = () => {
     );
   };
 
+  // Asistente IA para regenerar y enriquecer actividades de la semana
+  const handleMejorarActividadesConIA = async () => {
+    if (!currentSemana) return;
+    setGenerandoIA(true);
+
+    const saberSelId = currentSemana.saberesSeleccionados[0];
+    const saberSelObj = allSaberes.find((s) => s.id === saberSelId);
+
+    try {
+      const resp = await processAICascade({
+        tipo: 'recurso_apoyo_maestro_4_pilares',
+        prompt: `Genera la mediación didáctica oficial para la semana ${currentSemana.numeroSemana} sobre el saber "${saberSelObj?.nombre || currentSemana.tituloSemana}". Indicador: "${saberSelObj?.indicador || ''}". Asegura integrar los 3 momentos didácticos, saberes procedimentales, actitudinales y los 3 componentes de evaluación MEP (Proyecto, Cotidiano, Tareas).`,
+        contexto: {
+          modulo: selectedModuloId,
+          saberId: saberSelObj?.id,
+          saberNombre: saberSelObj?.nombre,
+          indicadorTexto: saberSelObj?.indicador,
+          tema: saberSelObj?.nombre
+        }
+      });
+
+      if (resp && resp.success) {
+        // Enriquecer campos con sugerencias pedagógicas
+        updateCurrentSemana(prev => ({
+          ...prev,
+          evidenciaAprendizaje: `Bitácora técnica, circuito/algoritmo probado y análisis metacognitivo sobre ${saberSelObj?.nombre || 'la sesión'}.`
+        }));
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setGenerandoIA(false);
+    }
+  };
+
   if (!modulo) return null;
 
-  const allSaberes = modulo.areas.flatMap((a) => a.saberes);
+  const currentSaberId = currentSemana?.saberesSeleccionados[0];
+  const currentSaberObj = allSaberes.find((s) => s.id === currentSaberId);
+  const currentArea = modulo.areas.find((a) => a.saberes.some((s) => s.id === currentSaberId));
+  const currentDistM1 = currentSaberId ? DISTRIBUCION_SABERES_M1[currentSaberId] : null;
+  const currentEjeInfo = currentSaberId ? getEjeEspecificoParaSaber(currentSaberId) : null;
 
   return (
     <div className="space-y-6">
       {/* Header del Planeador */}
-      <div className="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
-                Mediación Didáctica Oficial 2026
+      <div className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-sky-600 text-white shadow-xs">
+                Mediación Pedagógica Oficial MEP 2026
               </span>
-              <span className="text-xs text-zinc-500 font-medium">9° Año • 18 Semanas Lectivas</span>
+              <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200">
+                III Ciclo • 9° Año • 18 Semanas Lectivas
+              </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
-              Planeador Semanal de Mediación Pedagógica
+              Planeamiento Didáctico y Actividades de Mediación en 3 Momentos
             </h1>
-            <p className="text-xs text-zinc-600">
-              Estructure las semanas de clase respetando los 3 momentos didácticos (Inicio, Desarrollo y Cierre) e integre hitos del Proyecto semestral.
+            <p className="text-xs sm:text-sm text-zinc-600 max-w-4xl">
+              Estructure las sesiones semanales con actividades listas para analizar, articulando los <strong>Saberes Procedimentales</strong>, <strong>Actitudinales</strong>, <strong>Competencias</strong>, <strong>RdA</strong>, <strong>Ejes Transversales Oficiales</strong> y los <strong>3 Componentes de Evaluación MEP</strong>.
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 shrink-0">
-            {/* Badge Módulo 1 */}
-            <div className="px-3.5 py-1.5 bg-indigo-50 text-indigo-900 border border-indigo-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-2xs">
-              <Layers className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Módulo 1: Robótica & Algoritmos (18 Semanas)</span>
-            </div>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              onClick={() => setMostrarModalPerfiles(true)}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs"
+            >
+              <Target className="w-3.5 h-3.5 text-teal-600" />
+              <span>Perfiles de Salida MEP</span>
+            </button>
+
+            <button
+              onClick={handleRestablecerOficial}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs"
+              title="Recargar y sincronizar todas las 18 semanas con los 3 momentos y saberes oficiales"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span>🔄 Sincronizar Guía Oficial 2026</span>
+            </button>
 
             <button
               onClick={handleSave}
-              className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-white hover:bg-zinc-800 shadow-sm transition-all"
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm cursor-pointer ${
+                isSaved
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+              }`}
             >
-              <Save className="w-3.5 h-3.5" />
-              <span>{isSaved ? '¡Guardado!' : 'Guardar Plan'}</span>
+              {isSaved ? <CheckCircle2 className="w-4 h-4 text-emerald-200" /> : <Save className="w-4 h-4" />}
+              <span>{isSaved ? '¡Guardado Localmente!' : 'Guardar Planeamiento'}</span>
             </button>
+          </div>
+        </div>
+
+        {/* Selector de Semanas / Días (1 a 18) */}
+        <div className="mt-6 pt-5 border-t border-zinc-100">
+          <div className="flex items-center justify-between mb-2.5">
+            <span className="text-xs font-bold text-zinc-600 uppercase tracking-wider flex items-center gap-1.5">
+              <Calendar className="w-4 h-4 text-indigo-600" />
+              Itinerario de Semanas Lectivas (Periodo Escolar):
+            </span>
+            <span className="text-xs text-zinc-500 font-medium">
+              Semana Activa: <strong className="text-indigo-600 font-bold">#{selectedSemanaNum}</strong> de 18
+            </span>
+          </div>
+
+          <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-18 gap-1.5">
+            {semanas.map((sem) => {
+              const isSelected = sem.numeroSemana === selectedSemanaNum;
+              const tieneEtapa = Boolean(sem.etapaProyectoAsociada);
+
+              return (
+                <button
+                  key={sem.numeroSemana}
+                  onClick={() => setSelectedSemanaNum(sem.numeroSemana)}
+                  className={`py-2 px-1 rounded-xl text-xs font-bold flex flex-col items-center justify-center transition-all cursor-pointer border ${
+                    isSelected
+                      ? 'bg-indigo-600 text-white border-indigo-700 shadow-md ring-2 ring-indigo-300'
+                      : tieneEtapa
+                      ? 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
+                      : 'bg-zinc-50 text-zinc-700 border-zinc-200 hover:bg-zinc-100'
+                  }`}
+                  title={`${sem.tituloSemana} ${tieneEtapa ? '(Etapa de Proyecto)' : '(Trabajo Cotidiano)'}`}
+                >
+                  <span>S{sem.numeroSemana}</span>
+                  <span className="text-[9px] opacity-80 font-normal">
+                    {tieneEtapa ? '🎯 ABP' : '📝 Cot.'}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Grid de 18 Semanas (Navegación Compacta) */}
-      <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-2xs">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <span className="text-xs font-bold text-zinc-700 uppercase tracking-wider flex items-center">
-            <Calendar className="w-3.5 h-3.5 mr-1.5 text-indigo-600" />
-            Línea de Semanas Lectivas (1 a 18)
-          </span>
-          <span className="text-[11px] text-zinc-500">
-            Haga clic en una semana para editar su mediación
-          </span>
-        </div>
-
-        <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-18 gap-1.5">
-          {semanas.map((sem) => {
-            const isSelected = selectedSemanaNum === sem.numeroSemana;
-            const hasProject = Boolean(sem.etapaProyectoAsociada);
-
-            return (
-              <button
-                key={sem.numeroSemana}
-                onClick={() => setSelectedSemanaNum(sem.numeroSemana)}
-                className={`py-2 px-1 rounded-xl text-center border text-xs transition-all relative ${
-                  isSelected
-                    ? 'border-indigo-600 bg-indigo-600 text-white font-bold shadow-xs'
-                    : hasProject
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 font-semibold'
-                    : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100'
-                }`}
-              >
-                <div className="text-[10px] opacity-75">S</div>
-                <div className="font-bold text-sm leading-none mt-0.5">{sem.numeroSemana}</div>
-                {hasProject && !isSelected && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 absolute bottom-1 left-1/2 -translate-x-1/2"></span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Editor de la Semana Seleccionada */}
+      {/* Detalle de la Semana Seleccionada */}
       {currentSemana && (
-        <div className="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-sm space-y-6">
-          {/* Header de la Semana */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-zinc-100 gap-3">
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-zinc-900 text-white">
-                  Semana {currentSemana.numeroSemana} de 18
+        <div className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 shadow-sm space-y-6">
+          
+          {/* Fila Superior: Título de la Semana, Modalidad y Saber Oficial */}
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-5 border-b border-zinc-100">
+            <div className="space-y-2 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                  Semana {currentSemana.numeroSemana}
                 </span>
-                {currentSemana.etapaProyectoAsociada && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                    Hito del Proyecto Activo
+
+                {currentSemana.etapaProyectoAsociada ? (
+                  <span className="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+                    <span>🎯</span>
+                    <span>Vinculada a Proyecto: {currentSemana.etapaProyectoAsociada.replace('_', ' ').toUpperCase()}</span>
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 flex items-center gap-1.5">
+                    <span>📝</span>
+                    <span>Modalidad: Trabajo Cotidiano (9 Sub-etapas)</span>
                   </span>
                 )}
               </div>
+
               <input
                 type="text"
                 value={currentSemana.tituloSemana}
                 onChange={(e) =>
                   updateCurrentSemana((prev) => ({ ...prev, tituloSemana: e.target.value }))
                 }
-                className="text-lg sm:text-xl font-bold text-zinc-900 mt-1.5 w-full bg-transparent border-b border-transparent hover:border-zinc-300 focus:border-indigo-500 focus:outline-none"
+                className="text-lg sm:text-xl font-bold text-zinc-900 bg-transparent border-b border-dashed border-zinc-300 focus:border-indigo-600 focus:outline-none w-full"
+                placeholder="Título descriptivo de la semana..."
               />
             </div>
 
-            {/* Asignar Saber Conceptual */}
-            <div className="shrink-0 w-full sm:w-80">
-              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">
-                Saber e Indicador Base:
+            {/* Selector de Saber Oficial */}
+            <div className="w-full lg:w-96 space-y-1.5">
+              <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider block">
+                Saber Curricular Asignado:
               </label>
               <select
                 value={currentSemana.saberesSeleccionados[0] || ''}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  const selectedSaber = allSaberes.find((s) => s.id === val);
+                  const sId = e.target.value;
+                  const sObj = allSaberes.find((s) => s.id === sId);
+                  const dist = sId ? DISTRIBUCION_SABERES_M1[sId] : null;
+                  const eje = sId ? getEjeEspecificoParaSaber(sId) : null;
 
-                  updateCurrentSemana((prev) => {
-                    let inicioDesc = prev.momentoInicio.estrategia;
-                    let desarrolloDesc = prev.momentoDesarrollo.estrategia;
-                    let cierreDesc = prev.momentoCierre.estrategia;
-
-                    if (selectedSaber) {
-                      const { estrategia: activeEst } = getCustomEstrategiaForSaber(
-                        selectedSaber.id,
-                        selectedSaber.estrategiaMetodologica
-                      );
-                      inicioDesc = activeEst.inicio.descripcion;
-                      desarrolloDesc = activeEst.desarrollo.descripcion;
-                      cierreDesc = activeEst.cierre.descripcion;
-                    }
-
-                    return {
-                      ...prev,
-                      saberesSeleccionados: val ? [val] : [],
-                      tituloSemana: selectedSaber
-                        ? `Semana ${currentSemana.numeroSemana}: ${selectedSaber.nombre}`
-                        : prev.tituloSemana,
-                      momentoInicio: selectedSaber
-                        ? { ...prev.momentoInicio, estrategia: inicioDesc }
-                        : prev.momentoInicio,
-                      momentoDesarrollo: selectedSaber
-                        ? { ...prev.momentoDesarrollo, estrategia: desarrolloDesc }
-                        : prev.momentoDesarrollo,
-                      momentoCierre: selectedSaber
-                        ? { ...prev.momentoCierre, estrategia: cierreDesc }
-                        : prev.momentoCierre,
-                    };
-                  });
+                  updateCurrentSemana((prev) => ({
+                    ...prev,
+                    saberesSeleccionados: sId ? [sId] : [],
+                    tituloSemana: `Semana ${prev.numeroSemana}: ${sObj ? sObj.nombre : 'Sesión de Mediación'}`,
+                    momentoInicio: {
+                      estrategia: sObj ? sObj.estrategiaMetodologica.inicio.descripcion : prev.momentoInicio.estrategia,
+                      tiempo: prev.momentoInicio.tiempo
+                    },
+                    momentoDesarrollo: {
+                      estrategia: sObj ? `${sObj.estrategiaMetodologica.desarrollo.descripcion} Acciones: ${sObj.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : prev.momentoDesarrollo.estrategia,
+                      tiempo: prev.momentoDesarrollo.tiempo
+                    },
+                    momentoCierre: {
+                      estrategia: sObj ? `${sObj.estrategiaMetodologica.cierre.descripcion} Evaluación: ${sObj.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : prev.momentoCierre.estrategia,
+                      tiempo: prev.momentoCierre.tiempo
+                    },
+                    escenarioConectado: sObj ? sObj.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : prev.escenarioConectado,
+                    escenarioDesconectado: sObj ? sObj.estrategiaMetodologica.recursosSugeridos.desconectado.join(', ') : prev.escenarioDesconectado,
+                    saberesProcedimentales: dist ? dist.saberesProcedimentalesIds : prev.saberesProcedimentales,
+                    saberesActitudinales: dist ? dist.saberesActitudinalesIds : prev.saberesActitudinales,
+                    ejeTransversalDetalle: eje ? {
+                      ejeId: eje.detalle.ejePrincipal,
+                      ejeNombre: eje.ejeConfig.nombre,
+                      dimensionNombre: eje.detalle.dimensionNombre,
+                      descriptor: eje.detalle.descriptorOficial
+                    } : prev.ejeTransversalDetalle
+                  }));
                 }}
-                className="w-full text-xs bg-zinc-50 border border-zinc-200 rounded-lg p-2 text-zinc-800 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
+                className="w-full text-xs bg-zinc-50 border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none font-medium"
               >
-                <option value="">-- Seleccionar Saber Oficial --</option>
+                <option value="">-- Seleccionar Saber Oficial MEP --</option>
                 {allSaberes.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.nombre}
+                    {s.nombre} - ({s.indicador.substring(0, 45)}...)
                   </option>
                 ))}
               </select>
 
-              {currentSemana.saberesSeleccionados[0] && (() => {
-                const selId = currentSemana.saberesSeleccionados[0];
-                const selObj = allSaberes.find((s) => s.id === selId);
-                if (!selObj) return null;
-                const { isCustom } = getCustomEstrategiaForSaber(selObj.id, selObj.estrategiaMetodologica);
-                return (
-                  <div className="mt-1.5 flex flex-wrap gap-1.5 justify-end">
-                    <button
-                      onClick={() => {
-                        setEditorMediacionData({
-                          saberId: selObj.id,
-                          saberNombre: selObj.nombre,
-                          indicadorTexto: selObj.indicador,
-                          areaNombre: modulo?.areas.find((a) => a.saberes.some((s) => s.id === selId))?.nombre || 'Área Oficial',
-                          moduloId: selectedModuloId,
-                          estrategiaBaseOficial: selObj.estrategiaMetodologica,
-                        });
-                      }}
-                      className="px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200/80 text-[11px] font-bold flex items-center space-x-1 transition-colors shadow-2xs"
-                      title="Editar o Re-plantear la actividad de mediación didáctica"
-                    >
-                      <Edit3 className="w-3.5 h-3.5 text-amber-700" />
-                      <span>{isCustom ? '✏️ Mediación Editada' : '✏️ Replantear Mediación'}</span>
-                    </button>
+              {currentSaberObj && (
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    onClick={() => {
+                      setEditorMediacionData({
+                        saberId: currentSaberObj.id,
+                        saberNombre: currentSaberObj.nombre,
+                        indicadorTexto: currentSaberObj.indicador,
+                        areaNombre: currentArea?.nombre || 'Área Oficial',
+                        moduloId: selectedModuloId,
+                        estrategiaBaseOficial: currentSaberObj.estrategiaMetodologica,
+                      });
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Edit3 className="w-3 h-3 text-amber-700" />
+                    <span>Replantear</span>
+                  </button>
 
-                    <button
-                      onClick={() => {
-                        setRecursoApoyoModalData({
-                          saberId: selObj.id,
-                          saberNombre: selObj.nombre,
-                          indicador: selObj.indicador,
-                          areaNombre: modulo?.areas.find((a) => a.saberes.some((s) => s.id === selId))?.nombre || 'Área Oficial',
-                          moduloId: selectedModuloId,
-                        });
-                      }}
-                      className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200/70 text-[11px] font-bold flex items-center space-x-1 transition-colors shadow-2xs"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                      <span>Recurso Apoyo IA</span>
-                    </button>
-                  </div>
-                );
-              })()}
+                  <button
+                    onClick={handleMejorarActividadesConIA}
+                    disabled={generandoIA}
+                    className="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <Sparkles className="w-3 h-3 text-purple-600" />
+                    <span>{generandoIA ? 'Generando...' : 'Asistente IA'}</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Bloque de Vinculación con Proyecto */}
-          <div className="bg-emerald-50/50 border border-emerald-200/70 rounded-xl p-4 space-y-2">
+          {/* Tarjetas Curriculares de Vinculación: Competencia, RdA, Eje Transversal y Saberes */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {/* 1. Competencia & RdA */}
+            <div className="bg-sky-50/70 border border-sky-200/80 rounded-2xl p-4 space-y-2 text-xs">
+              <div className="flex items-center gap-1.5 text-sky-900 font-bold uppercase tracking-wider text-[10px]">
+                <Award className="w-4 h-4 text-sky-600" />
+                Competencia & RdA de III Ciclo
+              </div>
+              <p className="text-zinc-800 text-[11px] leading-relaxed">
+                <strong className="text-sky-950 font-bold">Área:</strong> {currentArea?.nombre || 'Formación Tecnológica'}
+              </p>
+              <p className="text-zinc-700 text-[11px] leading-relaxed line-clamp-2" title={currentArea?.competenciaArea}>
+                <strong className="text-zinc-900 font-semibold">Competencia:</strong> {currentArea?.competenciaArea || 'Competencia rectora del área.'}
+              </p>
+              <p className="text-zinc-700 text-[11px] leading-relaxed line-clamp-2" title={currentArea?.rdaCiclo || currentArea?.rda}>
+                <strong className="text-zinc-900 font-semibold">RdA (7°-8°-9°):</strong> {currentArea?.rdaCiclo || currentArea?.rda || 'Resultado de Aprendizaje oficial.'}
+              </p>
+            </div>
+
+            {/* 2. Eje Transversal Oficial MEP */}
+            <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-indigo-900 font-bold uppercase tracking-wider text-[10px]">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  Eje Transversal Oficial
+                </span>
+                <span className="px-2 py-0.5 bg-white rounded-full border border-indigo-200 text-indigo-700">
+                  MEP 2026
+                </span>
+              </div>
+              {currentEjeInfo ? (
+                <>
+                  <p className="font-bold text-indigo-950 text-xs">
+                    {currentEjeInfo.ejeConfig.nombre}
+                  </p>
+                  <p className="text-[11px] text-zinc-700 leading-snug">
+                    <strong className="text-zinc-900 font-semibold">Dimensión:</strong> {currentEjeInfo.detalle.dimensionNombre}
+                  </p>
+                  <p className="text-[11px] text-zinc-600 leading-snug line-clamp-2" title={currentEjeInfo.detalle.descriptorOficial}>
+                    {currentEjeInfo.detalle.descriptorOficial}
+                  </p>
+                </>
+              ) : (
+                <p className="text-zinc-500 text-[11px]">Seleccione un saber para visualizar el eje transversal oficial vinculado.</p>
+              )}
+            </div>
+
+            {/* 3. Saberes Procedimentales & Actitudinales */}
+            <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 space-y-2 text-xs">
+              <div className="flex items-center justify-between text-emerald-900 font-bold uppercase tracking-wider text-[10px]">
+                <span className="flex items-center gap-1.5">
+                  <Brain className="w-4 h-4 text-emerald-600" />
+                  Pensamiento Computacional
+                </span>
+                <span className="px-2 py-0.5 bg-white rounded-full border border-emerald-200 text-emerald-700">
+                  Saberes
+                </span>
+              </div>
+              
+              <div className="space-y-1.5">
+                <div>
+                  <span className="text-[10px] font-bold text-emerald-950 uppercase tracking-wider block">Procedimentales:</span>
+                  <div className="flex flex-wrap gap-1 mt-0.5">
+                    {currentDistM1?.saberesProcedimentalesIds.map((id) => {
+                      const sp = DICCIONARIO_PROCEDIMENTALES[id];
+                      return (
+                        <span 
+                          key={id} 
+                          className="px-2 py-0.5 rounded-md bg-white border border-emerald-200 text-[10px] font-semibold text-emerald-900"
+                          title={sp?.observable}
+                        >
+                          {sp?.nombre || id}
+                        </span>
+                      );
+                    }) || <span className="text-[11px] text-zinc-500">General</span>}
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-emerald-950 uppercase tracking-wider block">Actitudinales:</span>
+                  <div className="flex flex-wrap gap-1 mt-0.5">
+                    {currentDistM1?.saberesActitudinalesIds.map((id) => {
+                      const sa = DICCIONARIO_ACTITUDINALES[id];
+                      return (
+                        <span 
+                          key={id} 
+                          className="px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[10px] font-semibold text-amber-900"
+                          title={sa?.observable}
+                        >
+                          {sa?.nombre || id}
+                        </span>
+                      );
+                    }) || <span className="text-[11px] text-zinc-500">General</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bloque de Vinculación con el Proyecto Semestral (ABP) */}
+          <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider flex items-center">
-                <Sparkles className="w-3.5 h-3.5 mr-1 text-emerald-700" />
-                Vinculación con el Proyecto Semestral
+              <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-emerald-600" />
+                Articulación con el Proyecto Semestral (Design Thinking)
               </span>
-              <label className="flex items-center space-x-2 text-xs text-emerald-950 cursor-pointer">
+              <label className="flex items-center space-x-2 text-xs text-zinc-700 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={currentSemana.esSemanaDedicadaAProyecto}
@@ -372,16 +607,16 @@ export const PlaneamientoView: React.FC = () => {
                       esSemanaDedicadaAProyecto: e.target.checked
                     }))
                   }
-                  className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                  className="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="font-medium">Semana 100% dedicada al Proyecto</span>
+                <span className="font-semibold">Semana 100% dedicada a Proyecto (Taller / Feria)</span>
               </label>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">
-                  Etapa de Design Thinking Asociada:
+                  Etapa de Proyecto:
                 </label>
                 <select
                   value={currentSemana.etapaProyectoAsociada || ''}
@@ -394,9 +629,9 @@ export const PlaneamientoView: React.FC = () => {
                       actividadProyectoEnSemana: etapaObj ? `${etapaObj.nombre}: ${etapaObj.proposito}` : ''
                     }));
                   }}
-                  className="w-full text-xs bg-white border border-emerald-200 rounded-lg p-2 text-zinc-800 focus:outline-none"
+                  className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
                 >
-                  <option value="">Sin etapa de proyecto específica esta semana</option>
+                  <option value="">Sin etapa de proyecto específica (Trabajo Cotidiano Regular)</option>
                   {proyecto?.etapas.map((et) => (
                     <option key={et.id} value={et.id}>
                       {et.nombre} ({et.faseNombre})
@@ -407,11 +642,11 @@ export const PlaneamientoView: React.FC = () => {
 
               <div>
                 <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">
-                  Acción de Proyecto en la Semana:
+                  Acción Concreta en el Proyecto:
                 </label>
                 <input
                   type="text"
-                  placeholder="Ej: Levantamiento de mapa de empatía / Ensamble de prototipo..."
+                  placeholder="Ej: Levantamiento de mapa de empatía, ensamble de prototipo, pruebas..."
                   value={currentSemana.actividadProyectoEnSemana || ''}
                   onChange={(e) =>
                     updateCurrentSemana((prev) => ({
@@ -419,59 +654,67 @@ export const PlaneamientoView: React.FC = () => {
                       actividadProyectoEnSemana: e.target.value
                     }))
                   }
-                  className="w-full text-xs bg-white border border-emerald-200 rounded-lg p-2 text-zinc-800 focus:outline-none"
+                  className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* Los 3 Momentos Didácticos de la Semana */}
+          {/* Actividades Didácticas Creadas en los 3 Momentos (Inicio, Desarrollo, Cierre) */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider">
-              Desglose de los 3 Momentos Didácticos
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
+                <BookOpen className="w-4 h-4 text-indigo-600" />
+                Actividades de Mediación a Desarrollar (Los 3 Momentos Didácticos)
+              </h3>
+              <span className="text-[11px] text-zinc-500 font-medium">
+                80 min lectivos totales
+              </span>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* 1. Momento Inicio */}
-              <div className="bg-sky-50/40 border border-sky-100 rounded-xl p-4 space-y-2">
-                <div className="flex items-center justify-between pb-1 border-b border-sky-100">
-                  <span className="text-xs font-bold text-sky-800 flex items-center">
-                    <span className="w-5 h-5 rounded-full bg-sky-100 text-sky-800 inline-flex items-center justify-center mr-1 text-[11px]">1</span>
-                    Momento Inicio
-                  </span>
-                  <input
-                    type="text"
-                    value={currentSemana.momentoInicio.tiempo}
+              <div className="bg-sky-50/40 border border-sky-100 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
+                    <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-sky-200/70 text-sky-900 inline-flex items-center justify-center text-[11px] font-bold">1</span>
+                      Momento Inicio (Focalización)
+                    </span>
+                    <input
+                      type="text"
+                      value={currentSemana.momentoInicio.tiempo}
+                      onChange={(e) =>
+                        updateCurrentSemana((prev) => ({
+                          ...prev,
+                          momentoInicio: { ...prev.momentoInicio, tiempo: e.target.value }
+                        }))
+                      }
+                      className="text-[11px] font-bold text-sky-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-sky-200"
+                    />
+                  </div>
+                  <textarea
+                    rows={5}
+                    value={currentSemana.momentoInicio.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
                         ...prev,
-                        momentoInicio: { ...prev.momentoInicio, tiempo: e.target.value }
+                        momentoInicio: { ...prev.momentoInicio, estrategia: e.target.value }
                       }))
                     }
-                    className="text-[11px] font-medium text-zinc-500 w-16 text-right bg-transparent border-b border-transparent hover:border-zinc-300 focus:outline-none"
+                    className="w-full text-xs bg-white border border-sky-200 rounded-xl p-3 text-zinc-800 focus:ring-2 focus:ring-sky-500/20 focus:outline-none leading-relaxed"
+                    placeholder="Estrategia de focalización, reto detonante y activación de conocimientos previos..."
                   />
                 </div>
-                <textarea
-                  rows={4}
-                  value={currentSemana.momentoInicio.estrategia}
-                  onChange={(e) =>
-                    updateCurrentSemana((prev) => ({
-                      ...prev,
-                      momentoInicio: { ...prev.momentoInicio, estrategia: e.target.value }
-                    }))
-                  }
-                  className="w-full text-xs bg-white border border-sky-200/80 rounded-lg p-2.5 text-zinc-800 focus:ring-2 focus:ring-sky-500/20 focus:outline-none leading-relaxed"
-                  placeholder="Focalización, preguntas generadoras y activación..."
-                />
               </div>
 
               {/* 2. Momento Desarrollo */}
-              <div className="bg-indigo-50/40 border border-indigo-100 rounded-xl p-4 space-y-2 flex flex-col justify-between">
+              <div className="bg-indigo-50/40 border border-indigo-100 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between pb-1 border-b border-indigo-100">
-                    <span className="text-xs font-bold text-indigo-800 flex items-center">
-                      <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-800 inline-flex items-center justify-center mr-1 text-[11px]">2</span>
-                      Momento Desarrollo
+                  <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
+                    <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-indigo-200/70 text-indigo-900 inline-flex items-center justify-center text-[11px] font-bold">2</span>
+                      Momento Desarrollo (Construcción)
                     </span>
                     <input
                       type="text"
@@ -482,11 +725,11 @@ export const PlaneamientoView: React.FC = () => {
                           momentoDesarrollo: { ...prev.momentoDesarrollo, tiempo: e.target.value }
                         }))
                       }
-                      className="text-[11px] font-medium text-zinc-500 w-16 text-right bg-transparent border-b border-transparent hover:border-zinc-300 focus:outline-none"
+                      className="text-[11px] font-bold text-indigo-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-indigo-200"
                     />
                   </div>
                   <textarea
-                    rows={4}
+                    rows={5}
                     value={currentSemana.momentoDesarrollo.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
@@ -494,19 +737,19 @@ export const PlaneamientoView: React.FC = () => {
                         momentoDesarrollo: { ...prev.momentoDesarrollo, estrategia: e.target.value }
                       }))
                     }
-                    className="w-full text-xs bg-white border border-indigo-200/80 rounded-lg p-2.5 text-zinc-800 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none leading-relaxed"
-                    placeholder="Construcción, laboratorio práctico, codificación..."
+                    className="w-full text-xs bg-white border border-indigo-200 rounded-xl p-3 text-zinc-800 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none leading-relaxed"
+                    placeholder="Laboratorio práctico, construcción de prototipos, codificación y depuración..."
                   />
                 </div>
               </div>
 
               {/* 3. Momento Cierre */}
-              <div className="bg-emerald-50/40 border border-emerald-100 rounded-xl p-4 space-y-2 flex flex-col justify-between">
+              <div className="bg-emerald-50/40 border border-emerald-100 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between pb-1 border-b border-emerald-100">
-                    <span className="text-xs font-bold text-emerald-800 flex items-center">
-                      <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 inline-flex items-center justify-center mr-1 text-[11px]">3</span>
-                      Momento Cierre
+                  <div className="flex items-center justify-between pb-1.5 border-b border-emerald-100">
+                    <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                      <span className="w-5 h-5 rounded-full bg-emerald-200/70 text-emerald-900 inline-flex items-center justify-center text-[11px] font-bold">3</span>
+                      Momento Cierre (Sistematización)
                     </span>
                     <input
                       type="text"
@@ -517,11 +760,11 @@ export const PlaneamientoView: React.FC = () => {
                           momentoCierre: { ...prev.momentoCierre, tiempo: e.target.value }
                         }))
                       }
-                      className="text-[11px] font-medium text-zinc-500 w-16 text-right bg-transparent border-b border-transparent hover:border-zinc-300 focus:outline-none"
+                      className="text-[11px] font-bold text-emerald-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-emerald-200"
                     />
                   </div>
                   <textarea
-                    rows={4}
+                    rows={5}
                     value={currentSemana.momentoCierre.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
@@ -529,82 +772,163 @@ export const PlaneamientoView: React.FC = () => {
                         momentoCierre: { ...prev.momentoCierre, estrategia: e.target.value }
                       }))
                     }
-                    className="w-full text-xs bg-white border border-emerald-200/80 rounded-lg p-2.5 text-zinc-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none leading-relaxed"
-                    placeholder="Sistematización, coevaluación y reflexión..."
+                    className="w-full text-xs bg-white border border-emerald-200 rounded-xl p-3 text-zinc-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none leading-relaxed"
+                    placeholder="Sistematización en bitácora, coevaluación formativa y síntesis metacognitiva..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recursos Conectados / Desconectados y Componentes Oficiales de Evaluación MEP */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+            
+            {/* Recursos: Conectado vs Desconectado */}
+            <div className="bg-zinc-50/80 rounded-2xl p-5 space-y-3 border border-zinc-200">
+              <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
+                <Zap className="w-4 h-4 text-amber-500" />
+                Recursos Didácticos de Aula (Conectado / Desconectado):
+              </span>
+
+              <div className="space-y-2">
+                <div>
+                  <label className="text-[11px] text-zinc-600 font-bold block mb-1">
+                    🌐 Escenario Conectado (Software / Simuladores / WebApps):
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={currentSemana.escenarioConectado}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({ ...prev, escenarioConectado: e.target.value }))
+                    }
+                    className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
+                    placeholder="Wokwi, Tinkercad Circuits, IDE de programación..."
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] text-zinc-600 font-bold block mb-1">
+                    📦 Escenario Desconectado (Unplugged / Material Concreto):
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={currentSemana.escenarioDesconectado}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({ ...prev, escenarioDesconectado: e.target.value }))
+                    }
+                    className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
+                    placeholder="Guías impresas, diagramas en papel milimetrado, tarjetas de roles..."
                   />
                 </div>
               </div>
             </div>
 
-            {/* Espacio de Anotaciones y Bitácora Docente para el Saber de la Semana */}
-            {currentSemana.saberesSeleccionados[0] && (
-              <div className="pt-2">
-                <AnotacionesIndicador
-                  saberId={currentSemana.saberesSeleccionados[0]}
-                  saberNombre={allSaberes.find((s) => s.id === currentSemana.saberesSeleccionados[0])?.nombre || 'Saber de la Semana'}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Multiescenarios y Evaluación */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            <div className="bg-zinc-50 rounded-xl p-4 space-y-2 border border-zinc-200">
-              <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider block">
-                Recursos (Conectado / Desconectado):
+            {/* Los 3 Componentes Oficiales de Evaluación MEP y DUA */}
+            <div className="bg-zinc-50/80 rounded-2xl p-5 space-y-3 border border-zinc-200">
+              <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
+                <CheckSquare className="w-4 h-4 text-indigo-600" />
+                Los 3 Componentes de Evaluación Formativa MEP & DUA:
               </span>
-              <div>
-                <label className="text-[10px] text-zinc-500 font-bold">Escenario Conectado:</label>
-                <input
-                  type="text"
-                  value={currentSemana.escenarioConectado}
-                  onChange={(e) =>
-                    updateCurrentSemana((prev) => ({ ...prev, escenarioConectado: e.target.value }))
-                  }
-                  className="w-full text-xs bg-white border border-zinc-200 rounded p-1.5 mt-0.5"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-zinc-500 font-bold">Escenario Desconectado:</label>
-                <input
-                  type="text"
-                  value={currentSemana.escenarioDesconectado}
-                  onChange={(e) =>
-                    updateCurrentSemana((prev) => ({ ...prev, escenarioDesconectado: e.target.value }))
-                  }
-                  className="w-full text-xs bg-white border border-zinc-200 rounded p-1.5 mt-0.5"
-                />
+
+              <div className="space-y-2 text-xs">
+                {/* 1. Proyecto */}
+                <div>
+                  <label className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
+                    <span>🚀 1. Proyecto Semestral (ABP):</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSemana.componentesEvaluacion?.proyecto || ''}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({
+                        ...prev,
+                        componentesEvaluacion: {
+                          proyecto: e.target.value,
+                          cotidiano: prev.componentesEvaluacion?.cotidiano || '',
+                          tareasAsistencia: prev.componentesEvaluacion?.tareasAsistencia || ''
+                        }
+                      }))
+                    }
+                    className="w-full text-xs bg-white border border-emerald-200 rounded-xl p-2 mt-0.5 text-zinc-800"
+                    placeholder="Avances en entregables de la maqueta / prototipo..."
+                  />
+                </div>
+
+                {/* 2. Trabajo Cotidiano */}
+                <div>
+                  <label className="text-[11px] font-bold text-sky-800 flex items-center gap-1">
+                    <span>📝 2. Trabajo Cotidiano (Observación de Aula):</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSemana.componentesEvaluacion?.cotidiano || ''}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({
+                        ...prev,
+                        componentesEvaluacion: {
+                          proyecto: prev.componentesEvaluacion?.proyecto || '',
+                          cotidiano: e.target.value,
+                          tareasAsistencia: prev.componentesEvaluacion?.tareasAsistencia || ''
+                        }
+                      }))
+                    }
+                    className="w-full text-xs bg-white border border-sky-200 rounded-xl p-2 mt-0.5 text-zinc-800"
+                    placeholder="Aplicación procedimental y resolución colaborativa..."
+                  />
+                </div>
+
+                {/* 3. Tareas / Asistencia */}
+                <div>
+                  <label className="text-[11px] font-bold text-purple-800 flex items-center gap-1">
+                    <span>📁 3. Tareas / Asistencia / Actitudes:</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSemana.componentesEvaluacion?.tareasAsistencia || ''}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({
+                        ...prev,
+                        componentesEvaluacion: {
+                          proyecto: prev.componentesEvaluacion?.proyecto || '',
+                          cotidiano: prev.componentesEvaluacion?.cotidiano || '',
+                          tareasAsistencia: e.target.value
+                        }
+                      }))
+                    }
+                    className="w-full text-xs bg-white border border-purple-200 rounded-xl p-2 mt-0.5 text-zinc-800"
+                    placeholder="Bitácora individual, persistencia ante el error, respeto..."
+                  />
+                </div>
+
+                {/* Pauta DUA */}
+                <div className="pt-1">
+                  <label className="text-[11px] font-bold text-zinc-600 block">
+                    ♿ Pauta DUA Formativa:
+                  </label>
+                  <input
+                    type="text"
+                    value={currentSemana.pautaDUAAplicada}
+                    onChange={(e) =>
+                      updateCurrentSemana((prev) => ({ ...prev, pautaDUAAplicada: e.target.value }))
+                    }
+                    className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2 mt-0.5 text-zinc-800"
+                    placeholder="Opciones de representación visual/auditiva y expresión..."
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="bg-zinc-50 rounded-xl p-4 space-y-2 border border-zinc-200">
-              <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider block">
-                Evaluación Formativa & DUA:
-              </span>
-              <div>
-                <label className="text-[10px] text-zinc-500 font-bold">Instrumento de Evaluación:</label>
-                <input
-                  type="text"
-                  value={currentSemana.instrumentoEvaluacion}
-                  onChange={(e) =>
-                    updateCurrentSemana((prev) => ({ ...prev, instrumentoEvaluacion: e.target.value }))
-                  }
-                  className="w-full text-xs bg-white border border-zinc-200 rounded p-1.5 mt-0.5"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-zinc-500 font-bold">Pauta DUA Aplicada:</label>
-                <input
-                  type="text"
-                  value={currentSemana.pautaDUAAplicada}
-                  onChange={(e) =>
-                    updateCurrentSemana((prev) => ({ ...prev, pautaDUAAplicada: e.target.value }))
-                  }
-                  className="w-full text-xs bg-white border border-zinc-200 rounded p-1.5 mt-0.5"
-                />
-              </div>
-            </div>
           </div>
+
+          {/* Espacio de Bitácora Docente para el Saber de la Semana */}
+          {currentSaberObj && (
+            <div className="pt-2">
+              <AnotacionesIndicador
+                saberId={currentSaberObj.id}
+                saberNombre={currentSaberObj.nombre}
+              />
+            </div>
+          )}
+
         </div>
       )}
 
@@ -652,24 +976,18 @@ export const PlaneamientoView: React.FC = () => {
           areaNombre={editorMediacionData.areaNombre}
           moduloId={editorMediacionData.moduloId}
           estrategiaBaseOficial={editorMediacionData.estrategiaBaseOficial}
-          onSaved={(nuevaEst) => {
-            // Actualizar la semana actual si tiene este saber seleccionado
-            updateCurrentSemana((prev) => {
-              if (prev.saberesSeleccionados.includes(editorMediacionData.saberId)) {
-                return {
-                  ...prev,
-                  momentoInicio: { ...prev.momentoInicio, estrategia: nuevaEst.inicio.descripcion },
-                  momentoDesarrollo: { ...prev.momentoDesarrollo, estrategia: nuevaEst.desarrollo.descripcion },
-                  momentoCierre: { ...prev.momentoCierre, estrategia: nuevaEst.cierre.descripcion },
-                };
-              }
-              return prev;
-            });
+          onSaved={() => {
+            // Refrescar
           }}
           onClose={() => setEditorMediacionData(null)}
         />
       )}
+
+      {/* Modal de Perfiles de Salida Oficiales MEP */}
+      <ModalPerfilesSalidaOficiales
+        isOpen={mostrarModalPerfiles}
+        onClose={() => setMostrarModalPerfiles(false)}
+      />
     </div>
   );
 };
-

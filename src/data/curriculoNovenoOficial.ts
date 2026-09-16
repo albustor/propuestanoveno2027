@@ -43,8 +43,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Examina mecanismos de transmisión (engranajes y poleas) identificando el punto motriz de entrada y anticipando la velocidad de salida.",
+                  "Formula hipótesis en su bitácora sobre cómo influye el tamaño de los engranajes en la fuerza final."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -60,8 +60,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Identifica y diferencia el movimiento de entrada y salida ensamblando o simulando trenes de engranajes y poleas, calculando la relación de transmisión mecánica.",
+                  "Comprueba experimentalmente la variación de torque vs. velocidad angular y verifica el acoplamiento cinemático con actuadores."
                 ]
               },
               "cierre": {
@@ -73,8 +73,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Demuestra ante el grupo el movimiento resultante obtenido en el mecanismo y coevalúa la precisión del cálculo cinemático.",
+                  "Registra en la bitácora técnica las lecciones aprendidas sobre tolerancia de piezas y fricción mecánica."
                 ]
               },
               "recursosSugeridos": {
@@ -129,8 +129,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Identifica en la placa microcontroladora la arquitectura de puertos, pines de entrada/salida (I/O) y rieles de alimentación eléctrica.",
+                  "Registra en su bitácora la correspondencia básica entre señales digitales (HIGH/LOW) y analógicas."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -146,8 +146,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Aplica las funciones del microcontrolador conectando de forma segura pines digitales y analógicos con VCC y GND en protoboard o simulador.",
+                  "Transfiere el programa desde el IDE y valida la comunicación bidireccional de control con sensores y actuadores."
                 ]
               },
               "cierre": {
@@ -159,8 +159,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Verifica en el monitor serial la recepción continua de datos y comprueba la ausencia de cortocircuitos en el cableado.",
+                  "Sistematiza el mapa de pines (pinout) y las buenas prácticas de conexionado eléctrico del microcontrolador."
                 ]
               },
               "recursosSugeridos": {
@@ -215,8 +215,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Observa el comportamiento de sensores (luz, distancia, temperatura) ante estímulos físicos del entorno y predice sus rangos de salida.",
+                  "Formula preguntas sobre cómo transformar magnitudes físicas analógicas en valores computacionales."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -232,8 +232,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Integra sensores en el circuito del microcontrolador, leyendo y acondicionando las señales de entrada en tiempo real.",
+                  "Programa umbrales y condiciones lógicas para que las lecturas del sensor detonen respuestas automatizadas precisas."
                 ]
               },
               "cierre": {
@@ -245,8 +245,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Calibra empíricamente el rango de detección del sensor contrastando con instrumentos de medición y minimizando el ruido ambiental.",
+                  "Registra en la bitácora la tabla de valores calibrados y su respuesta ante variaciones del entorno."
                 ]
               },
               "recursosSugeridos": {
@@ -301,8 +301,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza los tipos de actuadores (servomotores, motores DC, zumbadores, LEDs) y los requerimientos de potencia y señal para accionarlos.",
+                  "Plantea hipótesis sobre cómo modular el ángulo de giro o la velocidad motriz."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -318,8 +318,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Integra y cablea actuadores en el circuito, programando su activación y modulación (señales PWM o digitales) según las condiciones del sistema.",
+                  "Verifica que las respuestas motrices, sonoras o lumínicas se ejecuten con precisión temporal ante los comandos del microcontrolador."
                 ]
               },
               "cierre": {
@@ -331,8 +331,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Comprueba que el actuador opere dentro de los límites mecánicos seguros sin calentamiento ni sobrecarga de corriente.",
+                  "Coevalúa con sus pares la suavidad del movimiento y la sincronización con los eventos programados."
                 ]
               },
               "recursosSugeridos": {
@@ -387,8 +387,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza problemáticas cotidianas del hogar o colegio vinculadas con accesibilidad para personas con discapacidad o ahorro energético.",
+                  "Dibuja el croquis espacial de la vivienda o aula identificando las zonas críticas de automatización."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -404,8 +404,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Analiza los usos y beneficios de la domótica construyendo o simulando una maqueta funcional con subsistemas de iluminación automática, alarmas o control térmico.",
+                  "Integra la matriz de causa-efecto domótica vinculando eventos del entorno cotidiano con respuestas automatizadas de confort y seguridad."
                 ]
               },
               "cierre": {
@@ -417,8 +417,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Sustenta mediante un mini-pitch el impacto social, ecológico y de accesibilidad universal de su solución domótica.",
+                  "Evalúa con la rúbrica formativa la viabilidad técnica y eficiencia en el uso de recursos del prototipo."
                 ]
               },
               "recursosSugeridos": {
@@ -473,8 +473,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Revisa la lista de especificaciones técnicas, el árbol de problemas y los criterios de aceptación del prototipo a construir.",
+                  "Distribuye roles de ensamble estructural, cableado y programación dentro de su equipo de trabajo."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -490,8 +490,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Construye de manera integral el prototipo físico o simulado ensamblando la estructura mecánica, cableado electrónico y firmware unificado.",
+                  "Valida que la interacción entre sensores, microcontrolador y actuadores responda con fidelidad a la necesidad diagnosticada."
                 ]
               },
               "cierre": {
@@ -503,8 +503,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Ejecuta protocolos de pruebas de estrés y cacería de errores (Bug Hunting) corrigiendo fallas de hardware y software.",
+                  "Presenta el prototipo final ante la comunidad educativa destacando su funcionamiento y replicabilidad."
                 ]
               },
               "recursosSugeridos": {
@@ -570,8 +570,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Explora el entorno de programación (IDE), reconociendo la correspondencia entre bloques lógicos y su equivalente en código textual.",
+                  "Configura los parámetros de compilador, puerto de comunicación y librerías requeridas por la tarjeta."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -587,8 +587,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Diseña y codifica la solución automatizada en el entorno visual o textual, modularizando el código en funciones, eventos y parámetros.",
+                  "Compila y transfiere el firmware al mecanismo robótico, depurando errores de sintaxis y lógica en tiempo real."
                 ]
               },
               "cierre": {
@@ -600,8 +600,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Realiza revisión de código entre pares (Code Review) verificando modularidad, indentación y comentarios explicativos.",
+                  "Reflexiona sobre las ventajas de la programación estructurada para el mantenimiento y escalabilidad del software."
                 ]
               },
               "recursosSugeridos": {
@@ -656,8 +656,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza el problema descomponiéndolo en datos de entrada, procesos secuenciales y salidas requeridas.",
+                  "Plantea secuencias de pasos lógicos en lenguaje natural identificando posibles ambigüedades."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -673,8 +673,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Diseña el algoritmo estructurado utilizando simbología normalizada de diagramas de flujo y pseudocódigo formal.",
+                  "Modela estructuras de decisión y repetición, trazando pruebas de escritorio con tablas de seguimiento de variables."
                 ]
               },
               "cierre": {
@@ -686,8 +686,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Valida el algoritmo contrastando casos de prueba límite para garantizar que no existan bucles infinitos ni caminos sin salida.",
+                  "Coevalúa con sus pares la claridad, economía de pasos y rigurosidad lógica de la solución representada."
                 ]
               },
               "recursosSugeridos": {
@@ -753,8 +753,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Observa paneles de telemetría en tiempo real y analiza cómo los objetos cotidianos se interconectan a través de Internet.",
+                  "Registra preguntas sobre los protocolos de comunicación y la privacidad de los datos transmitidos en la red."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -770,8 +770,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Analiza el funcionamiento de IoT simulando o configurando el envío de paquetes de datos desde microcontroladores hacia paneles en la nube.",
+                  "Programa la automatización de actuadores remotos en respuesta a umbrales de telemetría monitoreados en tiempo real."
                 ]
               },
               "cierre": {
@@ -783,8 +783,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Analiza los vectores de riesgo en ciberseguridad para dispositivos IoT y formula buenas prácticas de autenticación.",
+                  "Documenta en la bitácora el flujo completo de datos desde el sensor local hasta el dashboard en la nube."
                 ]
               },
               "recursosSugeridos": {
@@ -839,8 +839,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Debate sobre la permanencia de la información en medios digitales y las consecuencias de pérdidas o fugas de datos.",
+                  "Identifica los diferentes soportes de almacenamiento físico y en la nube utilizados en su vida cotidiana."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -856,8 +856,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Reconoce y aplica las etapas del ciclo de vida del dato estructurando información en formatos estándar (CSV/JSON) y ejecutando respaldos 3-2-1.",
+                  "Implementa protocolos de conservación segura, verificación de integridad y borrado seguro de datos confidenciales."
                 ]
               },
               "cierre": {
@@ -869,8 +869,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Construye un decálogo de higiene digital y protección de datos personales alineado con la normativa de privacidad.",
+                  "Evalúa las políticas de almacenamiento de sus propios proyectos aplicando criterios de responsabilidad ética."
                 ]
               },
               "recursosSugeridos": {
@@ -953,8 +953,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Ejecuta comandos de diagnóstico de red (ping, traceroute) rastreando la ruta de paquetes hacia servidores remotos.",
+                  "Formula hipótesis sobre cómo viaja la información encapsulada a través de nodos y enrutadores."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -970,8 +970,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Reconoce la arquitectura de red modelando topologías LAN en simuladores interactivos, asignando direccionamiento IP y configurando interfaces.",
+                  "Analiza el intercambio de datos diferenciando la seguridad entre protocolos cifrados (HTTPS) y no cifrados (HTTP/TCP)."
                 ]
               },
               "cierre": {
@@ -983,8 +983,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Diagnostica y resuelve fallas simuladas de conectividad (conflictos de IP, puertas de enlace caídas o máscaras erróneas).",
+                  "Elabora un mapa conceptual que sintetiza las capas y protocolos esenciales en la transmisión de datos."
                 ]
               },
               "recursosSugeridos": {
@@ -1039,8 +1039,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Inspecciona el monitor de rendimiento y el administrador de tareas para detectar cuellos de botella en CPU, disco y memoria RAM.",
+                  "Registra los síntomas de lentitud más comunes en equipos de cómputo personales y de la institución."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1056,8 +1056,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Aplica técnicas de optimización gestionando procesos de inicio, liberando memoria caché, limpiando temporales y programando actualizaciones.",
+                  "Comprueba antes y después los tiempos de respuesta y recursos disponibles en el sistema operativo."
                 ]
               },
               "cierre": {
@@ -1069,8 +1069,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Diseña una guía ilustrada de mantenimiento preventivo y optimización de software para usuarios no técnicos.",
+                  "Coevalúa las mejoras de desempeño obtenidas aplicando criterios de eficiencia y estabilidad del sistema."
                 ]
               },
               "recursosSugeridos": {
@@ -1125,8 +1125,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza una colección de datos desorganizada identificando problemas de redundancia, anomalías de actualización y falta de integridad.",
+                  "Plantea las entidades y atributos principales que conformarán el modelo de datos del proyecto."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1142,8 +1142,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Utiliza el gestor de bases de datos para crear tablas relacionales, definiendo claves primarias (PK), foráneas (FK) y relaciones 1 a N.",
+                  "Diseña y ejecuta consultas con filtros condicionales y ordenamientos para extraer información estructurada y resolver problemas de gestión."
                 ]
               },
               "cierre": {
@@ -1155,8 +1155,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Verifica la integridad referencial de la base de datos y genera reportes ejecutivos que responden a las preguntas del problema comunitario.",
+                  "Reflexiona sobre la superioridad de los sistemas relacionales frente a las hojas de cálculo planas para grandes volúmenes de datos."
                 ]
               },
               "recursosSugeridos": {
@@ -1211,8 +1211,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Examina piezas tridimensionales reales y bocetos ortogonales identificando las dimensiones en los ejes espaciales X, Y, Z.",
+                  "Planifica la descomposición de la pieza en figuras geométricas primitivas antes de iniciar el modelado digital."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1228,8 +1228,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Utiliza el software de modelado 3D aplicando operaciones de escalado paramétrico, alineación, sustracción de huecos y agrupación booleana.",
+                  "Modela el soporte o estructura física del prototipo ajustando medidas precisas en milímetros y verificando su ergonomía."
                 ]
               },
               "cierre": {
@@ -1241,8 +1241,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Inspecciona la pieza en software laminador verificando la ausencia de caras invertidas, grosor de paredes y viabilidad de impresión 3D.",
+                  "Exporta el archivo en formato estándar (.STL/.OBJ) y documenta las especificaciones dimensionales en su portafolio."
                 ]
               },
               "recursosSugeridos": {
@@ -1297,8 +1297,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Compara diferentes tipos de preguntas (abiertas, cerradas, escala Likert) analizando cuáles generan datos cuantitativos limpios y sin sesgo.",
+                  "Define las variables e indicadores sociodemográficos que requiere recopilar para el diagnóstico de la comunidad escolar."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1314,8 +1314,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Crea formularios y encuestas digitales estructurando secciones temáticas, validación de obligatoriedad de campos y saltos condicionales.",
+                  "Ajusta el diseño visual e interactivo del instrumento y genera códigos QR y enlaces cortos para su distribución efectiva."
                 ]
               },
               "cierre": {
@@ -1327,8 +1327,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Examina en tiempo real los tableros estadísticos y gráficos generados automáticamente por la plataforma de encuestas.",
+                  "Depura preguntas que generaron confusión y redacta las conclusiones preliminares a partir de la muestra recolectada."
                 ]
               },
               "recursosSugeridos": {
@@ -1383,8 +1383,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza casos reales de plagio y uso indebido de recursos en la web, debatiendo sobre los derechos morales y patrimoniales de los creadores.",
+                  "Identifica los símbolos de Copyright, Copyleft y los íconos de licencias Creative Commons."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1400,8 +1400,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Reconoce y aplica la normativa de derechos de autor buscando recursos en repositorios abiertos bajo licencias Creative Commons (CC BY, CC BY-SA).",
+                  "Atribuye correctamente la autoría de imágenes, software y textos utilizados en sus proyectos aplicando el formato estándar APA 7."
                 ]
               },
               "cierre": {
@@ -1413,8 +1413,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Asigna y justifica la licencia de uso para su propio producto digital o código fuente desarrollado en clase.",
+                  "Firma y socializa el compromiso de integridad académica y respeto a la propiedad intelectual en el aula."
                 ]
               },
               "recursosSugeridos": {
@@ -1469,8 +1469,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Realiza un ejercicio de auditoría de huella digital visible buscando su rastro público y extrayendo metadatos EXIF de imágenes de prueba.",
+                  "Reflexiona sobre la permanencia de publicaciones, comentarios y registros en plataformas digitales."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1486,8 +1486,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Analiza las implicaciones de la huella digital configurando parámetros de privacidad, desactivando rastreadores y gestionando permisos en navegadores y apps.",
+                  "Diseña un plan de construcción de identidad digital positiva y profesional orientado a su desarrollo académico y vocacional."
                 ]
               },
               "cierre": {
@@ -1499,8 +1499,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Socializa un decálogo de buenas prácticas para proteger la reputación digital propia y la de sus pares.",
+                  "Registra en la bitácora compromisos de higiene digital y navegación consciente y segura."
                 ]
               },
               "recursosSugeridos": {
@@ -1555,8 +1555,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza dilemas y situaciones de riesgo frecuentes en redes sociales y entornos de videojuegos en línea.",
+                  "Identifica las señales de alerta ante situaciones de ciberacoso, engaño o vulneración de la privacidad."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1572,8 +1572,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Analiza riesgos digitales y elabora contenidos educativos (infografías interactivas, podcasts o campañas de concienciación) con estrategias de prevención y autocuidado.",
+                  "Aplica y difunde las rutas institucionales de denuncia y los protocolos de actuación del MEP ante situaciones de vulneración."
                 ]
               },
               "cierre": {
@@ -1585,8 +1585,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Firma colectivamente el pacto de convivencia escolar digital y respeto mutuo en espacios virtuales.",
+                  "Evalúa las campañas creadas con la rúbrica de impacto comunicativo y pertinencia pedagógica."
                 ]
               },
               "recursosSugeridos": {
@@ -1652,8 +1652,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Observa ejemplos de respuestas generadas por modelos de lenguaje e imágenes con IA, identificando inconsistencias o alucinaciones.",
+                  "Plantea la importancia de contrastar siempre la información generada con fuentes bibliográficas rigurosas."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1669,8 +1669,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Aplica herramientas generativas de IA estructurando prompts profesionales bajo la fórmula R-C-T-R (Rol, Contexto, Tarea, Restricciones).",
+                  "Co-crea borradores de código o síntesis temáticas, verificando la precisión técnica, evitando fuga de datos privados y declarando el uso de IA."
                 ]
               },
               "cierre": {
@@ -1682,8 +1682,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Presenta el producto co-creado adjuntando la declaración de transparencia y verificación de fuentes (Fact-Checking).",
+                  "Evalúa críticamente el aporte y las limitaciones de la IA generativa como asistente del pensamiento humano."
                 ]
               },
               "recursosSugeridos": {
@@ -1738,8 +1738,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Activa conocimientos previos mediante dinámicas participativas y motiva la indagación técnica."
                 ],
                 "accionesEstudiante": [
-                  "Participa activamente analizando el problema o dilema planteado por el docente.",
-                  "Registra dudas e hipótesis iniciales en su bitácora digital o física."
+                  "Analiza casos de sesgos discriminatorios en sistemas de reconocimiento facial y algoritmos de selección automatizada.",
+                  "Examina videos deepfake y noticias falsas creadas con IA reconociendo los riesgos para la democracia y la confianza."
                 ],
                 "preguntasGeneradoras": [
                   "¿Cómo se relaciona este saber con un problema cotidiano de nuestro entorno?",
@@ -1755,8 +1755,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Supervisa el trabajo en equipo y la aplicación de prácticas del pensador computacional."
                 ],
                 "accionesEstudiante": [
-                  "Diseña, ensambla, programa o modela la solución asignada siguiendo criterios técnicos y buenas prácticas.",
-                  "Aplica depuración sistemática de errores y valida el funcionamiento de su producto."
+                  "Reconoce los desafíos éticos de la IA participando en un debate estructurado o mesa redonda sobre sesgos, privacidad de datos y futuro del trabajo.",
+                  "Redacta una matriz de evaluación ética de herramientas de IA valorando su impacto social, equidad y respeto a los derechos humanos."
                 ]
               },
               "cierre": {
@@ -1768,8 +1768,8 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
                   "Retroalimenta las oportunidades de mejora detectadas en la jornada de trabajo."
                 ],
                 "accionesEstudiante": [
-                  "Expone su solución ante el grupo y participa en coevaluación constructiva entre pares.",
-                  "Registra conclusiones y aprendizajes consolidados en su bitácora personal."
+                  "Consensa la Carta Estudiantil de Principios Éticos para el Uso de la Inteligencia Artificial en la Educación.",
+                  "Sistematiza en la bitácora las conclusiones sobre el rol del criterio humano y la autonomía frente a la automatización algorítmica."
                 ]
               },
               "recursosSugeridos": {

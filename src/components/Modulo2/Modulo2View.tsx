@@ -14,6 +14,7 @@ import { WebAppAddEditModal } from '../WebApps/WebAppAddEditModal';
 import { RecursoApoyoModal } from '../RecursoApoyo/RecursoApoyoModal';
 import { EditorActividadMediacionModal } from '../Mediacion/EditorActividadMediacionModal';
 import { AnotacionesIndicador } from '../Notas/AnotacionesIndicador';
+import { ModalPerfilesSalidaOficiales } from '../ModalPerfilesSalidaOficiales';
 
 export const Modulo2View: React.FC = () => {
   const modulo2 = MODULOS_NOVENO_OFICIAL.find((m) => m.id === 2);
@@ -25,6 +26,7 @@ export const Modulo2View: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState<string>('todas');
   const [expandedSaberId, setExpandedSaberId] = useState<string | null>('base_datos');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [mostrarModalPerfiles, setMostrarModalPerfiles] = useState<boolean>(false);
 
   // Modales de WebApps y QR
   const [qrModalData, setQrModalData] = useState<{
@@ -124,8 +126,18 @@ export const Modulo2View: React.FC = () => {
         {/* Perfil de Salida de III Ciclo */}
         {modulo2.perfilSalidaCiclo && (
           <div className="mt-4 pt-3.5 border-t border-zinc-100">
-            <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
-              🎯 Rasgos del Perfil de Salida de III Ciclo Tributados:
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
+                🎯 Rasgos del Perfil de Salida de III Ciclo Tributados:
+              </div>
+              <button
+                onClick={() => setMostrarModalPerfiles(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-teal-50 to-sky-50 hover:from-teal-100 hover:to-sky-100 text-teal-800 border border-teal-200/80 rounded-xl text-xs font-semibold shadow-2xs transition-all cursor-pointer"
+                title="Ver matriz completa de Perfiles de Salida MEP 2026 (4 Áreas y Ejes)"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                <span>Consultar Perfiles de Salida Oficiales MEP (4 Áreas y Ejes)</span>
+              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {modulo2.perfilSalidaCiclo.map((rasgo, idx) => (
@@ -295,7 +307,7 @@ export const Modulo2View: React.FC = () => {
                                 className={`px-2 py-0.5 rounded-md text-[9px] font-bold border flex items-center gap-1 ${cfg.bgLight}`}
                                 title={cfg.nombre}
                               >
-                                <span>{ejeId === 'sostenibilidad_ambiental' ? '🌿' : ejeId === 'inclusion_derechos' ? '♿' : ejeId === 'salud_bienestar_digital' ? '🍎' : '🛡️'}</span>
+                                <span>{ejeId === 'pensamiento_computacional' ? '💻' : ejeId === 'ciudadania_etica_digital' ? '🛡️' : '🚀'}</span>
                                 <span>{cfg.nombreCorto}</span>
                               </span>
                             );
@@ -512,6 +524,12 @@ export const Modulo2View: React.FC = () => {
           onClose={() => setEditorMediacionData(null)}
         />
       )}
+
+      {/* Modal Oficial de Perfiles de Salida MEP 2026 */}
+      <ModalPerfilesSalidaOficiales
+        isOpen={mostrarModalPerfiles}
+        onClose={() => setMostrarModalPerfiles(false)}
+      />
     </div>
   );
 };

@@ -1,73 +1,107 @@
-// Catálogo Oficial de Ejes Transversales y Perfil de Salida (III Ciclo - 9° Año MEP 2026)
+// =========================================================================================
+// CATÁLOGO OFICIAL DE EJES TRANSVERSALES MEP 2026 - SECUNDARIA (III CICLO / 9° AÑO)
+// Dirección de Recursos Tecnológicos en Educación (DRTE - MEP)
+// Programa Nacional de Formación Tecnológica (PNFT)
+// =========================================================================================
+
 import { EjeTransversalConfig, PerfilSalidaRasgoNoveno, EjeTransversalTipo } from '../types';
 
 export const EJES_TRANSVERSALES_OFICIALES: Record<EjeTransversalTipo, EjeTransversalConfig> = {
-  sostenibilidad_ambiental: {
-    id: 'sostenibilidad_ambiental',
-    nombre: 'Cultura Ambiental para el Desarrollo Sostenible y Eficiencia Energética',
-    nombreCorto: 'Sostenibilidad Ambiental',
-    icono: 'Leaf',
+  pensamiento_computacional: {
+    id: 'pensamiento_computacional',
+    nombre: 'Eje transversal: Pensamiento computacional',
+    nombreCorto: 'Pensamiento Computacional',
+    icono: 'Brain',
+    color: 'indigo',
+    bgLight: 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/60',
+    textColor: 'text-indigo-700 dark:text-indigo-300',
+    borderColor: 'border-indigo-400 dark:border-indigo-600',
+    descripcion: 'Desarrolla habilidades para resolver problemas mediante la formulación de algoritmos eficientes, modularización, descomposición sistemática y reconocimiento de patrones.',
+    dimensiones: [
+      {
+        id: 'pensamiento_algoritmico',
+        nombre: 'Pensamiento algorítmico',
+        descriptor: 'Construye algoritmos teniendo en cuenta la eficiencia y el rendimiento para la resolución de problemas.'
+      },
+      {
+        id: 'abstraccion',
+        nombre: 'Abstracción',
+        descriptor: 'Utiliza funciones o procedimientos para encapsular y abstraer bloques de código reutilizables. Esto le permite modularizar y organizar su código, promoviendo una mayor eficiencia y legibilidad.'
+      },
+      {
+        id: 'descomposicion',
+        nombre: 'Descomposición',
+        descriptor: 'Descompone problemas complejos en subproblemas más pequeños y los aborda de manera sistemática; para ello, utiliza diagramas de flujo u otras técnicas de representación visual para planificar y organizar su pensamiento.'
+      },
+      {
+        id: 'reconocimiento_patrones',
+        nombre: 'Reconocimiento de patrones',
+        descriptor: 'Analiza patrones en datos, algoritmos y problemas para obtener regularidades y estructuras repetitivas que le ayuden a entender y resolver problemas de manera eficiente.'
+      }
+    ],
+    aplicacionEnNoveno: 'Modularización de código en funciones, diseño de flujogramas estructurados, análisis de condiciones de control y calibración de ciclos en sistemas robóticos y algorítmicos.',
+    ejemplosProyectos: [
+      'Algoritmo modular de control cinemático para robots móviles',
+      'Diagramación y depuración sistemática de lógica de toma de decisiones en microcontroladores',
+      'Análisis de secuencias sensoriales y estructuras repetitivas en simuladores de circuitos'
+    ]
+  },
+  ciudadania_etica_digital: {
+    id: 'ciudadania_etica_digital',
+    nombre: 'Eje transversal: Ciudadanía y Ética digital',
+    nombreCorto: 'Ciudadanía y Ética Digital',
+    icono: 'ShieldCheck',
+    color: 'sky',
+    bgLight: 'bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800/60',
+    textColor: 'text-sky-700 dark:text-sky-300',
+    borderColor: 'border-sky-400 dark:border-sky-600',
+    descripcion: 'Promueve la conciencia sobre la huella digital y el impacto de la actividad en línea, así como la aplicación de principios éticos, empatía, respeto y convivencia digital saludable.',
+    dimensiones: [
+      {
+        id: 'ciudadania',
+        nombre: 'Ciudadanía',
+        descriptor: 'Reflexiona sobre cómo su actividad en línea genera rastros permanentes y la importancia de ser consciente de que su huella digital puede impactar en su reputación y en futuras oportunidades. Se espera que desarrolle habilidades para gestionar de manera responsable su presencia en línea y proteger su imagen digital.'
+      },
+      {
+        id: 'etica_digital',
+        nombre: 'Ética digital',
+        descriptor: 'Aplica los conceptos de ética y moralidad en el entorno digital. Esto incluye fomentar la empatía, el respeto y la consideración hacia los demás en línea, evitando el ciberacoso y promoviendo relaciones digitales saludables.'
+      }
+    ],
+    aplicacionEnNoveno: 'Gestión responsable de datos sensoriales y personales, privacidad en el uso de plataformas e IoT, análisis de sesgos éticos en la inteligencia artificial y prevención del ciberacoso.',
+    ejemplosProyectos: [
+      'Auditoría ética de recolección de datos en dispositivos inteligentes',
+      'Guía de buenas prácticas y seguridad en la gestión de contraseñas y huella digital',
+      'Análisis crítico del impacto ético de los asistentes virtuales y la IA generativa'
+    ]
+  },
+  emprendimiento_innovacion: {
+    id: 'emprendimiento_innovacion',
+    nombre: 'Eje transversal: Emprendimiento e Innovación',
+    nombreCorto: 'Emprendimiento e Innovación',
+    icono: 'Sparkles',
     color: 'emerald',
     bgLight: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
     textColor: 'text-emerald-700 dark:text-emerald-300',
     borderColor: 'border-emerald-400 dark:border-emerald-600',
-    descripcion: 'Promueve la conciencia ecológica, el uso racional de recursos, la gestión responsable de residuos tecnológicos (e-waste) y el diseño de automatizaciones orientadas al ahorro energético y la conservación del entorno.',
-    aplicacionEnNoveno: 'Desarrollo de prototipos domóticos que optimizan el consumo eléctrico (sensores de luz/presencia), monitoreo automatizado de variables ambientales (temperatura, humedad de suelos) y reducción de huella de carbono digital.',
+    descripcion: 'Fomenta el liderazgo colaborativo, la toma de decisiones en equipo, la delegación de roles y la integración creativa de herramientas tecnológicas para solucionar problemas reales.',
+    dimensiones: [
+      {
+        id: 'emprendimiento',
+        nombre: 'Emprendimiento',
+        descriptor: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades. Esto le ayudará a comprender la importancia de la colaboración y la comunicación efectiva en un entorno empresarial.'
+      },
+      {
+        id: 'innovacion',
+        nombre: 'Innovación',
+        descriptor: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras a los problemas que debe resolver.'
+      }
+    ],
+    aplicacionEnNoveno: 'Desarrollo de proyectos ABP en equipos con roles rotativos, prototipado de maquetas funcionales y diseño de soluciones automatizadas para retos comunitarios.',
     ejemplosProyectos: [
-      'Invernadero automatizado con riego por goteo según humedad de suelo',
-      'Sistema de iluminación eficiente para aulas con sensores LDR y PIR',
-      'Monitoreo de calidad de aire y temperatura en espacios escolares'
-    ]
-  },
-  inclusion_derechos: {
-    id: 'inclusion_derechos',
-    nombre: 'Inclusión, Accesibilidad Universal y Diseño Universal para el Aprendizaje (DUA)',
-    nombreCorto: 'Inclusión y Accesibilidad',
-    icono: 'Users',
-    color: 'purple',
-    bgLight: 'bg-purple-50 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800/60',
-    textColor: 'text-purple-700 dark:text-purple-300',
-    borderColor: 'border-purple-400 dark:border-purple-600',
-    descripcion: 'Garantiza que las soluciones tecnológicas consideren la diversidad humana, eliminando barreras de acceso físico, sensorial o cognitivo mediante tecnologías asistivas y diseño centrado en las personas.',
-    aplicacionEnNoveno: 'Diseño de dispositivos domóticos con retroalimentación sonora y lumínica para personas con discapacidad, interfaces digitales con alto contraste y ergonomía física en el modelado 3D.',
-    ejemplosProyectos: [
-      'Dispositivo de alerta multisensorial (buzzer + LEDs) para timbres escolares accesibles',
-      'Soporte ergonómico impreso en 3D para teclados o punteros adaptados',
-      'Formularios accesibles con lectura por voz y validación simplificada'
-    ]
-  },
-  salud_bienestar_digital: {
-    id: 'salud_bienestar_digital',
-    nombre: 'Salud Integral, Ergonomía y Bienestar Digital',
-    nombreCorto: 'Salud y Bienestar Digital',
-    icono: 'HeartPulse',
-    color: 'amber',
-    bgLight: 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/60',
-    textColor: 'text-amber-700 dark:text-amber-300',
-    borderColor: 'border-amber-400 dark:border-amber-600',
-    descripcion: 'Fomenta hábitos posturales adecuados en el uso de dispositivos, pausas activas, balance entre vida física y digital, así como la prevención de tecnoestrés y riesgos psicosociales en línea.',
-    aplicacionEnNoveno: 'Análisis ergonómico en la estación de computación, diseño de recordatorios automatizados de pausas activas con microcontroladores y gestión del tiempo de pantalla en proyectos de software.',
-    ejemplosProyectos: [
-      'Alarma de postura ergonómica con sensor ultrasónico de distancia en la pantalla',
-      'Temporizador Pomodoro físico con micro:bit para pausas activas en el laboratorio',
-      'Campaña interactiva de concientización sobre huella digital y bienestar emocional'
-    ]
-  },
-  etica_paz_ciudadania: {
-    id: 'etica_paz_ciudadania',
-    nombre: 'Derechos Humanos, Paz, Ciberdefensa y Juicio Ético de la IA',
-    nombreCorto: 'Ética, Ciberseguridad y Paz',
-    icono: 'ShieldCheck',
-    color: 'blue',
-    bgLight: 'bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800/60',
-    textColor: 'text-blue-700 dark:text-blue-300',
-    borderColor: 'border-blue-400 dark:border-blue-600',
-    descripcion: 'Desarrolla el pensamiento crítico sobre la privacidad del dato, la seguridad de la información, el respeto a la propiedad intelectual (licenciamiento Creative Commons) y la evaluación de sesgos en algoritmos e Inteligencia Artificial.',
-    aplicacionEnNoveno: 'Auditoría de ciberseguridad en redes locales, gestión ética de la identidad digital, respeto a los derechos de autor en productos digitales y uso responsable y verificado de IA generativa.',
-    ejemplosProyectos: [
-      'Guía de auditoría escolar contra phishing y configuración segura de contraseñas',
-      'Banco de recursos educativos licenciados bajo Creative Commons con atribución rigurosa',
-      'Análisis comparativo de sesgos de género o culturales en respuestas de modelos de IA'
+      'Prototipo automatizado e inclusivo desarrollado en equipo con metodología Design Thinking',
+      'Integración innovadora de modelado 3D y bases de datos para optimizar recursos del colegio',
+      'Diseño y validación de una solución tecnológica con usuarios reales en la comunidad'
     ]
   }
 };
@@ -79,15 +113,15 @@ export const PERFIL_SALIDA_NOVENO_RASGOS: PerfilSalidaRasgoNoveno[] = [
     titulo: 'Pensamiento Computacional y Lógica Modular',
     descripcion: 'Formula y depura algoritmos estructurados con funciones, parámetros y estructuras de control condicionales y repetitivas para resolver problemas complejos del entorno escolar y comunal.',
     dimension: 'Pensamiento Computacional',
-    ejesTransversalesAsociados: ['etica_paz_ciudadania', 'salud_bienestar_digital']
+    ejesTransversalesAsociados: ['pensamiento_computacional', 'ciudadania_etica_digital']
   },
   {
     id: 'perfil_robotica_iot',
     codigo: 'PS-NOV-02',
     titulo: 'Computación Física, Prototipado y Automatización',
-    descripcion: 'Construye prototipos automatizados y cinemáticos integrando microcontroladores, sensores y actuadores mecánicos aplicados a la domótica y retos comunitarios sostenibles.',
+    descripcion: 'Construye prototipos automatizados y cinemáticos integrando microcontroladores, sensores y actuadores mecánicos aplicados a la domótica y retos comunitarios.',
     dimension: 'Prototipado y Robótica',
-    ejesTransversalesAsociados: ['sostenibilidad_ambiental', 'inclusion_derechos']
+    ejesTransversalesAsociados: ['emprendimiento_innovacion', 'pensamiento_computacional']
   },
   {
     id: 'perfil_datos_relacionales',
@@ -95,15 +129,15 @@ export const PERFIL_SALIDA_NOVENO_RASGOS: PerfilSalidaRasgoNoveno[] = [
     titulo: 'Gestión Relacional del Dato e Inteligencia de Información',
     descripcion: 'Estructura bases de datos relacionales, ejecuta consultas condicionales y diseña formularios de captura garantizando la confiabilidad, integridad y privacidad del dato.',
     dimension: 'Ciencia de Datos y BD',
-    ejesTransversalesAsociados: ['etica_paz_ciudadania', 'inclusion_derechos']
+    ejesTransversalesAsociados: ['ciudadania_etica_digital', 'pensamiento_computacional']
   },
   {
     id: 'perfil_modelado_3d',
     codigo: 'PS-NOV-04',
     titulo: 'Diseño Paramétrico y Fabricación Digital 3D',
-    descripcion: 'Modela piezas tridimensionales paramétricas y funcionales orientadas a resolver necesidades de ergonomía, accesibilidad física o carcasas para sistemas electrónicos.',
+    descripcion: 'Modela piezas tridimensionales paramétricas y funcionales orientadas a resolver necesidades de ergonomía o carcasas para sistemas electrónicos.',
     dimension: 'Fabricación 3D',
-    ejesTransversalesAsociados: ['inclusion_derechos', 'sostenibilidad_ambiental']
+    ejesTransversalesAsociados: ['emprendimiento_innovacion', 'pensamiento_computacional']
   },
   {
     id: 'perfil_etica_ia_seguridad',
@@ -111,7 +145,7 @@ export const PERFIL_SALIDA_NOVENO_RASGOS: PerfilSalidaRasgoNoveno[] = [
     titulo: 'Ciberseguridad, Propiedad Intelectual y Ética de la IA',
     descripcion: 'Evalúa críticamente el impacto de la inteligencia artificial generativa, protege su huella digital, aplica licencias Creative Commons y previene riesgos en redes de comunicación.',
     dimension: 'Ética y Ciudadanía Digital',
-    ejesTransversalesAsociados: ['etica_paz_ciudadania', 'salud_bienestar_digital']
+    ejesTransversalesAsociados: ['ciudadania_etica_digital', 'emprendimiento_innovacion']
   },
   {
     id: 'perfil_actitudes_resilientes',
@@ -119,42 +153,45 @@ export const PERFIL_SALIDA_NOVENO_RASGOS: PerfilSalidaRasgoNoveno[] = [
     titulo: 'Prácticas y Actitudes Computacionales Resilientes',
     descripcion: 'Demuestra persistencia ante el error en procesos de depuración técnica, rigor metodológico en el trabajo colaborativo e iniciativa en proyectos comunitarios integrados.',
     dimension: 'Prácticas y Actitudes',
-    ejesTransversalesAsociados: ['salud_bienestar_digital', 'etica_paz_ciudadania']
+    ejesTransversalesAsociados: ['emprendimiento_innovacion', 'pensamiento_computacional']
   }
 ];
 
 // Mapeo Rápido de Ejes por Saber
 export const MAPEO_EJES_POR_SABER: Record<string, EjeTransversalTipo[]> = {
   // Módulo 1
-  movimiento_mecanismos: ['sostenibilidad_ambiental', 'salud_bienestar_digital'],
-  microcontrolador: ['inclusion_derechos', 'sostenibilidad_ambiental'],
-  sensor: ['sostenibilidad_ambiental', 'salud_bienestar_digital'],
-  actuador: ['inclusion_derechos', 'sostenibilidad_ambiental'],
-  domotica: ['sostenibilidad_ambiental', 'inclusion_derechos'],
-  prototipos: ['inclusion_derechos', 'sostenibilidad_ambiental'],
-  algoritmo: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  entorno_programacion: ['inclusion_derechos', 'etica_paz_ciudadania'],
-  estructuras_control: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  dato: ['etica_paz_ciudadania', 'inclusion_derechos'],
-  iot: ['sostenibilidad_ambiental', 'etica_paz_ciudadania'],
-  practicas_actitudes_m1: ['salud_bienestar_digital', 'etica_paz_ciudadania'],
+  movimiento_mecanismos: ['pensamiento_computacional', 'emprendimiento_innovacion'],
+  microcontrolador: ['pensamiento_computacional', 'emprendimiento_innovacion'],
+  sensor: ['pensamiento_computacional', 'ciudadania_etica_digital'],
+  actuador: ['emprendimiento_innovacion', 'pensamiento_computacional'],
+  domotica: ['emprendimiento_innovacion', 'pensamiento_computacional'],
+  prototipos: ['emprendimiento_innovacion', 'pensamiento_computacional'],
+  algoritmo: ['pensamiento_computacional', 'ciudadania_etica_digital'],
+  entorno_programacion: ['pensamiento_computacional', 'emprendimiento_innovacion'],
+  estructuras_control: ['pensamiento_computacional', 'ciudadania_etica_digital'],
+  dato: ['ciudadania_etica_digital', 'pensamiento_computacional'],
+  iot: ['pensamiento_computacional', 'ciudadania_etica_digital'],
+  practicas_actitudes_m1: ['emprendimiento_innovacion', 'pensamiento_computacional'],
   
   // Módulo 2
-  plataformas_contenido: ['inclusion_derechos', 'etica_paz_ciudadania'],
-  redes_comunicacion: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  riesgos_linea: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  huella_digital: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  modelado_3d: ['inclusion_derechos', 'sostenibilidad_ambiental'],
-  gestor_bd: ['etica_paz_ciudadania', 'inclusion_derechos'],
-  derechos_autor: ['etica_paz_ciudadania'],
-  desafios_ia: ['etica_paz_ciudadania', 'inclusion_derechos'],
-  herramientas_generativas: ['etica_paz_ciudadania', 'salud_bienestar_digital'],
-  practicas_actitudes_m2: ['salud_bienestar_digital', 'etica_paz_ciudadania']
+  plataformas_contenido: ['emprendimiento_innovacion', 'ciudadania_etica_digital'],
+  redes_comunicacion: ['ciudadania_etica_digital', 'pensamiento_computacional'],
+  riesgos_linea: ['ciudadania_etica_digital'],
+  huella_digital: ['ciudadania_etica_digital'],
+  modelado_3d: ['emprendimiento_innovacion', 'pensamiento_computacional'],
+  gestor_bd: ['pensamiento_computacional', 'ciudadania_etica_digital'],
+  derechos_autor: ['ciudadania_etica_digital'],
+  desafios_ia: ['ciudadania_etica_digital', 'pensamiento_computacional'],
+  herramientas_generativas: ['ciudadania_etica_digital', 'emprendimiento_innovacion'],
+  practicas_actitudes_m2: ['emprendimiento_innovacion', 'pensamiento_computacional']
 };
 
-// Mapeo Específico Principal con Justificación Pedagógica por Indicador
+// Mapeo Específico Principal con Dimensión y Justificación Pedagógica por Indicador
 export interface EjeEspecificoDetalle {
   ejePrincipal: EjeTransversalTipo;
+  dimensionId: string;
+  dimensionNombre: string;
+  descriptorOficial: string;
   justificacion: string;
   aplicacionAula: string;
 }
@@ -162,68 +199,186 @@ export interface EjeEspecificoDetalle {
 export const MAPEO_EJE_ESPECIFICO_DETALLE: Record<string, EjeEspecificoDetalle> = {
   // --- MÓDULO 1 ---
   movimiento_mecanismos: {
-    ejePrincipal: 'sostenibilidad_ambiental',
-    justificacion: 'Eficiencia energética mecánica: optimización de torque y reducción de fricción en sistemas de transmisión.',
-    aplicacionAula: 'Cálculo de relación de transmisión (engranajes y poleas) para maximizar la fuerza con el menor consumo de energía mecánica.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'descomposicion',
+    dimensionNombre: 'Descomposición',
+    descriptorOficial: 'Descompone problemas complejos en subproblemas más pequeños y los aborda de manera sistemática.',
+    justificacion: 'Descomposición cinemática: análisis de transmisión de fuerza y velocidad dividiendo el sistema en subsistemas de poleas y engranajes.',
+    aplicacionAula: 'Cálculo y prueba por etapas de la relación de transmisión para generar torque o velocidad mecánica.'
   },
   microcontrolador: {
-    ejePrincipal: 'inclusion_derechos',
-    justificacion: 'Accesibilidad e interactividad universal: interfaz programable capaz de accionar dispositivos de asistencia física y sensorial.',
-    aplicacionAula: 'Mapeo de pines I/O para conectar alertas lumínicas y sonoras que atienden necesidades de accesibilidad escolar.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'abstraccion',
+    dimensionNombre: 'Abstracción',
+    descriptorOficial: 'Utiliza funciones o procedimientos para encapsular y abstraer bloques de código reutilizables.',
+    justificacion: 'Abstracción de hardware: configuración de puertos I/O y mapeo de señales electrónicas mediante módulos de código reutilizables.',
+    aplicacionAula: 'Programación modular de rutinas de control para gestionar entradas y salidas del microcontrolador.'
   },
   sensor: {
-    ejePrincipal: 'sostenibilidad_ambiental',
-    justificacion: 'Monitoreo ambiental y uso racional de recursos: detección precisa de variables físicas para evitar consumos innecesarios.',
-    aplicacionAula: 'Calibración de sensores LDR (luz) y PIR (presencia) para encendido automático solo cuando se requiere iluminación.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'reconocimiento_patrones',
+    dimensionNombre: 'Reconocimiento de patrones',
+    descriptorOficial: 'Analiza patrones en datos, algoritmos y problemas para obtener regularidades y estructuras repetitivas.',
+    justificacion: 'Reconocimiento de patrones en lecturas físicas continuas y discretas para definir rangos y calibración sensorial.',
+    aplicacionAula: 'Identificación de umbrales en sensores analógicos (LDR) y digitales (PIR) para automatizar respuestas.'
   },
   actuador: {
-    ejePrincipal: 'inclusion_derechos',
-    justificacion: 'Diseño universal y respuesta adaptada: transformación de señales en acciones físicas que eliminan barreras arquitectónicas.',
-    aplicacionAula: 'Accionamiento de servomotores para puertas automáticas y zumbadores para timbres escolares multisensoriales.'
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'innovacion',
+    dimensionNombre: 'Innovación',
+    descriptorOficial: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras a los problemas que debe resolver.',
+    justificacion: 'Solución innovadora física: transformación de señales digitales en movimiento y alertas útiles para la comunidad escolar.',
+    aplicacionAula: 'Integración de servomotores y buzzers en prototipos que solucionan barreras físicas o alertas escolares.'
   },
   domotica: {
-    ejePrincipal: 'sostenibilidad_ambiental',
-    justificacion: 'Cultura ambiental y desarrollo sostenible: automatización integral para la reducción de la huella de carbono en el hogar y colegio.',
-    aplicacionAula: 'Diseño de maqueta de aula inteligente con gestión eficiente de iluminación y ventilación automatizada.'
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'innovacion',
+    dimensionNombre: 'Innovación',
+    descriptorOficial: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras a los problemas que debe resolver.',
+    justificacion: 'Diseño integral de automatizaciones innovadoras contextualizadas a retos del hogar y el entorno educativo.',
+    aplicacionAula: 'Diseño y montaje de maqueta de hogar o aula inteligente con gestión automatizada de luces y accesos.'
   },
   prototipos: {
-    ejePrincipal: 'inclusion_derechos',
-    justificacion: 'Prototipado inclusivo: integración de subsistemas para responder a necesidades reales identificadas en la comunidad.',
-    aplicacionAula: 'Construcción y prueba en equipo de prototipos domóticos con materiales reusables y enfoque de accesibilidad universal.'
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'emprendimiento',
+    dimensionNombre: 'Emprendimiento',
+    descriptorOficial: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades.',
+    justificacion: 'Liderazgo y trabajo en equipo para la construcción, integración y prueba de prototipos funcionales.',
+    aplicacionAula: 'Distribución de roles técnicos (diseño, armado, programación, pruebas) durante el prototipado ABP.'
   },
   algoritmo: {
-    ejePrincipal: 'etica_paz_ciudadania',
-    justificacion: 'Pensamiento algorítmico y rigor lógico: formulación estructurada de pasos sin ambigüedad ni sesgos en la toma de decisiones.',
-    aplicacionAula: 'Diagramas de flujo con simbología normalizada que definen con exactitud el comportamiento del sistema automatizado.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'pensamiento_algoritmico',
+    dimensionNombre: 'Pensamiento algorítmico',
+    descriptorOficial: 'Construye algoritmos teniendo en cuenta la eficiencia y el rendimiento para la resolución de problemas.',
+    justificacion: 'Construcción formal de secuencias lógicas paso a paso con máxima claridad, precisión y eficiencia.',
+    aplicacionAula: 'Diseño de diagramas de flujo normalizados para modelar la lógica de control del sistema automatizado.'
   },
   entorno_programacion: {
-    ejePrincipal: 'inclusion_derechos',
-    justificacion: 'Diseño Universal para el Aprendizaje (DUA): entornos flexibles (bloques o texto) que eliminan barreras de entrada a la programación.',
-    aplicacionAula: 'Codificación modular en IDEs visuales/textuales permitiendo diversas formas de expresión y andamiaje según el estudiante.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'abstraccion',
+    dimensionNombre: 'Abstracción',
+    descriptorOficial: 'Utiliza funciones o procedimientos para encapsular y abstraer bloques de código reutilizables.',
+    justificacion: 'Modularidad en entornos de programación (bloques y texto) para estructurar código legible y mantenible.',
+    aplicacionAula: 'Creación de procedimientos y funciones con parámetros en IDEs visuales y textuales.'
   },
   estructuras_control: {
-    ejePrincipal: 'etica_paz_ciudadania',
-    justificacion: 'Juicio lógico y control condicional: toma de decisiones segura ante condiciones límite y prevención de fallos críticos.',
-    aplicacionAula: 'Programación de condicionales (if/else) y bucles para regular con precisión y seguridad el arranque y paro de mecanismos.'
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'pensamiento_algoritmico',
+    dimensionNombre: 'Pensamiento algorítmico',
+    descriptorOficial: 'Construye algoritmos teniendo en cuenta la eficiencia y el rendimiento para la resolución de problemas.',
+    justificacion: 'Toma de decisiones lógicas mediante condicionales y bucles optimizados para responder a eventos del entorno.',
+    aplicacionAula: 'Codificación de estructuras condicionales anidadas y ciclos repetitivos para gobernar el comportamiento del prototipo.'
   },
   dato: {
-    ejePrincipal: 'etica_paz_ciudadania',
-    justificacion: 'Privacidad, integridad y confiabilidad del dato: tratamiento responsable de mediciones recolectadas por sensores IoT.',
-    aplicacionAula: 'Validación de mediciones sensoriales y protocolo de registro seguro sin vulnerar la privacidad de los usuarios.'
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'etica_digital',
+    dimensionNombre: 'Ética digital',
+    descriptorOficial: 'Aplica los conceptos de ética y moralidad en el entorno digital.',
+    justificacion: 'Responsabilidad en el tratamiento, almacenamiento y uso de datos recolectados por sensores y sistemas digitales.',
+    aplicacionAula: 'Validación de integridad del dato y protocolos de no vulneración de la privacidad estudiantil.'
   },
   iot: {
-    ejePrincipal: 'sostenibilidad_ambiental',
-    justificacion: 'Automatización y telemática comunitaria: interconexión de dispositivos para la gestión inteligente del entorno escolar.',
-    aplicacionAula: 'Simulación de lectura y respuesta remota de variables ambientales para optimización de recursos institucionales.'
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'ciudadania',
+    dimensionNombre: 'Ciudadanía',
+    descriptorOficial: 'Reflexiona sobre cómo su actividad en línea genera rastros permanentes y la importancia de ser consciente de su presencia digital.',
+    justificacion: 'Conciencia crítica de cómo los dispositivos interconectados transmiten datos y generan huellas digitales institucionales.',
+    aplicacionAula: 'Análisis de protocolos de comunicación IoT y medidas de protección de la red escolar.'
   },
   practicas_actitudes_m1: {
-    ejePrincipal: 'salud_bienestar_digital',
-    justificacion: 'Resiliencia ante el error, persistencia y bienestar socioemocional durante la depuración técnica y el trabajo colaborativo.',
-    aplicacionAula: 'Bitácora metacognitiva de debugging donde el error se aborda constructivamente como oportunidad de aprendizaje.'
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'emprendimiento',
+    dimensionNombre: 'Emprendimiento',
+    descriptorOficial: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades.',
+    justificacion: 'Cultura de persistencia ante el error, tolerancia a la frustración y co-docencia durante la depuración técnica.',
+    aplicacionAula: 'Bitácora colaborativa de resolución de errores y retroalimentación entre pares.'
+  },
+
+  // --- MÓDULO 2 ---
+  plataformas_contenido: {
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'innovacion',
+    dimensionNombre: 'Innovación',
+    descriptorOficial: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras a los problemas que debe resolver.',
+    justificacion: 'Creación de instrumentos digitales para la recolección comunitaria y presentación innovadora de información.',
+    aplicacionAula: 'Diseño de encuestas digitales y tableros interactivos para diagnósticos escolares.'
+  },
+  redes_comunicacion: {
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'ciudadania',
+    dimensionNombre: 'Ciudadanía',
+    descriptorOficial: 'Reflexiona sobre cómo su actividad en línea genera rastros permanentes y la importancia de gestionar responsablemente su presencia en línea.',
+    justificacion: 'Comprensión de la arquitectura de redes y seguridad de la información que circula en medios digitales.',
+    aplicacionAula: 'Configuración segura de perfiles y reconocimiento de puertos y canales de transmisión de datos.'
+  },
+  riesgos_linea: {
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'etica_digital',
+    dimensionNombre: 'Ética digital',
+    descriptorOficial: 'Aplica los conceptos de ética y moralidad en el entorno digital. Evita el ciberacoso y promueve relaciones digitales saludables.',
+    justificacion: 'Prevención de fraudes, malware, phishing y fomento de una convivencia digital respetuosa y segura.',
+    aplicacionAula: 'Taller de detección de enlaces fraudulentos y protocolo de reporte de ciberacoso.'
+  },
+  huella_digital: {
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'ciudadania',
+    dimensionNombre: 'Ciudadanía',
+    descriptorOficial: 'Reflexiona sobre cómo su actividad en línea genera rastros permanentes y su impacto en la reputación.',
+    justificacion: 'Auditoría de presencia digital y desarrollo de criterios de protección de la identidad en línea.',
+    aplicacionAula: 'Mapeo de la propia huella digital y configuración de privacidad en servicios web y redes sociales.'
+  },
+  modelado_3d: {
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'innovacion',
+    dimensionNombre: 'Innovación',
+    descriptorOficial: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras.',
+    justificacion: 'Fabricación digital tridimensional paramétrica para materializar soluciones físicas personalizadas.',
+    aplicacionAula: 'Modelado 3D en Tinkercad/FreeCAD de soportes o carcasas para proyectos escolares.'
+  },
+  gestor_bd: {
+    ejePrincipal: 'pensamiento_computacional',
+    dimensionId: 'descomposicion',
+    dimensionNombre: 'Descomposición',
+    descriptorOficial: 'Descompone problemas complejos en subproblemas más pequeños y los aborda de manera sistemática.',
+    justificacion: 'Descomposición de la información en entidades, atributos, llaves primarias/foráneas y relaciones normalizadas.',
+    aplicacionAula: 'Diseño del modelo entidad-relación y consultas SQL selectivas para la toma de decisiones.'
+  },
+  derechos_autor: {
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'etica_digital',
+    dimensionNombre: 'Ética digital',
+    descriptorOficial: 'Aplica los conceptos de ética y moralidad en el entorno digital, respetando los derechos de autor y licencias.',
+    justificacion: 'Uso ético de contenidos ajenos, licenciamiento Creative Commons y atribución rigurosa de fuentes.',
+    aplicacionAula: 'Curaduría y licenciamiento de contenidos multimedia escolares con Creative Commons.'
+  },
+  desafios_ia: {
+    ejePrincipal: 'ciudadania_etica_digital',
+    dimensionId: 'etica_digital',
+    dimensionNombre: 'Ética digital',
+    descriptorOficial: 'Aplica los conceptos de ética y moralidad en el entorno digital y reflexiona críticamente sobre la tecnología.',
+    justificacion: 'Pensamiento crítico sobre sesgos, discriminación algorítmica y privacidad en sistemas basados en IA.',
+    aplicacionAula: 'Debate guiado sobre dilemas éticos y límites del uso de la IA en la sociedad.'
+  },
+  herramientas_generativas: {
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'innovacion',
+    dimensionNombre: 'Innovación',
+    descriptorOficial: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras.',
+    justificacion: 'Uso productivo, crítico y ético de la IA generativa como asistente para la resolución de retos complejos.',
+    aplicacionAula: 'Formulación de prompts estructurados para sintetizar información y generar alternativas de diseño.'
+  },
+  practicas_actitudes_m2: {
+    ejePrincipal: 'emprendimiento_innovacion',
+    dimensionId: 'emprendimiento',
+    dimensionNombre: 'Emprendimiento',
+    descriptorOficial: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades.',
+    justificacion: 'Colaboración efectiva, adaptabilidad y liderazgo técnico en proyectos digitales basados en datos.',
+    aplicacionAula: 'Evaluación formativa del trabajo en equipo y toma colectiva de decisiones en el proyecto semestral.'
   }
 };
 
-export function getEjeEspecificoParaSaber(saberId: string): { ejeConfig: any; detalle: EjeEspecificoDetalle } | null {
+export function getEjeEspecificoParaSaber(saberId: string): { ejeConfig: EjeTransversalConfig; detalle: EjeEspecificoDetalle } | null {
   const detalle = MAPEO_EJE_ESPECIFICO_DETALLE[saberId];
   if (!detalle) return null;
   const ejeConfig = EJES_TRANSVERSALES_OFICIALES[detalle.ejePrincipal];

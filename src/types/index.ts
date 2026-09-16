@@ -92,13 +92,32 @@ export interface RecursoApoyoCompleto {
 }
 
 // -------------------------------------------------------------
-// EJES TRANSVERSALES Y PERFIL DE SALIDA (III CICLO - 9° AÑO MEP)
+// EJES TRANSVERSALES OFICIALES MEP 2026 (III CICLO - 9° AÑO)
 // -------------------------------------------------------------
 export type EjeTransversalTipo = 
-  | 'sostenibilidad_ambiental' 
-  | 'inclusion_derechos' 
-  | 'salud_bienestar_digital' 
-  | 'etica_paz_ciudadania';
+  | 'pensamiento_computacional' 
+  | 'ciudadania_etica_digital' 
+  | 'emprendimiento_innovacion';
+
+export type DimensionPensamientoComputacional = 
+  | 'pensamiento_algoritmico' 
+  | 'abstraccion' 
+  | 'descomposicion' 
+  | 'reconocimiento_patrones';
+
+export type DimensionCiudadaniaEticaDigital = 
+  | 'ciudadania' 
+  | 'etica_digital';
+
+export type DimensionEmprendimientoInnovacion = 
+  | 'emprendimiento' 
+  | 'innovacion';
+
+export interface DimensionEjeConfig {
+  id: string;
+  nombre: string;
+  descriptor: string;
+}
 
 export interface EjeTransversalConfig {
   id: EjeTransversalTipo;
@@ -110,6 +129,7 @@ export interface EjeTransversalConfig {
   textColor: string;
   borderColor: string;
   descripcion: string;
+  dimensiones: DimensionEjeConfig[];
   aplicacionEnNoveno: string;
   ejemplosProyectos: string[];
 }
@@ -265,10 +285,27 @@ export interface SemanaPlaneamiento {
   escenarioConectado: string;
   escenarioDesconectado: string;
 
-  // Evaluación y DUA
+  // Componentes Oficiales de Evaluación MEP (Proyecto, Cotidiano, Tareas/Asistencia)
+  componentesEvaluacion?: {
+    proyecto: string;
+    cotidiano: string;
+    tareasAsistencia: string;
+  };
+
+  // Evaluación Formativa y DUA
   evidenciaAprendizaje: string;
-  instrumentoEvaluacion: string; // 'Rúbrica de proceso', 'Escala de desempeño', 'Lista de cotejo'
+  instrumentoEvaluacion: string; // 'Rúbrica analítica', 'Escala de desempeño', 'Lista de cotejo'
   pautaDUAAplicada: string;
+
+  // Saberes y Ejes vinculados
+  saberesProcedimentales?: string[];
+  saberesActitudinales?: string[];
+  ejeTransversalDetalle?: {
+    ejeId: EjeTransversalTipo;
+    ejeNombre: string;
+    dimensionNombre: string;
+    descriptor: string;
+  };
 }
 
 export interface PlaneamientoGlobalNoveno {

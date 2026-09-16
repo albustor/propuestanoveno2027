@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { registrarEventoTelemetria } from './telemetry';
+import { getPerfilesSalidaTextoParaIA } from '../data/perfilesSalidaData';
 
 interface AICacheEntry {
   response: string;
@@ -348,36 +349,32 @@ void ejecutarValidacion() {
 | **Diseño Algorítmico y Lógica** | Plantea secuencias incompletas o sin orden condicional claro. | Diseña algoritmos en pseudocódigo o flujograma que resuelven parcialmente el problema. | Formula algoritmos estructurados y completos que controlan con exactitud el comportamiento del sistema. |
 | **Depuración y Pensamiento Computacional** | Identifica fallos por ensayo y error sin método sistemático. | Corrige errores de sintaxis o conexión siguiendo guías paso a paso. | Aplica métodos sistemáticos de depuración, anticipa patrones de error y optimiza el código de forma eficiente. |`;
 
-    case 'resumen_avances_diarios_ia':
-      return `### 📊 RESUMEN EJECUTIVO Y SÍNTESIS DE AVANCES DIARIOS (MEP 2026)
-**Nivel:** Noveno Año de Secundaria (III Ciclo)
-**Áreas / Saberes abordados:** ${areas}
-**Fecha de Bitácora:** ${new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+    case 'resumen_avances_diarios_ia': {
+      const promptTxt = payload.prompt || "";
+      return `### 📝 RESUMEN DE AVANCES DEL DÍA (PALABRAS SENCILLAS)
+**Fecha:** ${new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+**Nivel:** 9° Año de Secundaria — Formación Tecnológica MEP
 
 ---
 
-#### 🌟 1. SÍNTESIS GENERAL DE LA JORNADA Y DESEMPEÑO
-Durante la sesión de trabajo, el estudiantado demostró un nivel satisfactorio de apropiación conceptual y destreza procedimental en relación con los indicadores curriculares establecidos. Se evidencia una evolución favorable desde la fase inicial de focalización hasta la aplicación técnica en simuladores y montajes físicos.
+#### 🌟 1. ¿QUÉ SE TRABAJÓ HOY EN LA JORNADA?
+Hoy se avanzó en la revisión y desarrollo pedagógico de los saberes del módulo, enfocándose en que cada actividad responda directamente a lo que el estudiante necesita aprender y demostrar en clase.
 
 ---
 
-#### 🎯 2. PRINCIPALES LOGROS Y PRÁCTICAS COMPUTACIONALES ALCANZADAS
-1. **Modularización y Estructuración:** La mayoría de los subgrupos logró descomponer los desafíos en sub-problemas abordables, optimizando el tiempo de desarrollo.
-2. **Experimentación y Comprobación Activa:** Ejecución rigurosa de pruebas en el entorno de simulación/físico, registrando valores de entrada y salida con precisión técnica.
-3. **Colaboración y Comunicación Técnica:** Intercambio fluido de roles dentro de las parejas de trabajo, asumiendo con responsabilidad el liderazgo de hardware y la depuración lógica.
+#### 📌 2. PUNTOS CLAVE Y AVANCES REGISTRADOS
+- **Lectura y fundamentación:** Se analizaron los documentos base del programa y la vinculación de cada indicador con el perfil de salida del estudiante.
+- **Diseño práctico de aula:** Se organizaron los momentos de clase (Inicio, Desarrollo y Cierre) con opciones para colegios con computadoras y opciones desconectadas (sin internet ni equipos costosos).
+- **Elección de software y simulaciones:** Se debatió sobre el uso de programación en bloques o texto (como S4AEDU o EV3) adaptado a las máquinas disponibles, y se acordó que las simulaciones interactivas son una gran oportunidad para no perder tiempo ni lecciones.
+- **Prototipos flexibles:** Se abrió la posibilidad de trabajar con prototipos físicos o con simulaciones digitales según el equipamiento de cada centro educativo.
 
 ---
 
-#### 🔍 3. DIFICULTADES DETECTADAS Y GESTIÓN FORMATIVA DEL ERROR
-- **Punto Crítico Identificado:** Ciertos estudiantes presentaron dudas en la correcta inicialización de variables y mapeo de señales condicionales.
-- **Intervención Docente:** Se aplicó andamiaje mediante preguntas socráticas dirigidas y modelado en la pizarra, logrando que los equipos descubrieran y corrigieran las discrepancias de forma autónoma.
-
----
-
-#### 📋 4. ACUERDOS Y RECOMENDACIONES PARA LA PRÓXIMA SESIÓN
-- [x] Iniciar la siguiente sesión con una breve prueba de escritorio de 5 minutos sobre el caso de borde analizado hoy.
-- [x] Consolidar el registro de evidencias en las bitácoras individuales de los estudiantes.
-- [x] Conectar los resultados obtenidos con la etapa correspondiente del Proyecto Semestral de Design Thinking.`;
+#### 🤝 3. COMPROMISOS Y PRÓXIMOS PASOS
+1. Mantener las actividades de clase claras, sencillas y directamente alineadas a los indicadores.
+2. Organizar los enlaces y códigos QR de las WebApps y simuladores para facilitarle el acceso a los estudiantes.
+3. Continuar la articulación conjunta entre los docentes y asesores para la entrega del planeamiento.`;
+    }
 
     case 'distribucion_correlacion_evaluacion_ia': {
       const mod = payload.contexto?.modulo || 1;
@@ -424,51 +421,60 @@ Durante la sesión de trabajo, el estudiantado demostró un nivel satisfactorio 
 
     case 'informe_pedagogico_sesion_ia':
     case 'sintesis_reunion_acuerdos_ia': {
-      const titulo = payload.contexto?.tituloSesion || payload.contexto?.tema || "Sesión de Trabajo y Co-Docencia Curricular";
-      const fecha = payload.contexto?.fecha || new Date().toLocaleDateString('es-CR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      const titulo = payload.contexto?.tituloSesion || payload.contexto?.tema || "Jornada de Diseño Curricular y Articulación Pedagógica";
+      const fecha = payload.contexto?.fecha || new Date().toISOString().split('T')[0];
       const hora = payload.contexto?.hora || "08:00 a. m.";
       const participantes = payload.contexto?.participantes && payload.contexto.participantes.length > 0 
         ? payload.contexto.participantes.join(', ')
-        : "Alberto Bustos Ortega & Allan M. (Diseñadores Curriculares) | Kevin Sánchez Bogarín (Coordinador)";
+        : "Alberto Bustos Ortega & Allan M.";
       const avances = payload.contexto?.avancesEspecificos?.trim() || "";
       const temas = payload.contexto?.temasTratados?.trim() || "";
       const acuerdos = payload.contexto?.acuerdos || [];
-      const enfoque = payload.contexto?.enfoque || "pedagogico_curricular";
 
-      return `### 📋 INFORME PEDAGÓGICO EJECUTIVO Y SÍNTESIS DE SESIÓN (MEP 2026)
-**Programa:** Formación Tecnológica — Tercer Ciclo (Noveno Año)
+      return `### 📋 INFORME DEL DÍA Y RESUMEN DE LA SESIÓN (EN PALABRAS SENCILLAS)
 **Sesión:** ${titulo}
 **Fecha:** ${fecha} | **Hora:** ${hora}
-**Equipo Participante:** ${participantes}
-**Enfoque de Análisis:** ${enfoque === 'co_docencia' ? 'Co-Diseño y Práctica Docente Compartida' : enfoque === 'evaluacion_indicadores' ? 'Alineación de Indicadores y Evaluación Formativa' : 'Articulación Curricular, Mediación Pedagógica y DUA'}
+**Participantes:** ${participantes}
 
 ---
 
-#### 📌 1. SÍNTESIS DE TEMAS TRATADOS Y DIAGNÓSTICO DE LA SESIÓN
-${temas ? `**Puntos Abordados:**\n${temas}\n\n*Análisis Pedagógico:* Se analizaron los componentes medulares de la Guía Docente y el perfil del educador tecnológico, estableciendo una correlación directa entre los Resultados de Aprendizaje (RdA) por ciclo y los Indicadores de Logro e Indicadores de Evaluación para fundamentar las estrategias de mediación didáctica en el aula.` : `Durante la jornada se revisaron las directrices curriculares oficiales para 9° año, concentrando el análisis en la coherencia entre el perfil de salida, los indicadores de logro y la mediación en 3 momentos didácticos.`}
+#### 📌 1. ¿QUÉ SE ANALIZÓ Y SE CONVERSÓ HOY?
+${temas ? `${temas}
+
+*En resumen sencillo y directo:*
+- Revisamos las propuestas de actividades para los 10 saberes de Robótica, Algoritmos y Computación Física.
+- Analizamos qué software de programación conviene usar (si por bloques o texto, considerando casos como S4AEDU o EV3) según las computadoras y recursos reales que tenga cada docente en su aula.
+- Coincidimos en que las simulaciones digitales son una oportunidad valiosa para aprovechar el tiempo de clase y no perder lecciones cuando no hay kits físicos disponibles.
+- Dejamos abierta la posibilidad de que los estudiantes construyan prototipos físicos o hagan simulaciones digitales completas.` : `Durante la jornada se revisaron las estrategias de clase para los 10 saberes de 9° año, asegurando que sean realistas, comprensibles y aplicables en cualquier colegio.`}
 
 ---
 
-#### 🌟 2. AVANCES Y LOGROS ESPECÍFICOS ALCANZADOS
-${avances ? `**Avances del Equipo:**\n${avances}\n\n*Impacto Curricular:* La articulación entre el indicador de logro (apropiación del saber) y el indicador de evaluación (criterio de desempeño observable) garantiza que las actividades de aula no sean meramente operativas, sino que promuevan el pensamiento computacional y la resolución de problemas contextuales.` : `1. **Alineación de Indicadores:** Clarificación de la distinción funcional entre el indicador de logro y el indicador de evaluación en el planeamiento didáctico.\n2. **Coherencia Metodológica:** Estructuración de los 3 momentos de mediación (Inicio, Desarrollo y Cierre) con pautas DUA.\n3. **Integración Transversal:** Enlace de los saberes de robótica, programación y datos con los ejes transversales del MEP.`}
+#### 🌟 2. AVANCES Y LOGROS CONCRETOS DEL DÍA
+${avances ? `${avances}
+
+*Lo que se logró concretar:*
+1. **Lectura y análisis de documentos base:** Revisión detallada de los lineamientos del programa.
+2. **Conexión con el perfil de salida:** Asegurar que cada indicador desarrolle habilidades reales que el estudiante usará al graduarse.
+3. **Primeras ideas pedagógicas:** Bosquejo de actividades en 3 momentos (Inicio, Desarrollo y Cierre).
+4. **Opciones desconectadas (Unplugged):** Actividades sin computadora para garantizar que nadie quede excluido.` : `1. Estructuración de los 3 momentos didácticos (Inicio, Desarrollo y Cierre) con pautas DUA.
+2. Diseño de alternativas conectadas y desconectadas para atender la diversidad de aulas.`}
 
 ---
 
-#### 🔍 3. ANÁLISIS DE LA PRÁCTICA DOCENTE Y CORRELACIÓN CURRICULAR
-- **Alineación RdA $\rightarrow$ Indicador de Logro $\rightarrow$ Indicador de Evaluación:** Cada experiencia de aprendizaje debe partir del Resultado de Aprendizaje del ciclo, desagregarse en el indicador de logro del saber específico y evaluarse mediante criterios de desempeño observables en trabajo cotidiano o proyecto.
-- **Sinergia en Co-Docencia:** El intercambio de criterios y estrategias entre zonas de asesoría fortalece la propuesta técnica, asegurando adaptabilidad a diversos contextos institucionales (conectados y desconectados).
-- **Enfoque en Procesos (Cero Placeholders):** Énfasis en la depuración constructiva del error y el andamiaje pedagógico continuo.
+#### 💬 3. DECISIONES CLAVE Y ENFOQUE DE AULA
+- **Adaptación al equipo del docente:** No imponer un único software; permitir opciones en bloques o texto según el equipamiento del colegio.
+- **Simulaciones para optimizar el tiempo:** Usar simuladores web interactivos para que todos los estudiantes practiquen sin depender únicamente de material físico.
+- **Prototipos físicos o digitales:** Ambos formatos son válidos para demostrar el aprendizaje en robótica y computación física.
 
 ---
 
-#### 📋 4. MATRIZ DE ACUERDOS, COMPROMISOS Y PRÓXIMOS PASOS
-${acuerdos.length > 0 ? `\n| # | Acuerdo / Compromiso Pedagógico | Responsable(s) | Estado |\n| :---: | :--- | :--- | :---: |\n${acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Equipo Diseñador'} | ${a.completado ? '✅ Cumplido' : '⏳ En Proceso'} |`).join('\n')}\n` : `\n- [x] Continuar la articulación de estrategias compartidas desde ambas zonas de asesoría (Alberto & Allan).\n- [x] Consolidar la matriz de correlación entre indicadores de logro y de evaluación para la mediación.\n- [x] Registrar evidencias y bitácora de co-diseño para la coordinación con Kevin Sánchez.\n`}
+#### 🤝 4. ACUERDOS Y COMPROMISOS ASUMIDOS
+${acuerdos.length > 0 ? `\n| # | Compromiso / Tarea Acordada | Responsable(s) | Estado |\n| :---: | :--- | :--- | :---: |\n${acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Alberto & Allan'} | ${a.completado ? '✅ Cumplido' : '⏳ Pendiente / En desarrollo'} |`).join('\n')}\n` : `\n- [ ] Alinear los 10 indicadores de Módulo 1 a la matriz evaluativa.\n- [ ] Estructurar el banco de WebApps y simuladores interactivos con códigos QR.\n- [ ] Vincular el proyecto domótico con las etapas de Design Thinking.\n`}
 
 ---
 
-#### 💡 5. RECOMENDACIONES PEDAGÓGICAS PARA EL SEGUIMIENTO
-1. **Modelado en la Mediación:** Trasladar los acuerdos sobre el perfil docente a consignas claras para el estudiantado en los momentos de Inicio y Desarrollo.
-2. **Registro Sistemático:** Mantener actualizado el historial de encuentros para sustentar la entrega de cortes valorativos oficiales ante la jefatura curricular.`;
+#### 💡 5. CONCLUSIÓN PRÁCTICA
+La jornada fue muy productiva: se logró aterrizar el diseño curricular en orientaciones prácticas, flexibles y sencillas para los docentes de 9° año, priorizando el aprendizaje real del estudiante por encima de complicaciones técnicas innecesarias.`;
     }
 
     default:

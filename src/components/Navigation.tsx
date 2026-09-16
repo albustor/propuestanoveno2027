@@ -13,7 +13,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     {
       id: 'modulo1',
       label: 'Módulo 1: Robótica & Algoritmos',
-      sublabel: 'Computación Física & IoT (9° Año)',
+      shortLabel: 'Módulo 1: Robótica',
       icon: Cpu,
       badge: '10 Indicadores',
       color: 'sky'
@@ -21,57 +21,57 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     {
       id: 'proyecto',
       label: 'Proyecto Semestral',
-      sublabel: '3 Fases / 5 Etapas (Design Thinking)',
+      shortLabel: 'Proyecto ABP',
       icon: Sparkles,
-      badge: 'ABP / MEP',
+      badge: '5 Etapas',
       color: 'emerald'
     },
     {
       id: 'planeador',
       label: 'Planeador Didáctico',
-      sublabel: '18 Semanas con 3 Momentos',
+      shortLabel: 'Planeamiento 18 Sem.',
       icon: Calendar,
-      badge: 'Mediación',
+      badge: '3 Momentos',
       color: 'indigo'
     },
     {
       id: 'evaluacion',
       label: 'Distribución y Evaluación',
-      sublabel: 'Cotidiano, Tareas & Proyecto',
+      shortLabel: 'Evaluación REA',
       icon: SlidersHorizontal,
-      badge: 'REA MEP',
+      badge: 'Cotidiano/Proy',
       color: 'indigo'
     },
     {
       id: 'webapps',
       label: 'Recursos & Evidencias',
-      sublabel: 'Enlazado por Componente REA',
+      shortLabel: 'Recursos & WebApps',
       icon: Layers,
-      badge: 'Base de Datos',
+      badge: 'Catálogo',
       color: 'sky'
     },
     {
       id: 'sistematizacion',
-      label: 'Equipo, Allan & Reuniones',
-      sublabel: 'Co-Docencia & Telemetría',
+      label: 'Equipo & Co-Docencia',
+      shortLabel: 'Equipo & Log',
       icon: Users,
-      badge: 'Actas & Log',
+      badge: 'Actas',
       color: 'purple'
     },
     {
       id: 'exportacion',
       label: 'Exportación Oficial',
-      sublabel: 'Descargar DOCX / PDF',
+      shortLabel: 'Exportar MEP',
       icon: FileDown,
-      badge: 'MEP Listo',
+      badge: 'Word/PDF',
       color: 'rose'
     }
   ];
 
   return (
-    <nav className="bg-white border-b border-zinc-200 sticky top-16 z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex space-x-1 sm:space-x-2 overflow-x-auto py-2.5 no-scrollbar">
+    <nav className="bg-white border-b border-zinc-200 sticky top-16 z-30 shadow-2xs">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto py-2 scrollbar-thin scrollbar-thumb-zinc-300">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -79,22 +79,21 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`flex items-center space-x-2.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   isActive
-                    ? 'bg-zinc-900 text-white shadow-sm ring-1 ring-zinc-900'
-                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/80'
+                    ? 'bg-zinc-900 text-white shadow-xs ring-1 ring-zinc-900'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/90'
                 }`}
+                title={tab.label}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-zinc-500'}`} />
-                <div className="text-left">
-                  <div className="font-semibold leading-tight">{tab.label}</div>
-                  <div className={`text-[10px] ${isActive ? 'text-zinc-300' : 'text-zinc-400'}`}>
-                    {tab.sublabel}
-                  </div>
-                </div>
+                <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${isActive ? 'text-white' : 'text-zinc-500'}`} />
+                <span className="leading-tight">
+                  <span className="hidden xl:inline">{tab.label}</span>
+                  <span className="xl:hidden">{tab.shortLabel}</span>
+                </span>
                 {tab.badge && (
                   <span
-                    className={`ml-1 px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                    className={`ml-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold ${
                       isActive
                         ? 'bg-zinc-800 text-zinc-200'
                         : 'bg-zinc-100 text-zinc-600'

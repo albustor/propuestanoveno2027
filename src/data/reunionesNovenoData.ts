@@ -8,32 +8,50 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
     fecha: '2026-09-16',
     hora: '08:00',
     participantes: ['Alberto Bustos Ortega', 'Allan M.'],
-    temasTratados: 'Revisión y diseño de estrategias metodológicas para los 10 saberes del Módulo 1 (Robótica, Computación Física y Algoritmos). Definición de los 3 momentos didácticos (Inicio, Desarrollo, Cierre), DUA, recursos unplugged y herramientas de evaluación.',
+    temasTratados: 'Revisión y diseño de estrategias metodológicas para los 10 saberes del Módulo 1 (Robótica, Computación Física y Algoritmos). Definición de los 3 momentos didácticos (Inicio, Desarrollo, Cierre), DUA, recursos unplugged y herramientas de evaluación. Debemos definir sobre el indicador sobre Entorno de Programación sobre el sofftware; si es textual o por bloques, esto de acuerdo al enfoque de mecanismos robóticos_ Caso de S4AEDU o EV3 Considerando seriamente el uso de simulaciones en el proceso que nos lleva principalmente a procesos de creación de prototipos, no indica que sean físicos aunque es una de las opciones.',
     acuerdos: [
       {
         id: 'ac-allan-1',
         acuerdo: 'Alinear los 10 indicadores de Módulo 1 a la matriz de distribución evaluativa (Cotidiano, Tareas, Proyecto).',
         responsable: 'Alberto Bustos & Allan M.',
         fechaLimite: '2026-09-20',
-        completado: true
+        completado: false
       },
       {
         id: 'ac-allan-2',
         acuerdo: 'Estructurar el banco de WebApps y simuladores interactivos con códigos QR para el estudiantado.',
         responsable: 'Allan M.',
         fechaLimite: '2026-09-25',
-        completado: true
+        completado: false
       },
       {
         id: 'ac-allan-3',
         acuerdo: 'Vincular el prototipo domótico semestral con las 5 etapas de Design Thinking.',
         responsable: 'Alberto Bustos',
         fechaLimite: '2026-09-30',
-        completado: true
+        completado: false
+      },
+      {
+        id: 'ac-allan-4',
+        acuerdo: 'Compromiso: Considerar lo de software para el desarrollo de la actividad de acuerdo al equipamiento que tenga a disposición el docente.',
+        responsable: 'Alberto & Allan',
+        completado: false
+      },
+      {
+        id: 'ac-allan-5',
+        acuerdo: 'Las simulaciones son una oportunidad valiosa, considerando tiempo vrs lecciones perdidas',
+        responsable: 'Alberto & Allan',
+        completado: false
+      },
+      {
+        id: 'ac-allan-6',
+        acuerdo: 'Se puede abrir la posibilidad de hacer procesos de prototipos físicos o digitales en todo lo relacionado a computación física y robótica, tomando en cuenta además programación y algoritmos',
+        responsable: 'Alberto & Allan',
+        completado: false
       }
     ],
-    avancesConAllan: 'Se logró consolidar el 100% de los 10 saberes de Robótica y Algoritmos para 9° año. Se integró la bitácora de anotaciones diarias con síntesis por IA y la matriz de distribución de componentes del REA.',
-    sintesisIA: 'Jornada altamente productiva. Se completó el diseño metodológico de Módulo 1 y se establecieron los clústeres sinérgicos para el proyecto domótico.',
+    avancesConAllan: 'Lectura y análisis de documentación base Reflexión sobre impacto y vinculación del indicador de logro con el perfil de salida del estudiante en Bosquejos de primeras ideas pedagógicas Análisis de software de programación Abordaje de ideas para ir dando forma a opciones desconectadas',
+    sintesisIA: 'Jornada altamente productiva. Se completó el diseño metodológico de Módulo 1 y se establecieron los acuerdos de equipamiento, software y simulaciones.',
     estado: 'Completado',
     adjuntosOEnlaces: 'Propuesta Noveno Año 2026 - Módulo 1 y Planeador',
     timestamp: '2026-09-16T08:00:00.000Z'

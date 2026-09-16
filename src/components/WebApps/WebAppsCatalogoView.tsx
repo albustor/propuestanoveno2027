@@ -414,36 +414,28 @@ export const WebAppsCatalogoView: React.FC = () => {
             Todos
           </button>
           <button
-            onClick={() => setEjeFiltro('sostenibilidad_ambiental')}
+            onClick={() => setEjeFiltro('pensamiento_computacional')}
             className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold flex items-center gap-1 ${
-              ejeFiltro === 'sostenibilidad_ambiental' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200/60'
+              ejeFiltro === 'pensamiento_computacional' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 border border-blue-200/60'
             }`}
           >
-            <span>🌿</span> Sostenibilidad
+            <span>💻</span> Pensamiento Computacional
           </button>
           <button
-            onClick={() => setEjeFiltro('inclusion_derechos')}
+            onClick={() => setEjeFiltro('ciudadania_etica_digital')}
             className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold flex items-center gap-1 ${
-              ejeFiltro === 'inclusion_derechos' ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-800 border border-purple-200/60'
+              ejeFiltro === 'ciudadania_etica_digital' ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-800 border border-purple-200/60'
             }`}
           >
-            <span>♿</span> Inclusión & DUA
+            <span>🛡️</span> Ciudadanía y Ética Digital
           </button>
           <button
-            onClick={() => setEjeFiltro('salud_bienestar_digital')}
+            onClick={() => setEjeFiltro('emprendimiento_innovacion')}
             className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold flex items-center gap-1 ${
-              ejeFiltro === 'salud_bienestar_digital' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200/60'
+              ejeFiltro === 'emprendimiento_innovacion' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800 border border-amber-200/60'
             }`}
           >
-            <span>🍎</span> Salud & Bienestar
-          </button>
-          <button
-            onClick={() => setEjeFiltro('etica_paz_ciudadania')}
-            className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold flex items-center gap-1 ${
-              ejeFiltro === 'etica_paz_ciudadania' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 border border-blue-200/60'
-            }`}
-          >
-            <span>🛡️</span> Ética & Ciberseguridad
+            <span>🚀</span> Emprendimiento e Innovación
           </button>
         </div>
       </div>
@@ -502,7 +494,7 @@ export const WebAppsCatalogoView: React.FC = () => {
                             className={`px-2 py-0.5 rounded-md text-[9px] font-bold border flex items-center gap-1 ${cfg.bgLight}`}
                             title={cfg.nombre}
                           >
-                            <span>{ejeId === 'sostenibilidad_ambiental' ? '🌿' : ejeId === 'inclusion_derechos' ? '♿' : ejeId === 'salud_bienestar_digital' ? '🍎' : '🛡️'}</span>
+                            <span>{ejeId === 'pensamiento_computacional' ? '💻' : ejeId === 'ciudadania_etica_digital' ? '🛡️' : '🚀'}</span>
                             <span>{cfg.nombreCorto}</span>
                           </span>
                         );
