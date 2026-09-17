@@ -1,10 +1,10 @@
 // Equipo y Cronograma Oficial de Diseño Curricular - Noveno Año 2026
 export const EQUIPO_NOVENO_INFO = {
   "nivel": "Noveno Año (9°)",
-  "coordinador": "Kevin Sánchez Bogarín",
+  "coordinador": "Kevin Sánchez",
   "disenadores": [
-    "Allan M.",
-    "Alberto Bustos Ortega"
+    "Allan Morera",
+    "Alberto Bustos"
   ],
   "cronograma": [
     {

@@ -8,17 +8,19 @@ import { SemanaPlaneamiento } from '../../types';
 import { FileDown, FileText, CheckCircle2, ShieldCheck, Cpu, Layers } from 'lucide-react';
 
 export const ExportCenterView: React.FC = () => {
-  const [docente, setDocente] = useState('Alberto Bustos Ortega / Allan M.');
+  const [docente, setDocente] = useState('Allan Morera & Alberto Bustos');
   const [institucion, setInstitucion] = useState('Colegio Técnico Profesional / Liceo de Innovación');
   const [isExporting, setIsExporting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const getSemanasModulo = (moduloId: 1 | 2): SemanaPlaneamiento[] => {
-    const saved = localStorage.getItem(`planeamiento_noveno_modulo_${moduloId}`);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {}
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`planeamiento_noveno_modulo_${moduloId}`);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
     }
     const modulo = MODULOS_NOVENO_OFICIAL.find((m) => m.id === moduloId);
     const allSaberes = modulo ? modulo.areas.flatMap((a) => a.saberes) : [];

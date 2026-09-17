@@ -52,8 +52,8 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     },
     {
       id: 'sistematizacion',
-      label: 'Equipo & Co-Docencia',
-      shortLabel: 'Equipo & Log',
+      label: 'Equipo de Asesoría & Actas',
+      shortLabel: 'Equipo & Actas',
       icon: Users,
       badge: 'Actas',
       color: 'purple'

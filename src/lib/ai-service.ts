@@ -35,7 +35,8 @@ export interface AIRequestPayload {
     | 'resumen_avances_diarios_ia'
     | 'distribucion_correlacion_evaluacion_ia'
     | 'informe_pedagogico_sesion_ia'
-    | 'sintesis_reunion_acuerdos_ia';
+    | 'sintesis_reunion_acuerdos_ia'
+    | 'analizar_dictado_sesion_ia';
   contexto?: {
     modulo?: number;
     tema?: string;
@@ -359,175 +360,226 @@ void ejecutarValidacion() {
       const temasContext = payload.contexto?.temasTratados || "";
       const saberesInvolucrados = payload.contexto?.areas && payload.contexto.areas.length > 0 
         ? payload.contexto.areas.join(', ') 
-        : 'Robótica, Computación Física, Algoritmos, Ciencia de Datos e IA';
+        : 'Robótica, computación física, algoritmos, ciencia de datos e IA';
 
       // Detectar si hay insumos o notas específicas ingresadas
-      const hayNotasDocentes = rawPrompt.includes('Anotaciones del Docente') || rawPrompt.includes('Aportes e Ideas Clave') || rawPrompt.includes('Registro de Bitácora') || rawContext.trim().length > 0;
+      const hayNotasAsesoria = rawPrompt.includes('Anotaciones') || rawPrompt.includes('Aportes') || rawPrompt.includes('Registro de Bitácora') || rawPrompt.includes('Allan') || rawContext.trim().length > 0;
       
       // Extraer ideas clave aportadas
       let ideasRedactadas = "";
       if (temasContext && temasContext !== 'Desarrollo curricular, software de programación, simuladores y mediación contextual') {
-        ideasRedactadas += `\n- **Aportes Temáticos Centrales:** ${temasContext}`;
+        ideasRedactadas += `\n- **Aportes temáticos de la asesoría:** ${temasContext}`;
       }
       if (rawContext && rawContext.length > 5) {
         ideasRedactadas += `\n\n${rawContext}`;
       }
 
-      return `### 🏛️ REPORTE EJECUTIVO DIARIO DE AVANCES Y MEDIACIÓN CURRICULAR
-**Programa:** Formación Tecnológica MEP • Noveno Año (III Ciclo)
+      return `### Reporte ejecutivo de asesoría y avance curricular
+**Programa:** Formación tecnológica MEP • Propuesta didáctica para noveno año (tercer ciclo)
+**Nivel de trabajo:** Asesoría curricular y validación pedagógica (preparación para entrega a docentes)
 **Fecha:** ${fecha}
-**Áreas / Saberes en Foco:** ${saberesInvolucrados}
-**Relatoría:** PÍA Asistente Curricular MEP (Redacción Ejecutiva Basada en Insumos Docentes)
+**Áreas y saberes en diseño:** ${saberesInvolucrados}
+**Equipo de asesoría:** Allan Morera & Alberto Bustos • **Coordinación:** Kevin Sánchez
 
 ---
 
-#### 📋 1. SÍNTESIS EJECUTIVA DE LA JORNADA
-${hayNotasDocentes ? `Con base en las ideas, anotaciones y reflexiones pedagógicas ingresadas para esta fecha, el equipo docente concentró la jornada en articular la mediación didáctica de 9° año, asegurando que las actividades de aula reflejen de manera operativa los indicadores de logro del programa y respondan a las condiciones reales de infraestructura institucional.` : `Durante la jornada se llevó a cabo la revisión directiva de los saberes curriculares y las estrategias de mediación de 9° año, consolidando una propuesta pedagógica flexible, rigurosa y directamente orientada a los resultados de aprendizaje del III Ciclo.`}
+#### 1. Síntesis ejecutiva de la jornada de asesoría
+${hayNotasAsesoria ? `Con base en el currículo oficial ya establecido por el MEP para el tercer ciclo, el equipo de asesoría curricular concentró la jornada en desarrollar y validar que todas las actividades didácticas, estrategias de mediación, recursos y orientaciones respondan rigurosamente a los saberes e indicadores contemplados en el nivel de noveno año, asegurando su articulación con séptimo y octavo año para la entrega formal a las personas docentes.` : `Durante la jornada se avanzó en el desarrollo y validación de la propuesta pedagógica de noveno año con base en el currículo oficial establecido, estructurando orientaciones de mediación, recursos interactivos y criterios de evaluación formativa que respondan a las exigencias del nivel.`}
 
 ---
 
-#### 💡 2. RELATORÍA EDITORIAL DE IDEAS Y CRITERIOS PEDAGÓGICOS ADOPTADOS
-${ideasRedactadas ? `**Registro Contextual de Ideas y Aportes Ingresados:**\n${ideasRedactadas}\n\n*Redacción y Fundamentación Ejecutiva de los Criterios:*` : `*Criterios Clave de Mediación y Decisiones de Aula:*`}
-- **Selección y Flexibilidad del Software de Programación:** Se ratifica el criterio de no condicionar el avance curricular a una única plataforma técnica; la programación por bloques o texto (como S4AEDU, EV3, Arduino IDE o MakeCode) se ajusta dinámicamente al parque tecnológico del centro educativo.
-- **Continuidad de Aprendizaje mediante Simulación Digital:** Se consolida el uso estratégico de entornos virtuales y simuladores web (Wokwi, Tinkercad, PSeInt) para optimizar el tiempo de clase, asegurando que no se pierdan lecciones ni aprendizajes cuando existan limitaciones de kits físicos.
-- **Prototipado Híbrido (Físico y Digital):** Se valida tanto la construcción con hardware tangible como la experimentación y validación en simuladores interactivos, garantizando el cumplimiento pleno del indicador de logro.
-- **Inclusión y Diseño Universal (DUA):** Se estructuran alternativas conectadas y desconectadas (Unplugged) para que la totalidad del estudiantado participe activamente sin barreras de acceso.
+#### 2. Relatoría de criterios técnico-pedagógicos y validación del nivel
+${ideasRedactadas ? `**Registro contextual de insumos y decisiones técnicas:**\n${ideasRedactadas}\n\n*Fundamentación y criterios de diseño curricular:*` : `*Criterios pedagógicos y validación para la propuesta docente:*`}
+- **Validación con base en el currículo establecido del nivel:** se verifica que cada propuesta didáctica, reto y momento de clase responda directamente a los saberes, habilidades y descriptores oficiales de noveno año del programa de Formación Tecnológica MEP.
+- **Flexibilidad en el software de programación:** la propuesta que se entregará al personal docente no impondrá una única plataforma; contempla alternativas en bloques y texto (como S4AEDU, EV3, Arduino IDE o MakeCode) adaptables al equipamiento institucional.
+- **Continuidad pedagógica mediante simuladores web:** se integran entornos virtuales y simuladores interactivos (Wokwi, Tinkercad, PSeInt) en el banco de recursos para garantizar que los docentes dispongan de alternativas prácticas efectivas frente a limitaciones de kits físicos o reducción de tiempos lectivos.
+- **Prototipado híbrido (físico y digital):** se validan guías tanto para prototipos tangibles como para simulaciones digitales completas, asegurando el cumplimiento del indicador de logro en cualquier centro educativo.
+- **Inclusión y Diseño Universal para el Aprendizaje (DUA):** se estructuran secuencias conectadas y desconectadas (*unplugged*) para facilitar a las personas docentes la atención inclusiva de todo el estudiantado.
 
 ---
 
-#### 🎯 3. ALINEACIÓN CURRICULAR CON INDICADORES Y PERFILES DE SALIDA
-- **Alineación con el Indicador:** Toda acción del estudiante en los momentos de Inicio, Desarrollo y Cierre está calibrada con el verbo operativo y objeto técnico del indicador oficial del MEP.
-- **Contribución al Perfil de Salida (III Ciclo):** Fortalecimiento directo del **Pensamiento Crítico**, la **Resolución de Problemas mediante Algoritmos** y la **Apropiación Tecnológica Responsable**.
+#### 3. Alineación con los indicadores oficiales del nivel
+- **Alineación con el indicador oficial:** cada acción de aprendizaje propuesta para los momentos de inicio, desarrollo y cierre está calibrada con el verbo operativo y objeto técnico del indicador oficial establecido en el programa.
+- **Respuesta al perfil del nivel (tercer ciclo):** aseguramiento del pensamiento computacional, resolución de problemas mediante algoritmos y apropiación tecnológica responsable contemplados para noveno año.
 
 ---
 
-#### 🤝 4. MATRIZ EJECUTIVA DE ACUERDOS Y RESPONSABILIDADES
+#### 4. Matriz ejecutiva de acuerdos y responsabilidades de la asesoría
 
-| # | Compromiso / Acuerdo Estratégico | Responsable(s) | Estado Operativo |
-| :---: | :--- | :--- | :---: |
-| **1** | Alinear la acción del estudiante con el verbo del indicador en cada saber. | Alberto Bustos & Equipo | ✅ Sincronizado |
-| **2** | Disponer de alternativas en bloques y texto para cada propuesta didáctica. | Equipo de Co-Docencia | ✅ Establecido |
-| **3** | Incorporar simulaciones web para mitigar tiempos lectivos y falta de kits. | Allan M. & Alberto B. | ✅ Integrado |
-| **4** | Garantizar actividades desconectadas (Unplugged) bajo enfoque DUA. | Equipo Pedagógico | ✅ Incorporado |
-| **5** | Mantener sincronizadas las actas y bitácoras para publicación oficial. | Relatoría Curricular | ✅ Actualizado |
+| # | Compromiso o acuerdo estratégico | Responsable(s) | Estado operativo |
+| :-: | :--- | :--- | :-: |
+| **1** | Validar que las actividades didácticas respondan fielmente a los indicadores oficiales del nivel. | Allan Morera & Alberto Bustos | ✅ Sincronizado |
+| **2** | Disponer de alternativas en bloques y texto en cada propuesta didáctica para el docente. | Allan Morera & Alberto Bustos | ✅ Establecido |
+| **3** | Incorporar simulaciones web y WebApps interactivas en el catálogo de recursos docentes. | Allan Morera & Alberto Bustos | ✅ Integrado |
+| **4** | Diseñar actividades desconectadas (*unplugged*) bajo enfoque DUA para cada saber. | Allan Morera & Alberto Bustos | ✅ Incorporado |
+| **5** | Coordinar con los equipos de asesoría de 7° y 8° año la progresión de saberes del nivel. | Allan Morera & Alberto Bustos | ⏳ En proceso |
+| **6** | Mantener sincronizadas las actas y bitácoras de la asesoría para la entrega oficial. | Allan Morera & Alberto Bustos | ✅ Actualizado |
 
 ---
 
-#### 🚀 5. ORIENTACIONES OPERATIVAS PARA LA SIGUIENTE JORNADA
-1. **Ejecución en Aula:** Presentar a los estudiantes el reto detonante clarificando la meta de aprendizaje y el criterio de éxito en la bitácora.
-2. **Uso de WebApps:** Proveer acceso mediante códigos QR o enlaces directos al catálogo de simuladores interactivos.
-3. **Monitoreo Continuo:** Registrar en la bitácora docente los hallazgos y evidencias observadas para alimentar el próximo reporte ejecutivo.`;
+#### 5. Orientaciones para la siguiente sesión de diseño
+1. **Validación de secuencias didácticas:** contrastar la progresión de los momentos de clase contra los indicadores oficiales del programa.
+2. **Revisión del catálogo de WebApps:** comprobar los enlaces y códigos QR de simuladores antes de la entrega final.
+3. **Seguimiento inter-niveles:** continuar la articulación con los asesores de séptimo y octavo año para validar la continuidad curricular.`;
     }
 
     case 'distribucion_correlacion_evaluacion_ia': {
       const mod = payload.contexto?.modulo || 1;
-      return `### 🧠 RECOMENDACIÓN PEDAGÓGICA DE CORRELACIÓN Y DISTRIBUCIÓN EVALUATIVA (MEP 2026)
-**Nivel:** Noveno Año (III Ciclo) — **${mod === 1 ? 'Módulo 1: Robótica y Algoritmos' : mod === 2 ? 'Módulo 2: Ciencia de Datos, 3D e IA' : 'Módulos 1 y 2 Integrados'}**
-**Marco Normativo:** Reglamento de Evaluación de los Aprendizajes (REA MEP) y Enfoque ABP / Pensamiento Computacional.
+      return `### Recomendación pedagógica de correlación y distribución evaluativa (MEP 2026)
+**Nivel de aplicación:** Propuesta para noveno año (tercer ciclo) — **${mod === 1 ? 'Módulo 1: Robótica y algoritmos' : mod === 2 ? 'Módulo 2: Ciencia de datos, 3D e IA' : 'Módulos 1 y 2 integrados'}**
+**Destinatarios:** Propuesta técnica de asesoría para la orientación evaluativa de las personas docentes.
+**Marco normativo:** Reglamento de Evaluación de los Aprendizajes (REA MEP) y currículo oficial establecido.
+**Equipo de asesoría:** Allan Morera & Alberto Bustos
 
 ---
 
-#### ⚖️ 1. DISTRIBUCIÓN CURRICULAR SUGERIDA POR COMPONENTE DE EVALUACIÓN
+#### 1. Distribución curricular sugerida por componente de evaluación
 
-| Componente de Evaluación | Porcentaje Sugerido | Enfoque Pedagógico MEP | Indicadores Recomendados |
-| :--- | :---: | :--- | :--- |
-| **🛠️ Trabajo Cotidiano** | **45% - 50%** | Observación directa de desempeño, resolución de retos en parejas, depuración sistemática de errores y bitácora técnica de aula. | *Todos los saberes procedimentales con énfasis en montajes de circuitos, formulación de algoritmos, diseño de BD y modelado 3D.* |
-| **🚀 Proyecto Semestral (ABP)** | **30% - 40%** | Proceso transversal en 3 Fases y 5 Etapas (Design Thinking). Valora la integración sistémica de múltiples saberes en una solución real. | *Clústeres articulados: Sensores + Microcontrolador + Actuadores (M1) o BD + Modelado 3D + IA (M2).* |
-| **📝 Tareas / Evidencias Cortas** | **10%** | Actividades de investigación guiada, auditorías éticas, contraste de licenciamiento, glosarios técnicos y fichas de comprobación. | *Saberes de análisis reflexivo: Gestión Ética del Dato, Desafíos de la IA, Riesgos en Línea y Derechos de Autor.* |
-
----
-
-#### 🔗 2. CLÚSTERES DE CORRELACIÓN SINÉRGICA IDENTIFICADOS POR IA
-
-##### 🌟 Clúster A: ${mod === 1 ? 'Automatización y Lógica Física Condicional (Proyecto Semestral)' : 'Plataforma Digital Integral y Solución Comunitaria (Proyecto Semestral)'}
-- **Saberes Interconectados:** ${mod === 1 ? 'Domótica + Microcontrolador + Sensor + Actuador + Entorno de Programación' : 'Plataformas de Contenido + Gestor de BD + Modelado 3D + Herramientas Generativas'}
-- **Justificación Didáctica:** Los saberes no deben evaluarse de forma fragmentada; el microcontrolador depende del sensor para capturar datos y del algoritmo para activar el actuador. Esta sinergia optimiza el tiempo de aula y da sentido contextual al estudiantado.
-- **Instrumento Evaluativo Integrador:** *Rúbrica Analítica de Desempeño en Proyecto (Etapa 4: Prototipar y Etapa 5: Evaluar).*
-
-##### 💡 Clúster B: ${mod === 1 ? 'Cinemática Robótica y Control de Flujo (Trabajo Cotidiano)' : 'Arquitectura de Redes y Ciberdefensa Activa (Trabajo Cotidiano)'}
-- **Saberes Interconectados:** ${mod === 1 ? 'Movimiento en Mecanismos + Algoritmos + Estructuras de Control' : 'Redes de Comunicación + Riesgos en Línea + Huella Digital'}
-- **Justificación Didáctica:** Permite evaluar el razonamiento causa-efecto inmediato durante las sesiones prácticas de aula.
-- **Instrumento Evaluativo Integrador:** *Escala de Desempeño de Observación Continua (1-3 pts por criterio).*
-
-##### 🛡️ Clúster C: ${mod === 1 ? 'Seguridad y Responsabilidad en Datos IoT (Tareas)' : 'Ética de la IA y Propiedad Intelectual Digital (Tareas)'}
-- **Saberes Interconectados:** ${mod === 1 ? 'Dato + Prácticas y Actitudes Computacionales' : 'Desafíos de la IA + Derechos de Autor y Licenciamiento'}
-- **Justificación Didáctica:** Facilita el trabajo individual reflexivo y la investigación fuera del aula sin sobrecargar el tiempo de laboratorio.
-- **Instrumento Evaluativo Integrador:** *Lista de Cotejo Formativa con criterios de rigor y juicio ético.*
+| Componente de evaluación | Porcentaje sugerido | Enfoque pedagógico MEP | Indicadores recomendados |
+| :--- | :-: | :--- | :--- |
+| **Trabajo cotidiano** | **45% - 50%** | Observación directa del desempeño, resolución de retos en parejas, depuración sistemática de errores y bitácora técnica. | *Todos los saberes procedimentales con énfasis en montajes de circuitos, formulación de algoritmos, diseño de bases de datos y modelado 3D.* |
+| **Proyecto semestral (DT)** | **30% - 40%** | Proceso transversal en 3 fases y 5 etapas (Design Thinking). Valora la integración sistémica de múltiples saberes en una solución contextualizada. | *Clústeres articulados: sensores + microcontrolador + actuadores (M1) o bases de datos + modelado 3D + IA (M2).* |
+| **Tareas y evidencias cortas** | **10%** | Actividades de investigación guiada, auditorías éticas, contraste de licenciamiento, glosarios técnicos y fichas de comprobación. | *Saberes de análisis reflexivo: gestión ética del dato, desafíos de la IA, riesgos en línea y derechos de autor.* |
 
 ---
 
-#### 📌 3. RECOMENDACIONES TÉCNICAS PARA EL DOCENTE
-1. **Evitar la sobre-evaluación:** No aplique instrumentos aislados por cada micro-saber; utilice las correlaciones sugeridas para evaluar hasta 4 indicadores en una sola actividad integrada.
-2. **Retroalimentación Formativa Inmediata:** En Trabajo Cotidiano, registre avances diarios en la bitácora para que el resumen con IA consolide el progreso al final de la semana.
-3. **Flexibilidad DUA:** Permita que las evidencias de tareas y proyectos puedan ser demostradas mediante prototipo físico, simulación interactiva en línea o sustentación oral.`;
+#### 2. Clústeres de correlación sinérgica identificados por IA
+
+##### Clúster A: ${mod === 1 ? 'Automatización y lógica física condicional (Proyecto semestral)' : 'Plataforma digital integral y solución comunitaria (Proyecto semestral)'}
+- **Saberes interconectados:** ${mod === 1 ? 'Domótica + Microcontrolador + Sensor + Actuador + Entorno de programación' : 'Plataformas de contenido + Gestor de bases de datos + Modelado 3D + Herramientas generativas'}
+- **Justificación didáctica:** los saberes no deben evaluarse de forma fragmentada; el microcontrolador depende del sensor para capturar datos y del algoritmo para activar el actuador. Esta sinergia optimiza el tiempo lectivo y da sentido contextual a la mediación docente.
+- **Instrumento evaluativo integrador:** *Rúbrica analítica de desempeño en proyecto (Etapa 4: Prototipar y Etapa 5: Evaluar).*
+
+##### Clúster B: ${mod === 1 ? 'Cinemática robótica y control de flujo (Trabajo cotidiano)' : 'Arquitectura de redes y ciberdefensa activa (Trabajo cotidiano)'}
+- **Saberes interconectados:** ${mod === 1 ? 'Movimiento en mecanismos + Algoritmos + Estructuras de control' : 'Redes de comunicación + Riesgos en línea + Huella digital'}
+- **Justificación didáctica:** permite evaluar el razonamiento causa-efecto inmediato durante las sesiones prácticas guiadas por el docente.
+- **Instrumento evaluativo integrador:** *Escala de desempeño de observación continua (1-3 pts por criterio).*
+
+##### Clúster C: ${mod === 1 ? 'Seguridad y responsabilidad en datos IoT (Tareas)' : 'Ética de la IA y propiedad intelectual digital (Tareas)'}
+- **Saberes interconectados:** ${mod === 1 ? 'Dato + Prácticas y actitudes computacionales' : 'Desafíos de la IA + Derechos de autor y licenciamiento'}
+- **Justificación didáctica:** facilita el trabajo individual reflexivo y la investigación fuera del aula sin sobrecargar el tiempo de laboratorio.
+- **Instrumento evaluativo integrador:** *Lista de cotejo formativa con criterios de rigor y juicio ético.*
+
+---
+
+#### 3. Orientaciones para la mediación y evaluación docente
+1. **Evitar la sobre-evaluación:** la propuesta orienta al personal docente a no aplicar instrumentos aislados por cada micro-saber, sino a utilizar las correlaciones sinérgicas para evaluar hasta 4 indicadores en una sola actividad integrada.
+2. **Acompañamiento formativo continuo:** promover el registro sistemático de evidencias formativas para retroalimentar oportunamente al estudiantado.
+3. **Flexibilidad DUA:** asegurar que los instrumentos de evaluación admitan evidencias mediante prototipo físico, simulación digital interactiva o sustentación oral.`;
     }
 
     case 'informe_pedagogico_sesion_ia':
     case 'sintesis_reunion_acuerdos_ia': {
-      const titulo = payload.contexto?.tituloSesion || payload.contexto?.tema || "Jornada de Diseño Curricular y Articulación Pedagógica";
+      const titulo = payload.contexto?.tituloSesion || payload.contexto?.tema || "Jornada de diseño curricular y articulación de asesoría";
       const fecha = payload.contexto?.fecha || new Date().toISOString().split('T')[0];
       const hora = payload.contexto?.hora || "08:00 a. m.";
       const participantes = payload.contexto?.participantes && payload.contexto.participantes.length > 0 
         ? payload.contexto.participantes.join(', ')
-        : "Alberto Bustos Ortega & Allan M.";
+        : "Allan Morera & Alberto Bustos (Asesoría Curricular)";
       const acuerdos = payload.contexto?.acuerdos || [];
 
-      return `# INFORME EJECUTIVO DE CO-DOCENCIA Y DISEÑO CURRICULAR
-**Programa:** Formación Tecnológica MEP • Noveno Año (III Ciclo)
-**Sesión:** ${titulo}
+      return `# Informe ejecutivo de asesoría y diseño curricular
+**Programa:** Formación tecnológica MEP • Propuesta didáctica para noveno año (tercer ciclo)
+**Nivel de trabajo:** Asesoría curricular y validación pedagógica (preparación para entrega a docentes)
 **Fecha:** ${fecha} | **Hora:** ${hora}
-**Participantes:** ${participantes}
-**Coordinación:** Kevin Sánchez Bogarín
+**Equipo de asesoría:** ${participantes} • **Coordinación:** Kevin Sánchez
 
 ---
 
-### 1. PROPÓSITO DE LA SESIÓN
-Articular las orientaciones didácticas, la selección tecnológica y los criterios de evaluación formativa para los saberes de 9° año, asegurando su alineación con el perfil de salida y la realidad de infraestructura de los centros educativos.
+### 1. Propósito y alcance de la sesión
+Desarrollar y validar que la propuesta didáctica, orientaciones metodológicas, recursos interactivos y criterios de evaluación de noveno año respondan con estricta fidelidad a los saberes e indicadores del currículo oficial establecido para el nivel, garantizando su articulación con séptimo y octavo año previo a su entrega oficial a las personas docentes.
 
 ---
 
-### 2. SÍNTESIS DE AVANCES Y DECISIONES TÉCNICO-PEDAGÓGICAS
+### 2. Síntesis y fundamentación de las decisiones técnico-pedagógicas
 
-* **Fundamentación Curricular y Perfil de Salida:**
-  Se revisaron los documentos normativos del programa, calibrando cada acción del estudiante (Inicio, Desarrollo y Cierre) con el verbo operativo del indicador oficial para desarrollar autonomía computacional y pensamiento crítico.
+* **Fidelidad al currículo oficial del nivel:**
+  Se analizaron los descriptores e indicadores vigentes del programa de Formación Tecnológica para noveno año, asegurando que cada momento didáctico propuesto (inicio, desarrollo y cierre) refleje fielmente el nivel de complejidad requerido sin alterar los objetivos curriculares oficiales.
 
-* **Articulación de Nivel (8° y 9° Año):**
-  Se estableció la necesidad de coordinar con los docentes de 8° año para diagnosticar el nivel de entrada en microcontroladores y electrónica básica, asegurando una progresión pedagógica coherente en el III Ciclo.
+* **Articulación inter-niveles de asesoría:**
+  Se coordinó la progresión conceptual y técnica entre séptimo, octavo y noveno año, garantizando una transición fluida en el dominio de microcontroladores, lógica condicional, arquitectura de datos y principios éticos de la inteligencia artificial.
 
-* **Flexibilidad en Software de Programación:**
-  Se acordó no imponer una única herramienta. Las actividades permitirán entornos en bloques o texto (S4AEDU, EV3, Arduino IDE, MakeCode) según la disponibilidad de computadoras de cada colegio.
+* **Flexibilidad en el software de mediación docente:**
+  Se acordó no condicionar la propuesta a una sola herramienta informática. La documentación para los docentes contemplará alternativas tanto en programación por bloques como en código textual (S4AEDU, EV3, Arduino IDE, MakeCode), permitiendo su adaptación al parque tecnológico de cada centro educativo.
 
-* **Continuidad de Aprendizaje mediante Simuladores:**
-  Se validó el uso de simulaciones digitales interactivas (Wokwi, Tinkercad, PSeInt) como recurso estratégico para no perder lecciones cuando no se cuente con kits físicos suficientes.
+* **Continuidad pedagógica mediante simulaciones digitales:**
+  Se validó la incorporación de entornos virtuales interactivos (Wokwi, Tinkercad, PSeInt) para que el personal docente cuente con herramientas que mitiguen la escasez de kits físicos o la pérdida imprevista de lecciones lectivas.
 
-* **Prototipado Híbrido y Enfoque DUA:**
-  Se determinó que las evidencias de logro pueden demostrarse mediante prototipos físicos tangibles o simulaciones virtuales completas, integrando además opciones desconectadas (*Unplugged*) para garantizar la inclusión total.
+* **Inclusión educativa y enfoque DUA:**
+  Se diseñaron alternativas de prototipado físico, digital y desconectado (*unplugged*), asegurando que las personas docentes dispongan de opciones inclusivas para la totalidad del estudiantado.
 
 ---
 
-### 3. MATRIZ DE ACUERDOS Y COMPROMISOS ASUMIDOS
+### 3. Acuerdos, compromisos y responsabilidades de la asesoría
 
-| # | Acuerdo / Compromiso de Trabajo | Responsable(s) | Plazo / Estado |
-| :-: | :--- | :--- | :-: |
 ${acuerdos.length > 0 
-  ? acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Alberto & Allan'} | ${a.completado ? '✅ Cumplido' : '⏳ En proceso'} |`).join('\n')
-  : `| **1** | Alinear la redacción de la acción estudiantil al verbo exacto de cada indicador en Módulos 1 y 2. | Alberto Bustos & Equipo | ✅ Cumplido |
-| **2** | Disponer de alternativas en bloques y texto para cada propuesta didáctica de aula. | Equipo de Co-Docencia | ✅ Establecido |
-| **3** | Integrar simuladores web en el catálogo de WebApps para mitigar limitaciones de hardware. | Allan M. & Alberto B. | ✅ Integrado |
-| **4** | Incorporar actividades desconectadas (*Unplugged*) bajo pautas DUA para cada saber. | Equipo Pedagógico | ✅ Incorporado |
-| **5** | Coordinar con 8° año la revisión de indicadores y progresión en microcontroladores. | Allan M. & Alberto B. | ⏳ En proceso |
-| **6** | Mantener sincronizadas las fuentes de datos y actas en la plataforma para publicación en línea. | Relatoría Curricular | ✅ Sincronizado |`}
+  ? acuerdos.map((a, idx) => `* **${a.acuerdo.includes(':') ? a.acuerdo.split(':')[0] : `Compromiso ${idx + 1}`}**: ${a.acuerdo} *(Responsable(s): ${a.responsable || 'Allan Morera & Alberto Bustos'} — Estado: ${a.completado ? 'Cumplido' : 'En proceso'})*`).join('\n\n')
+  : `* **Alineación curricular y validación pedagógica:**
+  El equipo conformado por Allan Morera & Alberto Bustos asume la responsabilidad de revisar y calibrar las actividades de mediación de los módulos 1 y 2, garantizando que el verbo operativo de cada consigna responda de manera idéntica al indicador de logro del nivel.
+
+* **Consolidación del banco de recursos y WebApps:**
+  Allan Morera liderará la estructuración del catálogo de simuladores web y herramientas interactivas, incorporando accesos directos y códigos QR orientados a enriquecer las guías que se facilitarán al personal docente.
+
+* **Articulación de proyectos y metodología Design Thinking:**
+  Alberto Bustos asume la integración de las 5 etapas metodológicas de Design Thinking con los proyectos semestrales, permitiendo una tipificación abierta y contextualizada por parte de los docentes a futuro.
+
+* **Flexibilidad técnica e inclusión DUA:**
+  Ambos asesores consolidarán el inventario de actividades desconectadas (*unplugged*) y las pautas DUA, asegurando alternativas en bloques y texto para cada propuesta temática.
+
+* **Coordinación y seguimiento inter-niveles:**
+  Se mantendrán sesiones de seguimiento con los equipos de asesoría de 7° y 8° año para verificar la continuidad pedagógica antes del primer corte valorativo oficial.`}
 
 ---
 
-### 4. PRÓXIMOS PASOS OPERATIVOS
-1. Validar la correlación de indicadores en la matriz evaluativa (Cotidiano 45-50%, Proyecto DT 30-40%, Tareas 10%).
-2. Finalizar la tipificación abierta de retos para las 5 etapas de Design Thinking (DT).
-3. Consolidar el banco de recursos con códigos QR para acceso directo en el aula.`;
+### 4. Próximas acciones operativas
+1. Validar la matriz de distribución evaluativa (trabajo cotidiano 45-50%, proyecto DT 30-40% y tareas 10%).
+2. Finalizar la tipificación abierta para las etapas de empatizar, definir, idear, prototipar y evaluar.
+3. Sincronizar las bitácoras y actas en la plataforma para la presentación de avances a la coordinación.`;
+    }
+
+    case 'analizar_dictado_sesion_ia': {
+      const textoDictado = payload.prompt || payload.contexto?.avancesEspecificos || "";
+      const fechaHoy = payload.contexto?.fecha || new Date().toISOString().split('T')[0];
+      
+      // Estructurador inteligente del dictado acumulado
+      return JSON.stringify({
+        titulo: `Jornada de Asesoría Curricular y Validación: ${textoDictado.slice(0, 45).trim() || 'Alineación de Saberes 9°'}...`,
+        participantes: ["Allan Morera", "Alberto Bustos"],
+        temasTratados: textoDictado.length > 50 
+          ? `Análisis y acuerdos sobre: ${textoDictado.slice(0, 200).trim()}... Validación de los indicadores oficiales de 9° año y articulación técnica.`
+          : 'Revisión y diseño de estrategias metodológicas con base en el currículo oficial establecido para el nivel de noveno año.',
+        avancesConAllan: textoDictado.length > 30 
+          ? textoDictado.trim()
+          : 'Validación de actividades pedagógicas, software en bloques/texto y simuladores web.',
+        acuerdos: [
+          {
+            id: `ac-dictado-1`,
+            acuerdo: 'Validar que las consignas didácticas respondan con fidelidad al indicador oficial de noveno año.',
+            responsable: 'Allan Morera & Alberto Bustos',
+            fechaLimite: '2026-09-25',
+            completado: false
+          },
+          {
+            id: `ac-dictado-2`,
+            acuerdo: 'Garantizar opciones en bloques y texto para el equipamiento institucional disponible.',
+            responsable: 'Allan Morera & Alberto Bustos',
+            fechaLimite: '2026-09-30',
+            completado: false
+          },
+          {
+            id: `ac-dictado-3`,
+            acuerdo: 'Integrar simulaciones digitales y opciones unplugged bajo enfoque DUA en el banco de recursos.',
+            responsable: 'Allan Morera & Alberto Bustos',
+            fechaLimite: '2026-10-05',
+            completado: false
+          }
+        ],
+        estado: 'Completado'
+      });
     }
 
     default:
-      return `Respuesta pedagógica oficial generada conforme a los lineamientos de la Propuesta Educativa 2027 para Formación Tecnológica (Noveno Año MEP).`;
+      return `Propuesta pedagógica oficial elaborada a nivel de Asesoría Curricular de Formación Tecnológica MEP (Noveno Año, Tercer Ciclo).`;
   }
 }
 

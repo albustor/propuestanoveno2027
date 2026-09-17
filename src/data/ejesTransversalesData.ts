@@ -291,7 +291,7 @@ export const MAPEO_EJE_ESPECIFICO_DETALLE: Record<string, EjeEspecificoDetalle> 
     dimensionId: 'emprendimiento',
     dimensionNombre: 'Emprendimiento',
     descriptorOficial: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades.',
-    justificacion: 'Cultura de persistencia ante el error, tolerancia a la frustración y co-docencia durante la depuración técnica.',
+    justificacion: 'Cultura de persistencia ante el error, tolerancia a la frustración y aprendizaje colaborativo durante la depuración técnica.',
     aplicacionAula: 'Bitácora colaborativa de resolución de errores y retroalimentación entre pares.'
   },
 

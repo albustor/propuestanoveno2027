@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { PROYECTOS_SEMESTRALES_NOVENO } from '../../data/proyectoFasesEtapasData';
-import { Sparkles, CheckCircle, Calendar, ArrowRight, Lightbulb, Wrench, Presentation, Compass, FileCheck } from 'lucide-react';
+import { Sparkles, CheckCircle, Calendar, ArrowRight, Lightbulb, Wrench, Presentation, Compass, FileCheck, Target, Award, CheckSquare, FileText, Layers } from 'lucide-react';
 
 export const ProyectoFasesEtapasView: React.FC = () => {
   const [selectedModulo, setSelectedModulo] = useState<1 | 2>(1);
@@ -214,32 +214,53 @@ export const ProyectoFasesEtapasView: React.FC = () => {
               </div>
             </div>
 
-            {/* Entregables y Rúbrica MEP */}
+            {/* Entregables, Indicador de Logro e Indicador de Evaluación de Proyecto */}
             <div className="space-y-4">
+              {/* Indicadores Oficiales MEP (Etapa Inicial: Empatizar, Definir, Idear) */}
+              {activeEtapa.indicadorLogro && (
+                <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-1.5 shadow-2xs">
+                  <div className="flex items-center space-x-1.5 text-emerald-950 font-bold text-xs uppercase tracking-wider">
+                    <Target className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Indicador de Logro Oficial (MEP):</span>
+                  </div>
+                  <p className="text-xs text-emerald-950 font-medium leading-relaxed">
+                    {activeEtapa.indicadorLogro}
+                  </p>
+                </div>
+              )}
+
+              {(activeEtapa.indicadoresEvaluacion || activeEtapa.indicadorEvaluacion) && (
+                <div className="bg-indigo-50/70 border border-indigo-200 rounded-xl p-4 space-y-2 shadow-2xs">
+                  <div className="flex items-center space-x-1.5 text-indigo-950 font-bold text-xs uppercase tracking-wider">
+                    <Award className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <span>Indicador(es) de Evaluación del Proyecto:</span>
+                  </div>
+                  {activeEtapa.indicadoresEvaluacion && activeEtapa.indicadoresEvaluacion.length > 0 ? (
+                    <ul className="space-y-1.5">
+                      {activeEtapa.indicadoresEvaluacion.map((ind, idx) => (
+                        <li key={idx} className="flex items-start space-x-2 text-xs text-indigo-950 font-medium leading-relaxed">
+                          <CheckCircle className="w-3.5 h-3.5 text-indigo-600 shrink-0 mt-0.5" />
+                          <span>{ind}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-indigo-950 font-medium leading-relaxed">
+                      {activeEtapa.indicadorEvaluacion}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Entregables Sugeridos */}
               <div className="bg-white border border-zinc-200 rounded-xl p-4 shadow-2xs space-y-2">
-                <span className="text-xs font-bold text-zinc-900 uppercase tracking-wider">Entregables Sugeridos:</span>
+                <div className="flex items-center space-x-1.5 text-zinc-900 font-bold text-xs uppercase tracking-wider">
+                  <FileText className="w-4 h-4 text-zinc-600 shrink-0" />
+                  <span>Entregables Sugeridos:</span>
+                </div>
                 <ul className="list-disc list-inside text-xs text-zinc-700 space-y-1">
                   {activeEtapa.entregablesSugeridos.map((ent, idx) => (
                     <li key={idx} className="font-medium">{ent}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-4 space-y-2">
-                <div>
-                  <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider block">
-                    Desempeños de la Etapa Design Thinking (DT):
-                  </span>
-                  <span className="text-[10px] text-emerald-700 italic">
-                    (Los indicadores curriculares de logro se vincularán al tipificar el proyecto)
-                  </span>
-                </div>
-                <ul className="space-y-1.5 mt-1">
-                  {activeEtapa.criteriosEvaluacionMEP.map((crit, idx) => (
-                    <li key={idx} className="text-xs text-emerald-950 flex items-start space-x-1.5">
-                      <span className="text-emerald-700 font-bold">•</span>
-                      <span>{crit}</span>
-                    </li>
                   ))}
                 </ul>
               </div>

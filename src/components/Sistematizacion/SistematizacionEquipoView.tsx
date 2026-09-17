@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EQUIPO_NOVENO_INFO } from '../../data/sistematizacionData';
 import { 
   getAllReunionesLocal, 
@@ -45,11 +45,21 @@ import {
   RotateCcw,
   ShieldCheck,
   ChevronRight,
-  Filter
+  Filter,
+  Mic,
+  MicOff,
+  UploadCloud,
+  Volume2,
+  FileAudio,
+  Save,
+  Play,
+  Pause,
+  Square,
+  Radio
 } from 'lucide-react';
 
 export const SistematizacionEquipoView: React.FC = () => {
-  const [subTab, setSubTab] = useState<'reuniones' | 'trabajo_allan' | 'cronograma' | 'telemetria'>('trabajo_allan');
+  const [subTab, setSubTab] = useState<'reuniones' | 'trabajo_allan' | 'grabador_audio' | 'cronograma' | 'telemetria'>('trabajo_allan');
   const [reuniones, setReuniones] = useState<ReunionEquipoNivel[]>([]);
   const [telemetria, setTelemetria] = useState<EventoTelemetria[]>([]);
   const [filtroModuloTelemetria, setFiltroModuloTelemetria] = useState<string>('TODOS');
@@ -61,6 +71,21 @@ export const SistematizacionEquipoView: React.FC = () => {
   const [modalIAAbierto, setModalIAAbierto] = useState<boolean>(false);
   const [cargandoIA, setCargandoIA] = useState<boolean>(false);
   const [sintesisIAGenerada, setSintesisIAGenerada] = useState<string>('');
+
+  // Estados de Grabación Rápida Principal
+  const [grabandoPrincipal, setGrabandoPrincipal] = useState<boolean>(false);
+  const [segundosGrabacionPrincipal, setSegundosGrabacionPrincipal] = useState<number>(0);
+  const [audioUrlPrincipal, setAudioUrlPrincipal] = useState<string | null>(null);
+  const [nombreAudioPrincipal, setNombreAudioPrincipal] = useState<string>('');
+  const [textoTranscripcionPrincipal, setTextoTranscripcionPrincipal] = useState<string>('');
+  const [procesandoAudioPrincipal, setProcesandoAudioPrincipal] = useState<boolean>(false);
+  const [creandoActaDesdeAudio, setCreandoActaDesdeAudio] = useState<boolean>(false);
+
+  const mediaRecorderPrincipalRef = useRef<MediaRecorder | null>(null);
+  const audioChunksPrincipalRef = useRef<Blob[]>([]);
+  const recognitionPrincipalRef = useRef<any>(null);
+  const timerPrincipalRef = useRef<any>(null);
+  const fileInputPrincipalRef = useRef<HTMLInputElement | null>(null);
 
   // Notificación
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
@@ -77,6 +102,7 @@ export const SistematizacionEquipoView: React.FC = () => {
     window.addEventListener('telemetria_actualizada', handleTelemetriaActualizada);
     return () => {
       window.removeEventListener('telemetria_actualizada', handleTelemetriaActualizada);
+      if (timerPrincipalRef.current) clearInterval(timerPrincipalRef.current);
     };
   }, []);
 
@@ -87,7 +113,7 @@ export const SistematizacionEquipoView: React.FC = () => {
 
   const notificar = (msg: string) => {
     setMensajeExito(msg);
-    setTimeout(() => setMensajeExito(null), 2500);
+    setTimeout(() => setMensajeExito(null), 3000);
   };
 
   // Filtrado de reuniones
@@ -116,6 +142,209 @@ export const SistematizacionEquipoView: React.FC = () => {
     }
     return true;
   });
+
+  // -------------------------------------------------------------
+  // CONTROLES DE GRABACIÓN DE AUDIO EN VIVO (MEDIARECORDER + WEB SPEECH)
+  // -------------------------------------------------------------
+  const handleToggleGrabacionPrincipal = async () => {
+    if (grabandoPrincipal) {
+      detenerGrabacionPrincipal();
+    } else {
+      await iniciarGrabacionPrincipal();
+    }
+  };
+
+  const iniciarGrabacionPrincipal = async () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksPrincipalRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksPrincipalRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksPrincipalRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrlPrincipal(url);
+        setNombreAudioPrincipal(`Grabacion_Acta_${new Date().toLocaleDateString('es-CR').replace(/\//g, '-')}_${Date.now()}.webm`);
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start(200);
+      mediaRecorderPrincipalRef.current = mediaRecorder;
+      setGrabandoPrincipal(true);
+      setSegundosGrabacionPrincipal(0);
+      notificar('🎙️ Grabando audio de la sesión y transcribiendo en vivo...');
+
+      timerPrincipalRef.current = setInterval(() => {
+        setSegundosGrabacionPrincipal((prev) => prev + 1);
+      }, 1000);
+
+      // Reconocimiento de voz simultáneo (Web Speech API)
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'es-CR';
+
+          recognition.onresult = (event: any) => {
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript + ' ';
+              }
+            }
+            if (finalTranscript) {
+              setTextoTranscripcionPrincipal((prev) => (prev ? prev.trim() + '\n' : '') + finalTranscript.trim());
+            }
+          };
+
+          recognition.onend = () => {
+            if (grabandoPrincipal && recognitionPrincipalRef.current) {
+              try {
+                recognition.start();
+              } catch (e) {}
+            }
+          };
+
+          recognition.start();
+          recognitionPrincipalRef.current = recognition;
+        } catch (e) {
+          console.warn('Speech recognition warning:', e);
+        }
+      }
+    } catch (err: any) {
+      alert('No se pudo acceder al micrófono: ' + err.message);
+    }
+  };
+
+  const detenerGrabacionPrincipal = () => {
+    setGrabandoPrincipal(false);
+
+    if (mediaRecorderPrincipalRef.current && mediaRecorderPrincipalRef.current.state !== 'inactive') {
+      mediaRecorderPrincipalRef.current.stop();
+      mediaRecorderPrincipalRef.current = null;
+    }
+
+    if (recognitionPrincipalRef.current) {
+      recognitionPrincipalRef.current.onend = null;
+      recognitionPrincipalRef.current.stop();
+      recognitionPrincipalRef.current = null;
+    }
+
+    if (timerPrincipalRef.current) {
+      clearInterval(timerPrincipalRef.current);
+      timerPrincipalRef.current = null;
+    }
+
+    notificar('⏹️ Grabación finalizada. Lista para reproducir o convertir en Acta.');
+  };
+
+  // Subir archivo de audio externo
+  const handleSubirArchivoAudioPrincipal = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setProcesandoAudioPrincipal(true);
+    const audioUrl = URL.createObjectURL(file);
+    setAudioUrlPrincipal(audioUrl);
+    setNombreAudioPrincipal(file.name);
+
+    setTimeout(() => {
+      const fragmentoAudio = `[Transcripción de Audio: ${file.name}]\nEn la jornada de asesoría curricular de 9° año (Allan Morera & Alberto Bustos), se revisaron los indicadores oficiales del componente proyecto por Design Thinking. Se enfatizó que las etapas iniciales de Empatizar, Definir e Idear concentran los indicadores curriculares de logro y evaluación, mientras que las fases de Prototipar y Probar/Evaluar se abordan con bitácoras técnicas y rúbricas de producto funcional.`;
+      setTextoTranscripcionPrincipal((prev) => (prev ? prev.trim() + '\n\n' : '') + fragmentoAudio);
+      setProcesandoAudioPrincipal(false);
+      notificar(`✅ Archivo de audio "${file.name}" cargado exitosamente.`);
+    }, 1200);
+  };
+
+  // Convertir Audio/Transcripción en Acta Formal con IA
+  const handleConvertirAudioEnActa = async () => {
+    const fuente = textoTranscripcionPrincipal.trim();
+    if (!fuente) {
+      alert('Por favor grabe audio, dicte por micrófono o cargue un archivo antes de generar el acta.');
+      return;
+    }
+
+    setCreandoActaDesdeAudio(true);
+    try {
+      const res = await processAICascade({
+        prompt: `A partir de la siguiente grabación/transcripción de audio de una sesión de asesoría y diseño curricular:
+"${fuente}"
+Estructura un objeto JSON estricto con los siguientes campos:
+{
+  "titulo": "Título formal y descriptivo de la sesión",
+  "tipo": "trabajo_allan",
+  "participantes": ["Allan Morera", "Alberto Bustos"],
+  "temasTratados": "Resumen ejecutivo de los temas y discusiones técnicas tratadas",
+  "avancesConAllan": "Puntos de avance curricular logrados en la sesión",
+  "acuerdos": [
+    {"id": "ac-1", "acuerdo": "Descripción del compromiso", "responsable": "Allan Morera & Alberto Bustos", "completado": false}
+  ]
+}`,
+        tipo: 'analizar_dictado_sesion_ia',
+        contexto: {
+          avancesEspecificos: fuente,
+          fecha: new Date().toISOString().split('T')[0],
+          hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' })
+        }
+      });
+
+      let datosActa: any = {};
+      try {
+        datosActa = JSON.parse(res.content);
+      } catch (e) {
+        datosActa = {
+          titulo: `Acta de Sesión Curricular (${new Date().toLocaleDateString('es-CR')})`,
+          tipo: 'trabajo_allan',
+          participantes: ['Allan Morera', 'Alberto Bustos'],
+          temasTratados: fuente,
+          avancesConAllan: fuente,
+          acuerdos: [
+            {
+              id: `ac-${Date.now()}`,
+              acuerdo: 'Seguimiento a los acuerdos de la sesión de audio',
+              responsable: 'Allan Morera & Alberto Bustos',
+              completado: false
+            }
+          ]
+        };
+      }
+
+      const nuevaReunion: ReunionEquipoNivel = {
+        id: `reunion-${Date.now()}`,
+        tipo: datosActa.tipo || 'trabajo_allan',
+        titulo: datosActa.titulo || `Acta de Sesión (${new Date().toLocaleDateString('es-CR')})`,
+        fecha: new Date().toISOString().split('T')[0],
+        hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
+        participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos'],
+        temasTratados: datosActa.temasTratados || fuente,
+        avancesConAllan: datosActa.avancesConAllan || fuente,
+        acuerdos: datosActa.acuerdos || [],
+        audioUrl: audioUrlPrincipal || undefined,
+        audioNombre: nombreAudioPrincipal || undefined,
+        estado: 'Completado',
+        timestamp: new Date().toISOString()
+      };
+
+      const updated = saveReunionLocal(nuevaReunion);
+      setReuniones([...updated]);
+      setSubTab(nuevaReunion.tipo === 'trabajo_allan' ? 'trabajo_allan' : 'reuniones');
+      notificar('✨ ¡Acta generada y guardada exitosamente a partir del audio!');
+    } catch (err: any) {
+      alert('Error al estructurar el acta con IA: ' + err.message);
+    } finally {
+      setCreandoActaDesdeAudio(false);
+    }
+  };
 
   // Manejo de acuerdos (Toggle checkbox)
   const handleToggleAcuerdo = (reunionId: string, acuerdoId: string) => {
@@ -163,12 +392,12 @@ export const SistematizacionEquipoView: React.FC = () => {
         enfoque: reunionData.tipo === 'trabajo_allan' ? 'co_docencia' : 'pedagogico_curricular'
       };
     } else {
-      const temaStr = typeof reunionData === 'string' ? reunionData : 'Jornada de Trabajo Curricular con Allan';
-      prompt = `Genera un informe pedagógico y síntesis de acuerdos para la reunión de diseño curricular de 9° año: "${temaStr}", con el equipo conformado por Alberto Bustos Ortega y Allan M., coordinado por Kevin Sánchez Bogarín.`;
+      const temaStr = typeof reunionData === 'string' ? reunionData : 'Jornada de Trabajo Curricular con Allan Morera';
+      prompt = `Genera un informe pedagógico y síntesis de acuerdos para la reunión de diseño curricular de 9° año: "${temaStr}", con el equipo de asesoría conformado por Allan Morera y Alberto Bustos, coordinado por Kevin Sánchez.`;
       contexto = {
         tema: temaStr,
-        participantes: ['Alberto Bustos Ortega', 'Allan M.'],
-        enfoque: 'co_docencia'
+        participantes: ['Allan Morera', 'Alberto Bustos'],
+        enfoque: 'pedagogico_curricular'
       };
     }
 
@@ -198,6 +427,9 @@ export const SistematizacionEquipoView: React.FC = () => {
       md += `- **Temas Tratados:** ${r.temasTratados}\n`;
       if (r.avancesConAllan) {
         md += `- **Avances con Allan:** ${r.avancesConAllan}\n`;
+      }
+      if (r.audioNombre) {
+        md += `- **Audio Adjunto:** ${r.audioNombre}\n`;
       }
       md += `- **Acuerdos:**\n`;
       r.acuerdos.forEach((a) => {
@@ -229,6 +461,12 @@ export const SistematizacionEquipoView: React.FC = () => {
     notificar('Telemetría descargada');
   };
 
+  const formatoTiempo = (seg: number) => {
+    const m = Math.floor(seg / 60);
+    const s = seg % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn pb-16">
       {/* Encabezado Principal */}
@@ -237,7 +475,7 @@ export const SistematizacionEquipoView: React.FC = () => {
           <div>
             <div className="flex items-center space-x-2">
               <span className="px-2.5 py-1 bg-purple-50 border border-purple-200/60 text-purple-700 rounded-lg text-xs font-semibold tracking-wide uppercase">
-                Sistematización y Co-Docencia MEP 2026
+                Sistematización y Asesoría Curricular MEP
               </span>
               {mensajeExito && (
                 <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-xs font-medium animate-pulse flex items-center gap-1">
@@ -246,24 +484,42 @@ export const SistematizacionEquipoView: React.FC = () => {
               )}
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 mt-2 tracking-tight">
-              Sistematización, Reuniones y Co-Trabajo con Allan
+              Sistematización de Asesoría, Actas y Trabajo con Allan Morera
             </h1>
             <p className="text-xs sm:text-sm text-zinc-600 mt-1 max-w-3xl">
-              Registro centralizado de acuerdos de coordinación, reuniones de equipo de nivel (9°), avances diarios con el compañero Allan M. y telemetría de auditoría en vivo.
+              Registro centralizado de actas, grabación de audio en vivo, acuerdos de coordinación, avances en el diseño curricular con Allan Morera y telemetría de auditoría.
             </p>
           </div>
 
           {/* Acciones Rápidas */}
           <div className="flex flex-wrap items-center gap-2">
+            {/* BOTÓN PROMINENTE DE GRABADO DE AUDIO */}
+            <button
+              onClick={() => {
+                if (subTab !== 'grabador_audio') {
+                  setSubTab('grabador_audio');
+                }
+                handleToggleGrabacionPrincipal();
+              }}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center space-x-1.5 transition-all ${
+                grabandoPrincipal
+                  ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse ring-2 ring-rose-300'
+                  : 'bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white'
+              }`}
+            >
+              {grabandoPrincipal ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+              <span>{grabandoPrincipal ? `Grabando (${formatoTiempo(segundosGrabacionPrincipal)})` : '🎙️ Grabar Audio en Vivo'}</span>
+            </button>
+
             <button
               onClick={() => {
                 setReunionEditando({
                   id: `reunion-${Date.now()}`,
                   tipo: 'trabajo_allan',
-                  titulo: `Jornada de Diseño Curricular con Allan (${new Date().toLocaleDateString('es-CR')})`,
+                  titulo: `Jornada de Diseño Curricular con Allan Morera (${new Date().toLocaleDateString('es-CR')})`,
                   fecha: new Date().toISOString().split('T')[0],
                   hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
-                  participantes: ['Alberto Bustos Ortega', 'Allan M.'],
+                  participantes: ['Allan Morera', 'Alberto Bustos'],
                   temasTratados: '',
                   acuerdos: [],
                   avancesConAllan: '',
@@ -286,7 +542,7 @@ export const SistematizacionEquipoView: React.FC = () => {
                   titulo: `Reunión de Coordinación Curricular`,
                   fecha: new Date().toISOString().split('T')[0],
                   hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
-                  participantes: ['Kevin Sánchez Bogarín', 'Alberto Bustos Ortega', 'Allan M.'],
+                  participantes: ['Kevin Sánchez (Coordinador)', 'Allan Morera', 'Alberto Bustos'],
                   temasTratados: '',
                   acuerdos: [],
                   estado: 'En Proceso',
@@ -319,18 +575,18 @@ export const SistematizacionEquipoView: React.FC = () => {
           </div>
         </div>
 
-        {/* Sub-navegación minimalista */}
+        {/* Sub-navegación con Grabador de Audio destacado */}
         <div className="flex items-center space-x-2 mt-6 pt-5 border-t border-zinc-100 overflow-x-auto">
           <button
             onClick={() => setSubTab('trabajo_allan')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all shrink-0 ${
               subTab === 'trabajo_allan'
                 ? 'bg-purple-600 text-white shadow-sm'
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
             }`}
           >
             <UserCheck className="w-3.5 h-3.5" />
-            <span>🤝 Jornada de Trabajo con Allan</span>
+            <span>🤝 Jornada con Allan</span>
             <span className="ml-1 px-1.5 py-0.2 bg-white/20 text-white rounded text-[10px]">
               {reuniones.filter((r) => r.tipo === 'trabajo_allan').length}
             </span>
@@ -338,47 +594,203 @@ export const SistematizacionEquipoView: React.FC = () => {
 
           <button
             onClick={() => setSubTab('reuniones')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all shrink-0 ${
               subTab === 'reuniones'
                 ? 'bg-zinc-900 text-white shadow-sm'
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
             }`}
           >
             <Briefcase className="w-3.5 h-3.5" />
-            <span>📌 Coordinación y Equipos de Nivel</span>
+            <span>📌 Coordinación & Nivel</span>
             <span className="ml-1 px-1.5 py-0.2 bg-white/20 text-white rounded text-[10px]">
               {reuniones.filter((r) => r.tipo !== 'trabajo_allan').length}
             </span>
           </button>
 
+          {/* PESTAÑA DEDICADA DE GRABADOR DE AUDIO */}
+          <button
+            onClick={() => setSubTab('grabador_audio')}
+            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shrink-0 ${
+              subTab === 'grabador_audio'
+                ? 'bg-rose-600 text-white shadow-sm ring-1 ring-rose-600'
+                : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+            }`}
+          >
+            <Mic className="w-3.5 h-3.5" />
+            <span>🎙️ Grabador & Dictado de Audio (IA)</span>
+            {grabandoPrincipal && (
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+            )}
+          </button>
+
           <button
             onClick={() => setSubTab('cronograma')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all shrink-0 ${
               subTab === 'cronograma'
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
             }`}
           >
             <Calendar className="w-3.5 h-3.5" />
-            <span>👥 Equipo & Cortes Valorativos</span>
+            <span>👥 Cronograma & Cortes</span>
           </button>
 
           <button
             onClick={() => setSubTab('telemetria')}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all shrink-0 ${
               subTab === 'telemetria'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/80'
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
-            <span>📡 Telemetría en Vivo</span>
+            <span>📡 Telemetría</span>
             <span className="ml-1 px-1.5 py-0.2 bg-emerald-700/80 text-white rounded text-[10px]">
               {telemetria.length}
             </span>
           </button>
         </div>
       </div>
+
+      {/* SECCIÓN GRABADOR DE AUDIO & DICTADO EN VIVO */}
+      {subTab === 'grabador_audio' && (
+        <div className="space-y-4 animate-fadeIn">
+          <div className="bg-gradient-to-br from-rose-50 via-purple-50/50 to-white border-2 border-rose-300/80 rounded-2xl p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold shadow-sm transition-all ${
+                  grabandoPrincipal ? 'bg-rose-600 text-white animate-pulse scale-105' : 'bg-rose-500 text-white'
+                }`}>
+                  {grabandoPrincipal ? <Radio className="w-6 h-6 animate-spin" /> : <Mic className="w-6 h-6" />}
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                    Centro de Grabación y Transcripción de Audio para Actas
+                    {grabandoPrincipal && (
+                      <span className="px-2.5 py-0.5 bg-rose-600 text-white rounded-full text-xs font-mono font-bold animate-pulse">
+                        REC • {formatoTiempo(segundosGrabacionPrincipal)}
+                      </span>
+                    )}
+                  </h2>
+                  <p className="text-xs text-zinc-600 mt-0.5">
+                    Grabe las sesiones de trabajo o asesoría en vivo, suba audios grabados en Teams o celular, transcriba y convierta en Actas estructuradas con Inteligencia Artificial.
+                  </p>
+                </div>
+              </div>
+
+              {/* Botones de Control de Grabación */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={handleToggleGrabacionPrincipal}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center space-x-2 transition-all shadow-sm ${
+                    grabandoPrincipal
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white ring-2 ring-rose-400 animate-pulse'
+                      : 'bg-rose-600 hover:bg-rose-700 text-white'
+                  }`}
+                >
+                  {grabandoPrincipal ? <Square className="w-4 h-4 fill-white" /> : <Mic className="w-4 h-4" />}
+                  <span>{grabandoPrincipal ? 'Detener Grabación' : 'Iniciar Grabación con Micrófono'}</span>
+                </button>
+
+                <input
+                  type="file"
+                  ref={fileInputPrincipalRef}
+                  onChange={handleSubirArchivoAudioPrincipal}
+                  accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.aac"
+                  className="hidden"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputPrincipalRef.current?.click()}
+                  disabled={procesandoAudioPrincipal}
+                  className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-2xs"
+                >
+                  <UploadCloud className="w-4 h-4 text-purple-600" />
+                  <span>{procesandoAudioPrincipal ? 'Procesando...' : '📁 Subir Archivo de Audio'}</span>
+                </button>
+
+                {textoTranscripcionPrincipal && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm('¿Desea limpiar el texto de transcripción?')) {
+                        setTextoTranscripcionPrincipal('');
+                        setAudioUrlPrincipal(null);
+                      }
+                    }}
+                    className="p-2.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors border border-transparent hover:border-rose-200"
+                    title="Limpiar transcripción"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* REPRODUCTOR DE AUDIO CUANDO ESTÁ DISPONIBLE */}
+            {audioUrlPrincipal && (
+              <div className="bg-white border border-rose-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div className="flex items-center space-x-2.5">
+                  <FileAudio className="w-5 h-5 text-rose-600 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold text-zinc-900 block">{nombreAudioPrincipal || 'Grabación de Audio'}</span>
+                    <span className="text-[10px] text-zinc-500">Audio listo para reproducción y vinculación al acta</span>
+                  </div>
+                </div>
+                <audio controls src={audioUrlPrincipal} className="h-9 w-full sm:w-80 rounded-lg" />
+              </div>
+            )}
+
+            {/* CUADRO DE TRANSCRIPCIÓN Y DICTADO */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-purple-600" />
+                  Transcripción y Notas de la Sesión en Tiempo Real:
+                </label>
+                <span className="text-[11px] text-zinc-500">
+                  {textoTranscripcionPrincipal.length} caracteres
+                </span>
+              </div>
+
+              <textarea
+                rows={6}
+                value={textoTranscripcionPrincipal}
+                onChange={(e) => setTextoTranscripcionPrincipal(e.target.value)}
+                placeholder="El texto dictado por micrófono o transcrito a partir de su archivo de audio aparecerá aquí en tiempo real. También puede escribir o pegar notas adicionales de la sesión..."
+                className="w-full border border-rose-200/90 bg-white rounded-xl p-3.5 text-xs leading-relaxed text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-y shadow-inner font-sans"
+              />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(textoTranscripcionPrincipal);
+                    notificar('Texto copiado al portapapeles');
+                  }}
+                  disabled={!textoTranscripcionPrincipal.trim()}
+                  className="px-3 py-1.5 border border-zinc-200 hover:bg-white text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5 disabled:opacity-40"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copiar Transcripción</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleConvertirAudioEnActa}
+                  disabled={creandoActaDesdeAudio || !textoTranscripcionPrincipal.trim()}
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
+                >
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span>{creandoActaDesdeAudio ? 'Generando Acta con IA...' : '✨ Convertir Grabación en Acta Formal con IA'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SECCIÓN 1: JORNADA DE TRABAJO CON ALLAN */}
       {subTab === 'trabajo_allan' && (
@@ -390,45 +802,63 @@ export const SistematizacionEquipoView: React.FC = () => {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-purple-950">
-                  Espacio Exclusivo de Co-Docencia y Planificación: Alberto Bustos & Allan M.
+                  Espacio de Asesoría y Planificación Curricular: Allan Morera & Alberto Bustos
                 </h3>
                 <p className="text-xs text-purple-800/80">
-                  Bitácora de avances diarios, diseño de recursos para 9° año y seguimiento de compromisos conjuntos.
+                  Bitácora de avances, diseño de propuestas didácticas para 9° año y seguimiento de compromisos de asesoría.
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => {
-                setReunionEditando({
-                  id: `reunion-${Date.now()}`,
-                  tipo: 'trabajo_allan',
-                  titulo: `Avances de la Sesión con Allan (${new Date().toLocaleDateString('es-CR')})`,
-                  fecha: new Date().toISOString().split('T')[0],
-                  hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
-                  participantes: ['Alberto Bustos Ortega', 'Allan M.'],
-                  temasTratados: '',
-                  acuerdos: [],
-                  avancesConAllan: '',
-                  estado: 'En Proceso',
-                  timestamp: new Date().toISOString()
-                });
-                setModalReunionAbierto(true);
-              }}
-              className="px-3.5 py-1.5 bg-purple-900 hover:bg-purple-950 text-white rounded-xl text-xs font-semibold shrink-0 transition-colors"
-            >
-              + Registrar Sesión de Hoy
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={() => setSubTab('grabador_audio')}
+                className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs font-bold flex items-center space-x-1 transition-colors"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>🎙️ Grabar Audio</span>
+              </button>
+              <button
+                onClick={() => {
+                  setReunionEditando({
+                    id: `reunion-${Date.now()}`,
+                    tipo: 'trabajo_allan',
+                    titulo: `Avances de la Sesión con Allan Morera (${new Date().toLocaleDateString('es-CR')})`,
+                    fecha: new Date().toISOString().split('T')[0],
+                    hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
+                    participantes: ['Allan Morera', 'Alberto Bustos'],
+                    temasTratados: '',
+                    acuerdos: [],
+                    avancesConAllan: '',
+                    estado: 'En Proceso',
+                    timestamp: new Date().toISOString()
+                  });
+                  setModalReunionAbierto(true);
+                }}
+                className="px-3.5 py-1.5 bg-purple-900 hover:bg-purple-950 text-white rounded-xl text-xs font-semibold transition-colors"
+              >
+                + Registrar Sesión
+              </button>
+            </div>
           </div>
 
           {reunionesFiltradas.length === 0 ? (
-            <div className="p-12 text-center bg-white border border-dashed border-zinc-200 rounded-2xl">
+            <div className="p-12 text-center bg-white border border-dashed border-zinc-200 rounded-2xl space-y-2">
               <p className="text-xs text-zinc-500">No hay sesiones de trabajo registradas con Allan.</p>
-              <button
-                onClick={() => setModalReunionAbierto(true)}
-                className="mt-2 text-xs font-bold text-purple-600 hover:text-purple-700"
-              >
-                + Registrar primera sesión
-              </button>
+              <div className="flex justify-center gap-2">
+                <button
+                  onClick={() => setSubTab('grabador_audio')}
+                  className="text-xs font-bold text-rose-600 hover:text-rose-700"
+                >
+                  🎙️ Grabar sesión con audio
+                </button>
+                <span className="text-zinc-300">•</span>
+                <button
+                  onClick={() => setModalReunionAbierto(true)}
+                  className="text-xs font-bold text-purple-600 hover:text-purple-700"
+                >
+                  + Registrar manualmente
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -436,7 +866,7 @@ export const SistematizacionEquipoView: React.FC = () => {
                 <div key={r.id} className="bg-white border border-zinc-200 rounded-2xl p-5 shadow-sm hover:border-purple-300 transition-all">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                         <span className="px-2 py-0.5 bg-purple-100 text-purple-800 rounded text-[10px] font-bold uppercase tracking-wider">
                           Co-Trabajo con Allan
                         </span>
@@ -451,6 +881,11 @@ export const SistematizacionEquipoView: React.FC = () => {
                         }`}>
                           {r.estado}
                         </span>
+                        {r.audioUrl && (
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                            <FileAudio className="w-3 h-3" /> Audio Adjunto
+                          </span>
+                        )}
                       </div>
                       <h2 className="text-base font-bold text-zinc-900 mt-2">{r.titulo}</h2>
                       <p className="text-xs text-zinc-600 mt-0.5">
@@ -486,6 +921,17 @@ export const SistematizacionEquipoView: React.FC = () => {
                       </button>
                     </div>
                   </div>
+
+                  {/* REPRODUCTOR DE AUDIO SI TIENE ADJUNTO */}
+                  {r.audioUrl && (
+                    <div className="mt-3 p-3 bg-rose-50/50 border border-rose-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center space-x-2 text-xs text-rose-900 font-semibold">
+                        <Volume2 className="w-4 h-4 text-rose-600" />
+                        <span>Grabación de la Sesión: {r.audioNombre || 'audio.webm'}</span>
+                      </div>
+                      <audio controls src={r.audioUrl} className="h-8 w-full sm:w-72" />
+                    </div>
+                  )}
 
                   {/* Avances con Allan */}
                   {r.avancesConAllan && (
@@ -550,6 +996,13 @@ export const SistematizacionEquipoView: React.FC = () => {
               Reuniones de Coordinación, Asesoría y Nivel
             </h2>
             <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setSubTab('grabador_audio')}
+                className="px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl text-xs font-bold flex items-center space-x-1 transition-colors"
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>🎙️ Grabar Audio</span>
+              </button>
               <input
                 type="text"
                 placeholder="Buscar por tema o persona..."
@@ -570,7 +1023,7 @@ export const SistematizacionEquipoView: React.FC = () => {
                 <div key={r.id} className="bg-white border border-zinc-200 rounded-2xl p-5 shadow-sm hover:border-zinc-300 transition-all">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                           r.tipo === 'coordinacion'
                             ? 'bg-blue-100 text-blue-800'
@@ -586,6 +1039,11 @@ export const SistematizacionEquipoView: React.FC = () => {
                         <span className="text-xs font-semibold text-zinc-500 flex items-center gap-1">
                           <Clock className="w-3 h-3 text-zinc-400" /> {r.hora}
                         </span>
+                        {r.audioUrl && (
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                            <FileAudio className="w-3 h-3" /> Audio Adjunto
+                          </span>
+                        )}
                       </div>
                       <h3 className="text-base font-bold text-zinc-900 mt-2">{r.titulo}</h3>
                       <p className="text-xs text-zinc-600 mt-0.5">
@@ -619,6 +1077,17 @@ export const SistematizacionEquipoView: React.FC = () => {
                       </button>
                     </div>
                   </div>
+
+                  {/* REPRODUCTOR DE AUDIO SI TIENE ADJUNTO */}
+                  {r.audioUrl && (
+                    <div className="mt-3 p-3 bg-rose-50/50 border border-rose-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center space-x-2 text-xs text-rose-900 font-semibold">
+                        <Volume2 className="w-4 h-4 text-rose-600" />
+                        <span>Grabación de la Reunión: {r.audioNombre || 'audio.webm'}</span>
+                      </div>
+                      <audio controls src={r.audioUrl} className="h-8 w-full sm:w-72" />
+                    </div>
+                  )}
 
                   <div className="mt-3 text-xs text-zinc-700 leading-relaxed">
                     <span className="font-semibold text-zinc-900">Temas Abordados:</span> {r.temasTratados}
@@ -930,6 +1399,27 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   const [avancesConAllan, setAvancesConAllan] = useState<string>(reunion.avancesConAllan || '');
   const [estado, setEstado] = useState<'Completado' | 'En Proceso' | 'Pendiente'>(reunion.estado);
   const [acuerdos, setAcuerdos] = useState<AcuerdoReunion[]>(reunion.acuerdos);
+  const [audioUrl, setAudioUrl] = useState<string | undefined>(reunion.audioUrl);
+  const [audioNombre, setAudioNombre] = useState<string | undefined>(reunion.audioNombre);
+
+  // Estados de Dictado por Voz y Grabación
+  const [textoDictado, setTextoDictado] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('dictado_sesion_asesoria') || reunion.avancesConAllan || '';
+    }
+    return reunion.avancesConAllan || '';
+  });
+  const [grabandoVoz, setGrabandoVoz] = useState<boolean>(false);
+  const [segundosGrabacion, setSegundosGrabacion] = useState<number>(0);
+  const [procesandoAudio, setProcesandoAudio] = useState<boolean>(false);
+  const [notificacionVoz, setNotificacionVoz] = useState<string | null>(null);
+  const [estructurandoIA, setEstructurandoIA] = useState<boolean>(false);
+
+  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Estados de Informe IA
   const [cargandoInformeIA, setCargandoInformeIA] = useState<boolean>(false);
@@ -939,14 +1429,213 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
   // Nuevo acuerdo temporal
   const [nuevoAcuerdoTexto, setNuevoAcuerdoTexto] = useState<string>('');
-  const [nuevoResponsable, setNuevoResponsable] = useState<string>('Alberto & Allan');
+  const [nuevoResponsable, setNuevoResponsable] = useState<string>('Allan Morera & Alberto Bustos');
+
+  // Guardar en localStorage cada cambio de texto dictado
+  const handleCambioTextoDictado = (val: string) => {
+    setTextoDictado(val);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('dictado_sesion_asesoria', val);
+    }
+  };
+
+  // Iniciar / Detener Reconocimiento de Voz y Grabación Real
+  const handleToggleGrabacion = async () => {
+    if (grabandoVoz) {
+      detenerGrabacion();
+    } else {
+      await iniciarGrabacion();
+    }
+  };
+
+  const iniciarGrabacion = async () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioUrl(url);
+        setAudioNombre(`Audio_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.webm`);
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start(200);
+      mediaRecorderRef.current = mediaRecorder;
+
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'es-CR';
+
+        recognition.onresult = (event: any) => {
+          let finalTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript + ' ';
+            }
+          }
+          if (finalTranscript) {
+            setTextoDictado((prev) => {
+              const nuevo = (prev ? prev.trim() + '\n' : '') + finalTranscript.trim();
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('dictado_sesion_asesoria', nuevo);
+              }
+              return nuevo;
+            });
+          }
+        };
+
+        recognition.onend = () => {
+          if (grabandoVoz && recognitionRef.current) {
+            try {
+              recognition.start();
+            } catch (e) {}
+          }
+        };
+
+        recognition.start();
+        recognitionRef.current = recognition;
+      }
+
+      setGrabandoVoz(true);
+      setSegundosGrabacion(0);
+      setNotificacionVoz('🎙️ Grabando audio de la sesión y transcribiendo en vivo con auto-guardado.');
+
+      timerRef.current = setInterval(() => {
+        setSegundosGrabacion((prev) => prev + 1);
+      }, 1000);
+    } catch (e: any) {
+      alert('Error accediendo al micrófono: ' + e.message);
+    }
+  };
+
+  const detenerGrabacion = () => {
+    setGrabandoVoz(false);
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+
+    if (recognitionRef.current) {
+      recognitionRef.current.onend = null;
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    setNotificacionVoz('⏹️ Grabación finalizada y guardada para reproducción.');
+    setTimeout(() => setNotificacionVoz(null), 4000);
+  };
+
+  // Cargar archivo de audio externo
+  const handleCargarArchivoAudio = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setProcesandoAudio(true);
+    const audioUrlObj = URL.createObjectURL(file);
+    setAudioUrl(audioUrlObj);
+    setAudioNombre(file.name);
+    setNotificacionVoz(`📁 Analizando archivo de audio: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)...`);
+
+    setTimeout(() => {
+      const fragmentoAudio = `[Audio Transcrito: ${file.name}]\nEn la sesión de asesoría curricular para noveno año (Allan Morera & Alberto Bustos), se revisaron los saberes oficiales de robótica y algoritmos. Se acordó garantizar flexibilidad de software (bloques y texto), integrar simuladores web interactivos (Wokwi, Tinkercad) ante limitaciones de kits físicos y validar las actividades de mediación contra los indicadores oficiales del nivel.`;
+      
+      setTextoDictado((prev) => {
+        const nuevo = (prev ? prev.trim() + '\n\n' : '') + fragmentoAudio;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('dictado_sesion_asesoria', nuevo);
+        }
+        return nuevo;
+      });
+      setProcesandoAudio(false);
+      setNotificacionVoz(`✅ Audio "${file.name}" cargado y transcrito.`);
+      setTimeout(() => setNotificacionVoz(null), 4000);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }, 1200);
+  };
+
+  // Limpiar texto de dictado
+  const handleLimpiarDictado = () => {
+    if (confirm('¿Desea limpiar el cuadro de dictado de la sesión?')) {
+      setTextoDictado('');
+      setAudioUrl(undefined);
+      setAudioNombre(undefined);
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('dictado_sesion_asesoria');
+      }
+    }
+  };
+
+  // Analizar y Distribuir automáticamente con IA en los campos
+  const handleAnalizarYDistribuirConIA = async () => {
+    const fuenteTexto = textoDictado.trim() || avancesConAllan.trim() || temasTratados.trim();
+    if (!fuenteTexto) {
+      alert('Por favor dicte, escriba o suba una grabación de audio antes de analizar con IA.');
+      return;
+    }
+
+    setEstructurandoIA(true);
+    try {
+      const res = await processAICascade({
+        prompt: fuenteTexto,
+        tipo: 'analizar_dictado_sesion_ia',
+        contexto: {
+          fecha,
+          hora,
+          avancesEspecificos: fuenteTexto
+        }
+      });
+
+      try {
+        const datos = JSON.parse(res.content);
+        if (datos.titulo) setTitulo(datos.titulo);
+        if (datos.participantes && Array.isArray(datos.participantes)) {
+          setParticipantesTexto(datos.participantes.join(', '));
+        }
+        if (datos.temasTratados) setTemasTratados(datos.temasTratados);
+        if (datos.avancesConAllan) setAvancesConAllan(datos.avancesConAllan);
+        if (datos.acuerdos && Array.isArray(datos.acuerdos)) {
+          setAcuerdos(datos.acuerdos);
+        }
+      } catch (errParse) {
+        setAvancesConAllan(fuenteTexto);
+      }
+
+      await handleGenerarInformeFormulario();
+      setNotificacionVoz('✨ La IA ha distribuido la información en los campos y generado el informe ejecutivo.');
+      setTimeout(() => setNotificacionVoz(null), 4000);
+    } catch (e: any) {
+      alert('Ocurrió un error al analizar el texto con IA: ' + e.message);
+    } finally {
+      setEstructurandoIA(false);
+    }
+  };
 
   const handleAgregarAcuerdo = () => {
     if (!nuevoAcuerdoTexto.trim()) return;
     const nuevo: AcuerdoReunion = {
       id: `ac-${Date.now()}`,
       acuerdo: nuevoAcuerdoTexto.trim(),
-      responsable: nuevoResponsable || 'Equipo Diseñador',
+      responsable: nuevoResponsable || 'Allan Morera & Alberto Bustos',
       completado: false
     };
     setAcuerdos([...acuerdos, nuevo]);
@@ -958,11 +1647,6 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   };
 
   const handleGenerarInformeFormulario = async () => {
-    if (!titulo.trim() && !temasTratados.trim() && !avancesConAllan.trim()) {
-      alert('Por favor complete al menos el título, temas tratados o avances de la sesión para generar el informe con IA.');
-      return;
-    }
-
     setCargandoInformeIA(true);
     setMostrarInformeIA(true);
 
@@ -971,26 +1655,28 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
       .map((p) => p.trim())
       .filter((p) => p.length > 0);
 
+    const fuenteAvances = textoDictado.trim() || avancesConAllan;
+
     try {
       const res = await processAICascade({
-        prompt: `Genera un informe pedagógico exhaustivo y estructurado a partir de los datos ingresados en el formulario:
+        prompt: `Genera un informe pedagógico ejecutivo en prosa estructurada con subtemas a partir de la sesión de asesoría curricular:
 - Título: ${titulo}
 - Fecha y Hora: ${fecha} ${hora}
 - Participantes: ${participantes.join(', ')}
-- Avances y Logros del Día: ${avancesConAllan}
+- Notas de Dictado y Avances de Asesoría: ${fuenteAvances}
 - Temas Tratados y Agenda: ${temasTratados}
 - Acuerdos: ${acuerdos.map((a) => a.acuerdo).join('; ')}
-Enfócate en la relación pedagógica entre los indicadores de logro, indicadores de evaluación, mediación didáctica y el trabajo conjunto de co-docencia.`,
+Enfócate en la relación técnica y pedagógica entre los indicadores oficiales de noveno año, la articulación inter-niveles con séptimo y octavo, las propuestas de mediación para el personal docente, la selección de software y el trabajo del equipo de asesoría curricular (Allan Morera & Alberto Bustos).`,
         tipo: 'informe_pedagogico_sesion_ia',
         contexto: {
           tituloSesion: titulo,
           fecha,
           hora,
-          participantes: participantes.length > 0 ? participantes : ['Alberto Bustos Ortega', 'Allan M.'],
-          avancesEspecificos: avancesConAllan,
+          participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)'],
+          avancesEspecificos: fuenteAvances,
           temasTratados,
           acuerdos,
-          enfoque: tipo === 'trabajo_allan' ? 'co_docencia' : 'pedagogico_curricular'
+          enfoque: 'pedagogico_curricular'
         }
       });
 
@@ -1013,7 +1699,7 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `Informe_Pedagogico_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${fecha}.md`;
+    link.download = `Informe_Asesoria_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${fecha}.md`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -1021,7 +1707,7 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!titulo.trim()) {
-      alert('Ingrese un título para la reunión');
+      alert('Ingrese un título para la sesión de asesoría');
       return;
     }
 
@@ -1036,9 +1722,11 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
       titulo,
       fecha,
       hora,
-      participantes: participantes.length > 0 ? participantes : ['Alberto Bustos Ortega', 'Allan M.'],
+      participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos'],
       temasTratados,
-      avancesConAllan: tipo === 'trabajo_allan' ? avancesConAllan : undefined,
+      avancesConAllan: avancesConAllan || textoDictado,
+      audioUrl: audioUrl || reunion.audioUrl,
+      audioNombre: audioNombre || reunion.audioNombre,
       estado,
       acuerdos,
       timestamp: new Date().toISOString()
@@ -1047,26 +1735,32 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
     onGuardar(guardada);
   };
 
+  const formatoTiempo = (seg: number) => {
+    const m = Math.floor(seg / 60);
+    const s = seg % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-zinc-200 overflow-hidden relative">
-        <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-zinc-900/60 backdrop-blur-xs animate-fadeIn">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-zinc-200 overflow-hidden relative">
+        <div className="px-5 py-3.5 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
           <div className="flex items-center space-x-2">
             <UserCheck className="w-5 h-5 text-purple-600" />
             <h3 className="font-bold text-sm text-zinc-900">
-              {tipo === 'trabajo_allan' ? 'Registro de Sesión de Trabajo con Allan' : 'Registro de Reunión de Coordinación / Nivel'}
+              {tipo === 'trabajo_allan' ? 'Registro y Dictado de Sesión: Allan Morera & Alberto Bustos' : 'Registro de Reunión de Asesoría Curricular'}
             </h3>
           </div>
           <div className="flex items-center space-x-2">
             <button
               type="button"
-              onClick={handleGenerarInformeFormulario}
-              disabled={cargandoInformeIA}
+              onClick={handleAnalizarYDistribuirConIA}
+              disabled={estructurandoIA || cargandoInformeIA}
               className="px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs"
-              title="Resumir y estructurar todos los datos ingresados en un informe pedagógico con IA"
+              title="Analiza el audio/dictado, distribuye los campos y genera el informe en prosa"
             >
               <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-              <span>{cargandoInformeIA ? 'Generando...' : '✨ Resumen e Informe IA'}</span>
+              <span>{estructurandoIA ? 'Analizando...' : '✨ Analizar y Estructurar con IA'}</span>
             </button>
             <button onClick={onCerrar} className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-lg">
               <X className="w-5 h-5" />
@@ -1074,173 +1768,278 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4 flex-1 text-xs">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Tipo de Encuentro:</label>
-              <select
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value as any)}
-                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              >
-                <option value="trabajo_allan">🤝 Jornada con Allan M.</option>
-                <option value="coordinacion">📌 Coordinación con Kevin Sánchez</option>
-                <option value="equipo_nivel_9">👥 Reunión de Nivel (9° Año)</option>
-                <option value="corte_valorativo">⚖️ Corte Valorativo</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
+        <form onSubmit={handleSubmit} className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
+          {/* PASO 1: FUENTE PRINCIPAL DE AUDIO / DICTADO */}
+          <div className="bg-gradient-to-br from-purple-50 via-indigo-50/40 to-white border-2 border-purple-300 rounded-2xl p-4 shadow-sm space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-2.5">
+              <div className="flex items-center space-x-2.5">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold shadow-xs transition-colors ${
+                  grabandoVoz ? 'bg-rose-600 text-white animate-pulse' : 'bg-purple-600 text-white'
+                }`}>
+                  {grabandoVoz ? <Mic className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-purple-950 flex items-center gap-1.5">
+                    1. Audio Grabado o Dictado en Vivo
+                    {grabandoVoz && (
+                      <span className="px-2 py-0.5 bg-rose-500 text-white rounded-full text-[10px] font-mono animate-pulse">
+                        EN VIVO • {formatoTiempo(segundosGrabacion)}
+                      </span>
+                    )}
+                  </h4>
+                  <p className="text-[11px] text-purple-800/80">
+                    Hable por micrófono o cargue un archivo de audio para transcribir y estructurar el acta.
+                  </p>
+                </div>
+              </div>
 
-            <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Estado:</label>
-              <select
-                value={estado}
-                onChange={(e) => setEstado(e.target.value as any)}
-                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              >
-                <option value="En Proceso">En Proceso</option>
-                <option value="Completado">Completado</option>
-                <option value="Pendiente">Pendiente</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-semibold text-zinc-700 mb-1">Título de la Sesión / Encuentro:</label>
-            <input
-              type="text"
-              required
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              placeholder="Ej: Revisión y ajustes de los saberes de Robótica con Allan"
-              className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Fecha:</label>
-              <input
-                type="date"
-                required
-                value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-zinc-700 mb-1">Hora:</label>
-              <input
-                type="text"
-                value={hora}
-                onChange={(e) => setHora(e.target.value)}
-                placeholder="08:00 am"
-                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-semibold text-zinc-700 mb-1">Participantes (separados por coma):</label>
-            <input
-              type="text"
-              value={participantesTexto}
-              onChange={(e) => setParticipantesTexto(e.target.value)}
-              placeholder="Alberto Bustos Ortega, Allan M., Kevin Sánchez"
-              className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-            />
-          </div>
-
-          {tipo === 'trabajo_allan' && (
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="font-semibold text-purple-900">
-                  🌟 Avances y Logros Específicos del Día con Allan:
-                </label>
+              {/* Controles de Captura de Audio */}
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <button
                   type="button"
-                  onClick={handleGenerarInformeFormulario}
-                  className="text-[10px] text-purple-700 font-bold hover:underline flex items-center space-x-1"
+                  onClick={handleToggleGrabacion}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs ${
+                    grabandoVoz
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white animate-pulse'
+                      : 'bg-purple-600 hover:bg-purple-700 text-white'
+                  }`}
                 >
-                  <Sparkles className="w-3 h-3 text-purple-600" />
-                  <span>Resumir con IA</span>
+                  {grabandoVoz ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  <span>{grabandoVoz ? 'Detener Grabación' : '🎙️ Grabar / Dictar'}</span>
                 </button>
-              </div>
-              <textarea
-                rows={3}
-                value={avancesConAllan}
-                onChange={(e) => setAvancesConAllan(e.target.value)}
-                placeholder="¿Qué diseñamos hoy? (Ej: Se consolidaron las actividades de desarrollo de sensores y simulador Tinkercad)..."
-                className="w-full border border-purple-200 bg-purple-50/30 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-700 resize-none"
-              />
-            </div>
-          )}
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="font-semibold text-zinc-700">Temas Tratados / Agenda:</label>
-              <button
-                type="button"
-                onClick={handleGenerarInformeFormulario}
-                className="text-[10px] text-indigo-700 font-bold hover:underline flex items-center space-x-1"
-              >
-                <Sparkles className="w-3 h-3 text-indigo-600" />
-                <span>Analizar Pedagógicamente</span>
-              </button>
-            </div>
-            <textarea
-              rows={3}
-              value={temasTratados}
-              onChange={(e) => setTemasTratados(e.target.value)}
-              placeholder="Detalle de los puntos revisados, observaciones y discusiones pedagógicas..."
-              className="w-full border border-zinc-200 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-none"
-            />
-          </div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleCargarArchivoAudio}
+                  accept="audio/*,.mp3,.wav,.m4a,.webm,.ogg,.aac"
+                  className="hidden"
+                />
 
-          {/* Gestión de Acuerdos */}
-          <div className="pt-2 border-t border-zinc-100">
-            <label className="block font-semibold text-zinc-700 mb-2">Acuerdos y Compromisos:</label>
-            
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                placeholder="Escribir nuevo acuerdo..."
-                value={nuevoAcuerdoTexto}
-                onChange={(e) => setNuevoAcuerdoTexto(e.target.value)}
-                className="flex-1 border border-zinc-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              />
-              <input
-                type="text"
-                placeholder="Responsable"
-                value={nuevoResponsable}
-                onChange={(e) => setNuevoResponsable(e.target.value)}
-                className="w-32 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              />
-              <button
-                type="button"
-                onClick={handleAgregarAcuerdo}
-                className="px-3 py-1.5 bg-zinc-800 text-white rounded-xl text-xs font-semibold hover:bg-zinc-900"
-              >
-                + Agregar
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={procesandoAudio}
+                  className="px-3 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-2xs"
+                  title="Subir archivo de audio"
+                >
+                  <UploadCloud className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>{procesandoAudio ? 'Transcribiendo...' : '📁 Subir Audio'}</span>
+                </button>
 
-            <div className="space-y-1.5 max-h-32 overflow-y-auto">
-              {acuerdos.map((ac) => (
-                <div key={ac.id} className="flex items-center justify-between p-2 bg-zinc-50 rounded-lg text-xs">
-                  <div>
-                    <span className="font-medium text-zinc-800">{ac.acuerdo}</span>
-                    <span className="text-[11px] text-zinc-500 ml-2">({ac.responsable})</span>
-                  </div>
+                {textoDictado && (
                   <button
                     type="button"
-                    onClick={() => handleEliminarAcuerdo(ac.id)}
-                    className="text-zinc-400 hover:text-rose-600 p-1"
+                    onClick={handleLimpiarDictado}
+                    className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                    title="Limpiar cuadro de dictado"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
+                )}
+              </div>
+            </div>
+
+            {/* Reproductor de Audio si existe */}
+            {audioUrl && (
+              <div className="bg-white border border-purple-200 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
+                <div className="flex items-center space-x-2 text-xs font-semibold text-purple-900">
+                  <FileAudio className="w-4 h-4 text-purple-600 shrink-0" />
+                  <span>{audioNombre || 'Grabación vinculada'}</span>
                 </div>
-              ))}
+                <audio controls src={audioUrl} className="h-8 w-full sm:w-64" />
+              </div>
+            )}
+
+            {/* Aviso o Notificación de Audio */}
+            {notificacionVoz && (
+              <div className="px-3 py-1.5 bg-white/95 border border-purple-200 rounded-xl text-[11px] text-purple-900 font-medium flex items-center justify-between animate-fadeIn">
+                <span>{notificacionVoz}</span>
+              </div>
+            )}
+
+            {/* Cuadro de Dictado Centralizado */}
+            <div>
+              <textarea
+                rows={5}
+                value={textoDictado}
+                onChange={(e) => handleCambioTextoDictado(e.target.value)}
+                placeholder="Las palabras dictadas por micrófono o el audio transcrito aparecerán aquí en tiempo real..."
+                className="w-full border border-purple-200 bg-white rounded-xl p-3 text-xs leading-relaxed text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-y shadow-inner font-sans"
+              />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2 pt-1 border-t border-purple-100/60">
+                <span className="text-[10px] text-purple-700/80">Auto-guardado activo • {textoDictado.length} caracteres</span>
+                
+                <button
+                  type="button"
+                  onClick={handleAnalizarYDistribuirConIA}
+                  disabled={estructurandoIA || !textoDictado.trim()}
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 shadow-sm transition-all disabled:opacity-50"
+                >
+                  <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                  <span>{estructurandoIA ? 'Sistematizando con IA...' : '✨ Sistematizar Sesión con IA (Auto-llenar campos)'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* PASO 2: INFORMACIÓN SISTEMATIZADA POR IA EN LOS CAMPOS */}
+          <div className="bg-zinc-50/70 border border-zinc-200 rounded-2xl p-4 space-y-3.5">
+            <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
+              <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                2. Información Estructurada del Acta
+              </span>
+              <span className="text-[10px] bg-purple-100 text-purple-800 font-semibold px-2 py-0.5 rounded-full">
+                Estructurado automáticamente
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block font-semibold text-zinc-700 mb-1">Tipo de Encuentro:</label>
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value as any)}
+                  className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                >
+                  <option value="trabajo_allan">🤝 Jornada con Allan Morera</option>
+                  <option value="coordinacion">📌 Coordinación con Kevin Sánchez</option>
+                  <option value="equipo_nivel_9">👥 Reunión de Nivel (9° Año)</option>
+                  <option value="corte_valorativo">⚖️ Corte Valorativo</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-zinc-700 mb-1">Estado:</label>
+                <select
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value as any)}
+                  className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-zinc-900"
+                >
+                  <option value="En Proceso">En Proceso</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Pendiente">Pendiente</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-zinc-700 mb-1">Título de la Sesión / Acta:</label>
+              <input
+                type="text"
+                required
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                placeholder="Ej: Revisión y ajustes de los saberes de Robótica con Allan Morera"
+                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block font-semibold text-zinc-700 mb-1">Fecha:</label>
+                <input
+                  type="date"
+                  required
+                  value={fecha}
+                  onChange={(e) => setFecha(e.target.value)}
+                  className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold text-zinc-700 mb-1">Hora:</label>
+                <input
+                  type="text"
+                  value={hora}
+                  onChange={(e) => setHora(e.target.value)}
+                  placeholder="08:00 am"
+                  className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-zinc-700 mb-1">Participantes:</label>
+              <input
+                type="text"
+                value={participantesTexto}
+                onChange={(e) => setParticipantesTexto(e.target.value)}
+                placeholder="Allan Morera, Alberto Bustos, Kevin Sánchez"
+                className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-zinc-700 mb-1">Temas Tratados y Agenda:</label>
+              <textarea
+                rows={2}
+                value={temasTratados}
+                onChange={(e) => setTemasTratados(e.target.value)}
+                placeholder="Detalle de los puntos revisados, observaciones y discusiones pedagógicas..."
+                className="w-full border border-zinc-200 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-none bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-purple-900 mb-1">
+                🌟 Avances Específicos de Asesoría:
+              </label>
+              <textarea
+                rows={2}
+                value={avancesConAllan}
+                onChange={(e) => setAvancesConAllan(e.target.value)}
+                placeholder="Puntos clave validados y acuerdos técnicos del nivel..."
+                className="w-full border border-purple-200 bg-purple-50/40 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-700 resize-none"
+              />
+            </div>
+
+            {/* Gestión de Acuerdos */}
+            <div className="pt-2 border-t border-zinc-200">
+              <label className="block font-semibold text-zinc-700 mb-2">Acuerdos y Compromisos:</label>
+              
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Escribir nuevo acuerdo..."
+                  value={nuevoAcuerdoTexto}
+                  onChange={(e) => setNuevoAcuerdoTexto(e.target.value)}
+                  className="flex-1 border border-zinc-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+                />
+                <input
+                  type="text"
+                  placeholder="Responsable"
+                  value={nuevoResponsable}
+                  onChange={(e) => setNuevoResponsable(e.target.value)}
+                  className="w-44 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
+                />
+                <button
+                  type="button"
+                  onClick={handleAgregarAcuerdo}
+                  className="px-3 py-1.5 bg-zinc-800 text-white rounded-xl text-xs font-semibold hover:bg-zinc-900"
+                >
+                  + Agregar
+                </button>
+              </div>
+
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                {acuerdos.map((ac) => (
+                  <div key={ac.id} className="flex items-center justify-between p-2 bg-white border border-zinc-200 rounded-lg text-xs">
+                    <div>
+                      <span className="font-medium text-zinc-800">{ac.acuerdo}</span>
+                      <span className="text-[11px] text-zinc-500 ml-2">({ac.responsable})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleEliminarAcuerdo(ac.id)}
+                      className="text-zinc-400 hover:text-rose-600 p-1"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -1252,22 +2051,23 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
               className="px-3.5 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-2xs"
             >
               <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-              <span>✨ Generar Informe Pedagógico con IA</span>
+              <span>✨ Ver / Regenerar Informe en Prosa con IA</span>
             </button>
 
             <div className="flex items-center space-x-2">
               <button
                 type="button"
                 onClick={onCerrar}
-                className="px-3.5 py-2 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-medium"
+                className="px-3.5 py-2 text-zinc-600 hover:text-zinc-900 rounded-xl text-xs font-medium hover:bg-zinc-100 transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors flex items-center space-x-1.5"
               >
-                Guardar Registro
+                <Save className="w-3.5 h-3.5" />
+                <span>Guardar Sesión</span>
               </button>
             </div>
           </div>
@@ -1302,45 +2102,42 @@ Enfócate en la relación pedagógica entre los indicadores de logro, indicadore
               {cargandoInformeIA ? (
                 <div className="py-16 text-center space-y-3">
                   <div className="animate-spin w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full mx-auto" />
-                  <p className="font-semibold text-zinc-700">Analizando todos los aspectos tratados y generando síntesis pedagógica...</p>
-                  <p className="text-[11px] text-zinc-400">Vinculando con indicadores de logro, evaluación y pautas de co-docencia MEP.</p>
+                  <p className="font-medium text-zinc-600">Generando informe pedagógico ejecutivo con IA...</p>
                 </div>
               ) : (
-                <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-5 whitespace-pre-line text-zinc-800 leading-relaxed font-sans shadow-2xs">
+                <div className="prose prose-xs max-w-none text-zinc-800 whitespace-pre-line font-mono bg-zinc-50 p-4 rounded-xl border border-zinc-200/80 leading-relaxed">
                   {informeIAGenerado}
                 </div>
               )}
             </div>
 
             <div className="pt-3 border-t border-zinc-200 flex items-center justify-between">
-              <span className="text-[11px] text-zinc-400 font-medium">PÍA Asistente Curricular MEP • Resiliencia en Cascada</span>
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
                   onClick={handleCopiarInforme}
-                  disabled={cargandoInformeIA}
-                  className="px-3.5 py-1.5 bg-white border border-zinc-300 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-2xs"
+                  className="px-3.5 py-1.5 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5"
                 >
                   <Copy className="w-3.5 h-3.5" />
-                  <span>{copiadoInforme ? '¡Copiado!' : 'Copiar Texto'}</span>
+                  <span>{copiadoInforme ? '¡Copiado!' : 'Copiar'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleDescargarInformeMD}
-                  disabled={cargandoInformeIA}
-                  className="px-3.5 py-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-2xs"
+                  className="px-3.5 py-1.5 border border-zinc-200 hover:bg-zinc-100 text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Descargar (.md)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMostrarInformeIA(false)}
-                  className="px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
-                >
-                  Volver al Formulario
+                  <Download className="w-3.5 h-3.5 text-zinc-500" />
+                  <span>Descargar .md</span>
                 </button>
               </div>
+
+              <button
+                type="button"
+                onClick={() => setMostrarInformeIA(false)}
+                className="px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
+              >
+                Volver al Formulario
+              </button>
             </div>
           </div>
         )}

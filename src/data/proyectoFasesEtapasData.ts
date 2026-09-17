@@ -1,51 +1,53 @@
-// Catálogo del Proyecto Curricular por Fases y Etapas (Design Thinking / DT - Noveno Año)
+// Catálogo del Proyecto Curricular por Fases y Etapas (Design Thinking / DT - Noveno Año MEP)
+// Fuente Oficial: Documento "Formación Tecnológica - Conceptualización componente proyecto - III ciclo, ciclo Diversificado y EPJA - 2026 - PNFT - DRTE"
 import { ProyectoSemestral } from '../types';
 
 export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
   {
     "moduloId": 1,
-    "tituloProyecto": "Marco Metodológico de Proyecto por Design Thinking (DT) — Robótica & Computación Física",
-    "problemaContextual": "Espacio de ideación y diagnóstico contextual abierto: la problemática comunitaria y el reto de automatización específico serán tipificados y validados por el equipo docente según los saberes e indicadores que se vinculen a las 5 etapas de DT.",
+    "tituloProyecto": "Componente Proyecto • Metodología Design Thinking (DT) — Robótica & Computación Física",
+    "problemaContextual": "El componente de evaluación denominado proyecto responde al currículo por competencias del PNFT. Se desarrolla mediante 3 etapas (Inicial, Desarrollo y Final) integrando las 5 fases de Design Thinking en torno a una situación problema real definida con el estudiantado.",
     "fases": [
       {
         "id": "fase1_investigacion",
         "numero": 1,
-        "nombre": "Fase I: Comprensión y Diagnóstico del Contexto",
-        "descripcion": "Observación directa de necesidades del entorno, escucha activa de los usuarios y delimitación clara del reto tecnológico.",
+        "nombre": "A. Etapa Inicial: Empatizar, Definir e Idear",
+        "descripcion": "Comprensión profunda de las necesidades de los usuarios, delimitación clara del problema y selección de la solución más eficiente.",
         "etapas": [
           "etapa1_empatizar",
-          "etapa2_definir"
+          "etapa2_definir",
+          "etapa3_idear"
         ],
         "evidenciasEsperadas": [
-          "Mapa de empatía y registro de necesidades del entorno",
-          "Ficha de requerimientos técnicos y declaración del reto de diseño"
+          "Registro de intereses y necesidades del usuario (entrevistas, encuestas, observaciones)",
+          "Producto comunicativo con síntesis del problema (resumen, infográfico, video, esquema)",
+          "Selección y justificación comparativa de la idea de solución más eficiente"
         ]
       },
       {
         "id": "fase2_desarrollo",
         "numero": 2,
-        "nombre": "Fase II: Ideación, Diseño y Construcción Técnica",
-        "descripcion": "Generación creativa de alternativas, formulación de algoritmos en pseudocódigo/flujogramas y ensamble del prototipo tecnológico.",
+        "nombre": "B. Etapa de Desarrollo: Prototipar",
+        "descripcion": "Creación de un prototipo tangible o representación visual simple y realista que resuelva el problema utilizando recursos tecnológicos disponibles.",
         "etapas": [
-          "etapa3_idear",
           "etapa4_prototipar"
         ],
         "evidenciasEsperadas": [
-          "Diagramas de flujo y esquemas de conexionado de pines",
-          "Prototipo tecnológico funcional operativo (físico o simulado)"
+          "Prototipo tangible o representación visual funcional (maqueta, guion gráfico, programa, simulación o combinación)",
+          "Esquemas de conexión, algoritmos y código modular de control"
         ]
       },
       {
         "id": "fase3_evaluacion",
         "numero": 3,
-        "nombre": "Fase III: Validación, Depuración y Socialización",
-        "descripcion": "Pruebas de funcionamiento, calibración de sensores, depuración sistemática de fallas y sustentación pública ante la comunidad escolar.",
+        "nombre": "C. Etapa Final: Probar / Evaluar",
+        "descripcion": "Evaluación del alcance del prototipo en situaciones cotidianas, recopilación de retroalimentación de usuarios, mejoras reiterativas y sustentación pública.",
         "etapas": [
           "etapa5_evaluar_testear"
         ],
         "evidenciasEsperadas": [
-          "Matriz de pruebas y bitácora de depuración de errores",
-          "Presentación demostrativa (Demostración de lo Aprendido)"
+          "Pruebas de funcionamiento y registro de retroalimentación con usuarios/clientes",
+          "Bitácora de mejoras aplicadas y presentación en la Demostración de lo Aprendido"
         ]
       }
     ],
@@ -53,186 +55,185 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
       {
         "id": "etapa1_empatizar",
         "numero": 1,
-        "nombre": "Etapa 1: Empatizar",
+        "nombre": "Etapa 1: Empatizar (Etapa Inicial)",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Comprensión y Diagnóstico",
-        "proposito": "Comprender las necesidades reales de las personas usuarias mediante observación directa y escucha activa en el entorno escolar o comunal.",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Partir del planteamiento de un problema o situación a resolver que surge de los intereses y necesidades de un usuario o cliente (estudiantes, docentes, administrativos, personas externas o encargados legales).",
         "accionesClave": [
-          "Observar y registrar de forma directa situaciones problemáticas o necesidades cotidianas en el colegio o comunidad.",
-          "Conversar y escuchar activamente a las personas involucradas para identificar puntos de mejora y oportunidades de automatización."
+          "Partir del planteamiento de un problema o situación a resolver que surge de los intereses y necesidades de un usuario o cliente.",
+          "Registrar los intereses y necesidades del usuario ante un problema o situación a resolver, por medio de entrevistas, observaciones, grabaciones, encuestas, entre otras.",
+          "Propiciar la reflexión individual o grupal de las personas estudiantes sobre el problema a resolver: ¿Cuál es la raíz del problema? ¿Cómo afecta a los usuarios? ¿Qué soluciones consideran viables?"
         ],
         "entregablesSugeridos": [
-          "Mapa de empatía de las personas usuarias",
-          "Bitácora de observación directa de necesidades"
+          "Instrumento de recolección aplicado (entrevistas, encuestas o guía de observación)",
+          "Registro sistematizado de intereses y necesidades del usuario/cliente"
         ],
         "semanaSugeridaModulo1": [3, 4],
         "semanaSugeridaModulo2": [3, 4],
-        "criteriosEvaluacionMEP": [
-          "Aplica técnicas de observación y escucha activa para identificar necesidades reales del contexto.",
-          "Sistematiza la información cualitativa recopilada en instrumentos visuales como mapas de empatía."
+        "indicadorLogro": "Describir las necesidades, deseos y motivaciones de usuarios o clientes que tienen un problema o situación por resolver. (Empatizar)",
+        "indicadoresEvaluacion": [
+          "Describe un problema o situación por resolver que es importante para un usuario o cliente.",
+          "Registra los intereses y necesidades del usuario ante un problema o situación a resolver, por medio de entrevistas, observaciones, grabaciones, encuestas, entre otras."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Diálogo guiado sobre situaciones cotidianas que requieren soluciones innovadoras o automatizadas.",
-          "desarrollo": "Recorrido de observación en equipos y construcción colaborativa del mapa de empatía.",
-          "cierre": "Plenaria: Puesta en común de los principales hallazgos y necesidades identificadas."
+          "inicio": "Focalización: Diálogo y preguntas reflexivas sobre necesidades no resueltas en el entorno educativo y comunal.",
+          "desarrollo": "Aplicación de entrevistas, observaciones directas o encuestas a los usuarios clave para recolectar información.",
+          "cierre": "Sistematización y registro estructurado de los hallazgos y testimonios obtenidos."
         }
       },
       {
         "id": "etapa2_definir",
         "numero": 2,
-        "nombre": "Etapa 2: Definir",
+        "nombre": "Etapa 2: Definir (Etapa Inicial)",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Comprensión y Diagnóstico",
-        "proposito": "Sintetizar los hallazgos y formular el desafío tecnológico central mediante la pregunta detonante de diseño: ¿Cómo podríamos...?",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Sintetizar los hallazgos de la fase Empatizar mediante un producto comunicativo claro que delimite el problema y las necesidades a cubrir.",
         "accionesClave": [
-          "Sintetizar los hallazgos de la empatía y redactar la declaración precisa del reto de diseño.",
-          "Establecer la lista preliminar de requerimientos funcionales y técnicos necesarios para la solución."
+          "Sintetizar los hallazgos de la fase Empatizar (problema a resolver, intereses y necesidades del usuario o cliente).",
+          "Desarrollar un producto comunicativo (resumen, infográfico, tabla, mapa conceptual, esquema, video o audio) respondiendo a: ¿Qué?, ¿Quién?, ¿Dónde?, ¿Cómo?, ¿Por qué?, ¿Cuándo?",
+          "Facilitar sesiones de discusión donde las personas estudiantes compartan sus puntos de vista y reflexionen sobre cómo el problema se conecta con situaciones reales."
         ],
         "entregablesSugeridos": [
-          "Declaración del reto de diseño (Problem Statement)",
-          "Lista de especificaciones y requerimientos funcionales"
+          "Producto comunicativo estructurado (infografía, tabla, mapa conceptual o video/audio)",
+          "Delimitación clara del problema y necesidades priorizadas"
         ],
         "semanaSugeridaModulo1": [5, 6],
         "semanaSugeridaModulo2": [5, 6],
-        "criteriosEvaluacionMEP": [
-          "Delimita el reto técnico con claridad mediante la formulación estructurada de la pregunta de diseño.",
-          "Establece especificaciones y requerimientos técnicos viables acordes al nivel de 9° año."
+        "indicadorLogro": "Sintetizar los hallazgos relacionados con los intereses y necesidades del usuario o cliente, de modo que se entienda con claridad el problema o situación a resolver. (Definir)",
+        "indicadoresEvaluacion": [
+          "Sintetiza los intereses y necesidades del usuario o cliente en la construcción de un producto comunicativo."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de problemas amplios vs. retos de diseño bien acotados.",
-          "desarrollo": "Redacción colaborativa de la pregunta '¿Cómo podríamos...?' y definición de especificaciones técnicas.",
-          "cierre": "Validación con el equipo docente para asegurar la viabilidad del reto."
+          "inicio": "Focalización: Análisis de respuestas recolectadas y categorización de puntos de dolor del usuario.",
+          "desarrollo": "Elaboración del producto comunicativo respondiendo a las preguntas guía (¿Qué?, ¿Quién?, ¿Dónde?, ¿Cómo?, ¿Por qué?, ¿Cuándo?).",
+          "cierre": "Sesión de intercambio grupal para validar la claridad y relevancia del problema definido."
         }
       },
       {
         "id": "etapa3_idear",
         "numero": 3,
-        "nombre": "Etapa 3: Idear",
-        "faseId": "fase2_desarrollo",
-        "faseNombre": "Fase II: Ideación y Construcción",
-        "proposito": "Generar múltiples alternativas creativas y estructurar la lógica algorítmica y esquemas de conexión antes de la construcción.",
+        "nombre": "Etapa 3: Idear (Etapa Inicial)",
+        "faseId": "fase1_investigacion",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Generar una amplia variedad de ideas creativas, evaluar su aplicabilidad cotidiana y seleccionar la solución más eficiente mediante justificación comparativa.",
         "accionesClave": [
-          "Realizar sesiones de lluvia de ideas (Brainstorming) y bocetos conceptuales de la solución.",
-          "Diseñar el diagrama de flujo y los esquemas lógicos previos a la implementación técnica."
+          "Generar una amplia variedad de ideas considerando la perspectiva del usuario y cómo beneficiarse de ellas en el día a día.",
+          "Fomentar el pensamiento amplio y creativo, minimizando juicios de valor y permitiendo el flujo de ideas imaginativas.",
+          "Seleccionar la idea más prometedora y justificar con claridad, con al menos dos ideas, por qué es la más eficiente frente a otras."
         ],
         "entregablesSugeridos": [
-          "Diagrama de flujo normalizado",
-          "Boceto conceptual del prototipo con lista de materiales"
+          "Matriz de lluvia de ideas y técnicas de ideación aplicadas",
+          "Ficha de selección y justificación fundamentada de la solución elegida"
         ],
         "semanaSugeridaModulo1": [8, 9],
         "semanaSugeridaModulo2": [8, 9],
-        "criteriosEvaluacionMEP": [
-          "Genera y evalúa múltiples alternativas creativas de solución seleccionando la más pertinente.",
-          "Diseña diagramas de flujo y esquemas lógicos con adecuada simbología técnica."
+        "indicadorLogro": "Seleccionar la idea más eficiente para ofrecer una posible solución a un problema o situación por resolver. (Idear)",
+        "indicadoresEvaluacion": [
+          "Selecciona la idea que ofrezca la solución más eficiente para resolver el problema o situación.",
+          "Justifica de manera clara, con al menos dos ideas, por qué la solución elegida es la más eficiente, comparándola con otras."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Dinámica de pensamiento lateral y divergente.",
-          "desarrollo": "Diagramación del algoritmo y diseño del circuito preliminar en papel o simulador.",
-          "cierre": "Prueba de escritorio para validar la lógica algorítmica propuesta."
+          "inicio": "Focalización: Pregunta generadora: ¿Cómo podrías usar esta solución en tu día a día?",
+          "desarrollo": "Dinámica de ideación colaborativa, votación democrática y ponderación de viabilidad técnica.",
+          "cierre": "Redacción de la justificación comparativa de la idea ganadora ante el grupo."
         }
       },
       {
         "id": "etapa4_prototipar",
         "numero": 4,
-        "nombre": "Etapa 4: Prototipar",
+        "nombre": "Etapa 4: Prototipar (Etapa de Desarrollo)",
         "faseId": "fase2_desarrollo",
-        "faseNombre": "Fase II: Ideación y Construcción",
-        "proposito": "Construir el prototipo funcional integrando componentes de hardware, simulación y programación modular.",
+        "faseNombre": "B. Etapa de Desarrollo (Prototipar)",
+        "proposito": "Crear un prototipo tangible o representación visual simple, realista y factible con los recursos disponibles que resuelva la situación problema planteada.",
         "accionesClave": [
-          "Construir la estructura física o interactiva con materiales disponibles o simuladores web.",
-          "Conectar los componentes técnicos y programar el algoritmo en bloques o texto.",
-          "Integrar los subsistemas mecánicos, sensoriales y de software en una solución funcional."
+          "A partir de la idea más prometedora seleccionada, crear un prototipo tangible o una representación visual simple y de bajo costo.",
+          "Reflexionar sobre los recursos tecnológicos necesarios y disponibles (conexión a internet, materiales, lenguajes de programación y software específico).",
+          "Generar prototipos funcionales mediante maqueta, guion gráfico, programa, simulación o la combinación de estos para resolver el problema."
         ],
         "entregablesSugeridos": [
-          "Prototipo funcional operativo (físico o digital)",
-          "Código fuente comentado y modularizado"
+          "Prototipo tangible o representación visual funcional (maqueta, programa, simulación o combinación)",
+          "Código fuente estructurado y esquemas de conexionado/diseño"
         ],
         "semanaSugeridaModulo1": [11, 12, 13, 14],
         "semanaSugeridaModulo2": [11, 12, 13, 14],
-        "criteriosEvaluacionMEP": [
-          "Construye el prototipo integrando hardware programable o simulaciones interactivas.",
-          "Implementa el código funcional demostrando orden, depuración y buenas prácticas."
-        ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Verificación de componentes y normas de seguridad en el laboratorio.",
-          "desarrollo": "Montaje intensivo, programación y prueba individual de cada subsistema.",
-          "cierre": "Integración de componentes y primera prueba de funcionamiento integral."
+          "inicio": "Focalización: Inventario de recursos tecnológicos disponibles y pautas de seguridad en el laboratorio.",
+          "desarrollo": "Ensamble del prototipo tangible, conexión de circuitos y programación por bloques o texto.",
+          "cierre": "Verificación de funcionamiento preliminar y ajustes técnicos inmediatos."
         }
       },
       {
         "id": "etapa5_evaluar_testear",
         "numero": 5,
-        "nombre": "Etapa 5: Evaluar y Testear",
+        "nombre": "Etapa 5: Probar / Evaluar (Etapa Final)",
         "faseId": "fase3_evaluacion",
-        "faseNombre": "Fase III: Validación y Socialización",
-        "proposito": "Validar el funcionamiento del prototipo en condiciones reales, corregir fallos mediante depuración y presentar los resultados.",
+        "faseNombre": "C. Etapa Final (Probar / Evaluar)",
+        "proposito": "Evaluar el alcance del prototipo, probar su efectividad con usuarios en situaciones cotidianas, aplicar mejoras reiterativas y sustentar los resultados.",
         "accionesClave": [
-          "Ejecutar pruebas de funcionamiento sistemáticas y registrar las mejoras en la bitácora.",
-          "Aplicar procesos de coevaluación y retroalimentación entre equipos.",
-          "Presentar el proyecto en la Demostración de lo Aprendido (Feria Tecnológica)."
+          "Evaluar el alcance del prototipo (qué funciona y qué no) para recopilar retroalimentación de los usuarios o clientes.",
+          "Organizar pruebas donde las personas estudiantes usen sus prototipos en situaciones cotidianas y frente a los usuarios.",
+          "Realizar sesiones de retroalimentación reflexiva: ¿Funcionó como esperabas? ¿Qué aprendiste sobre su aplicación práctica?",
+          "Aplicar mejoras según observaciones y reiterar las etapas las veces necesarias hasta alcanzar la solución óptima."
         ],
         "entregablesSugeridos": [
-          "Informe técnico final con bitácora de depuración",
-          "Demostración pública del funcionamiento del prototipo"
+          "Matriz de pruebas con usuarios y registro de retroalimentación",
+          "Bitácora de mejoras implementadas y sustentación en la Demostración de lo Aprendido"
         ],
         "semanaSugeridaModulo1": [16, 17, 18],
         "semanaSugeridaModulo2": [16, 17, 18],
-        "criteriosEvaluacionMEP": [
-          "Valida el funcionamiento del prototipo verificando el cumplimiento del reto planteado.",
-          "Comunica con claridad técnica los resultados, aprendizajes y proceso de depuración."
-        ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Preparación de la demostración y revisión de criterios de evaluación.",
-          "desarrollo": "Exhibición y demostración en vivo ante compañeros y docentes.",
-          "cierre": "Sistematización de aprendizajes y retroalimentación final."
+          "inicio": "Focalización: Planificación de las pruebas de usuario y pautas de presentación pública.",
+          "desarrollo": "Pruebas de campo con usuarios reales, registro de impresiones y refinamiento del prototipo.",
+          "cierre": "Sustentación pública del proyecto y evaluación final con instrumentos oficiales."
         }
       }
     ]
   },
   {
     "moduloId": 2,
-    "tituloProyecto": "Marco Metodológico de Proyecto por Design Thinking (DT) — Ciencia de Datos & IA",
-    "problemaContextual": "Espacio de ideación y diagnóstico contextual abierto: la problemática digital comunitaria y la solución específica (base de datos, modelado 3D, IA o ciberseguridad) serán tipificadas y validadas por el equipo docente según los indicadores vinculados.",
+    "tituloProyecto": "Componente Proyecto • Metodología Design Thinking (DT) — Ciencia de Datos & IA",
+    "problemaContextual": "El componente de evaluación denominado proyecto responde al currículo por competencias del PNFT. Se desarrolla mediante 3 etapas (Inicial, Desarrollo y Final) integrando las 5 fases de Design Thinking en torno a una situación problema real de gestión de datos, modelado e inteligencia artificial.",
     "fases": [
       {
         "id": "fase1_investigacion",
         "numero": 1,
-        "nombre": "Fase I: Diagnóstico e Instrumentación Digital",
-        "descripcion": "Diseño de encuestas en línea, análisis del entorno y levantamiento de requerimientos de información.",
+        "nombre": "A. Etapa Inicial: Empatizar, Definir e Idear",
+        "descripcion": "Comprensión profunda de las necesidades de información de los usuarios, delimitación del desafío de datos y selección de la solución digital más eficiente.",
         "etapas": [
           "etapa1_empatizar",
-          "etapa2_definir"
+          "etapa2_definir",
+          "etapa3_idear"
         ],
         "evidenciasEsperadas": [
-          "Formulario digital con análisis de necesidades",
-          "Esquema de requerimientos funcionales de la solución"
+          "Registro de intereses y necesidades de información de los usuarios (encuestas digitales, entrevistas)",
+          "Producto comunicativo con síntesis de requerimientos de datos (infografía, esquema relacional, resumen)",
+          "Selección y justificación comparativa de la alternativa digital más eficiente"
         ]
       },
       {
         "id": "fase2_desarrollo",
         "numero": 2,
-        "nombre": "Fase II: Modelado, Diseño 3D y Co-creación con IA",
-        "descripcion": "Estructuración de datos, modelado paramétrico 3D y generación de contenidos con prompts estructurados.",
+        "nombre": "B. Etapa de Desarrollo: Prototipar",
+        "descripcion": "Creación de un prototipo digital tangible o representación visual (base de datos, modelo 3D, aplicación web o simulación) realista y funcional.",
         "etapas": [
-          "etapa3_idear",
           "etapa4_prototipar"
         ],
         "evidenciasEsperadas": [
-          "Estructura relacional de base de datos",
-          "Modelo 3D y recursos multimedia documentados"
+          "Prototipo digital operativo (base de datos relacional, modelo 3D, interfaz web o simulación)",
+          "Estructura de consultas SQL, archivos 3D y recursos interactivos documentados"
         ]
       },
       {
         "id": "fase3_evaluacion",
         "numero": 3,
-        "nombre": "Fase III: Auditoría Ética, Seguridad y Socialización",
-        "descripcion": "Revisión de licencias Creative Commons, análisis de riesgos digitales y exposición comunitaria.",
+        "nombre": "C. Etapa Final: Probar / Evaluar",
+        "descripcion": "Evaluación del prototipo digital en contexto real, auditoría ética y de licenciamiento, recopilación de feedback y sustentación pública.",
         "etapas": [
           "etapa5_evaluar_testear"
         ],
         "evidenciasEsperadas": [
-          "Portafolio digital con licenciamiento y autoría ética",
-          "Sustentación de la solución digital"
+          "Pruebas de usabilidad y feedback de usuarios sobre la solución digital",
+          "Portafolio digital con auditoría ética/licenciamiento y sustentación en la Demostración de lo Aprendido"
         ]
       }
     ],
@@ -240,140 +241,139 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
       {
         "id": "etapa1_empatizar",
         "numero": 1,
-        "nombre": "Etapa 1: Empatizar",
+        "nombre": "Etapa 1: Empatizar (Etapa Inicial)",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Diagnóstico e Instrumentación",
-        "proposito": "Diseñar y aplicar instrumentos digitales para conocer necesidades de gestión de información y ciudadanía digital.",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Partir del planteamiento de un problema o situación a resolver sobre gestión de información y necesidades de usuarios en la comunidad educativa.",
         "accionesClave": [
-          "Diseñar formularios o encuestas en plataformas digitales con validación de datos.",
-          "Aplicar el instrumento a una muestra del colegio o comunidad para recabar insumos."
+          "Partir del planteamiento de un problema o situación a resolver que surge de los intereses y necesidades de un usuario o cliente.",
+          "Registrar los intereses y necesidades del usuario ante un problema o situación a resolver, por medio de entrevistas, observaciones, grabaciones, encuestas, entre otras.",
+          "Propiciar la reflexión individual o grupal sobre el problema a resolver: ¿Cuál es la raíz del problema de información? ¿Cómo afecta a los usuarios? ¿Qué soluciones digitales son viables?"
         ],
         "entregablesSugeridos": [
-          "Formulario digital publicado",
-          "Informe preliminar de necesidades identificadas"
+          "Formulario o encuesta digital de recolección aplicado a usuarios",
+          "Registro sistematizado de requerimientos e intereses de los usuarios"
         ],
         "semanaSugeridaModulo1": [3, 4],
         "semanaSugeridaModulo2": [3, 4],
-        "criteriosEvaluacionMEP": [
-          "Formula instrumentos digitales claros y estructurados para recolectar información contextual.",
-          "Aplica normas éticas de privacidad y consentimiento informado en la captura de datos."
+        "indicadorLogro": "Describir las necesidades, deseos y motivaciones de usuarios o clientes que tienen un problema o situación por resolver. (Empatizar)",
+        "indicadoresEvaluacion": [
+          "Describe un problema o situación por resolver que es importante para un usuario o cliente.",
+          "Registra los intereses y necesidades del usuario ante un problema o situación a resolver, por medio de entrevistas, observaciones, grabaciones, encuestas, entre otras."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Métodos de recolección de datos y diseño de encuestas en línea.",
-          "desarrollo": "Configuración técnica del formulario y pilotaje con usuarios del entorno.",
-          "cierre": "Análisis preliminar de respuestas obtenidas."
+          "inicio": "Focalización: Análisis de problemas cotidianos vinculados al manejo de datos, comunicación o diseño.",
+          "desarrollo": "Diseño y aplicación de encuestas digitales y entrevistas a usuarios de la institución.",
+          "cierre": "Consolidación de las respuestas y categorización de requerimientos clave."
         }
       },
       {
         "id": "etapa2_definir",
         "numero": 2,
-        "nombre": "Etapa 2: Definir",
+        "nombre": "Etapa 2: Definir (Etapa Inicial)",
         "faseId": "fase1_investigacion",
-        "faseNombre": "Fase I: Diagnóstico e Instrumentación",
-        "proposito": "Definir los requerimientos de la base de datos, topología de red y alcance de la solución digital.",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Sintetizar los hallazgos de la fase Empatizar construyendo un producto comunicativo que estructure con claridad las necesidades de datos o modelado.",
         "accionesClave": [
-          "Identificar entidades, atributos y relaciones clave para el procesamiento de información.",
-          "Delimitar el reto de diseño digital y los requerimientos técnicos de ciberseguridad."
+          "Sintetizar los hallazgos de la fase Empatizar (problema a resolver, intereses y necesidades del usuario o cliente).",
+          "Desarrollar un producto comunicativo (resumen, infográfico, tabla, mapa conceptual, esquema, video o audio) respondiendo a: ¿Qué?, ¿Quién?, ¿Dónde?, ¿Cómo?, ¿Por qué?, ¿Cuándo?",
+          "Facilitar sesiones de discusión donde las personas estudiantes compartan sus puntos de vista y reflexionen sobre cómo el problema se conecta con situaciones reales."
         ],
         "entregablesSugeridos": [
-          "Diagrama Entidad-Relación preliminar",
-          "Declaración del reto de diseño digital"
+          "Producto comunicativo estructurado (infografía, diagrama de requerimientos o tabla comparativa)",
+          "Definición formal del reto de diseño digital y entidades clave"
         ],
         "semanaSugeridaModulo1": [5, 6],
         "semanaSugeridaModulo2": [5, 6],
-        "criteriosEvaluacionMEP": [
-          "Estructura requerimientos técnicos y modelos de datos con claridad y pertinencia.",
-          "Define el reto digital delimitando los alcances de la solución."
+        "indicadorLogro": "Sintetizar los hallazgos relacionados con los intereses y necesidades del usuario o cliente, de modo que se entienda con claridad el problema o situación a resolver. (Definir)",
+        "indicadoresEvaluacion": [
+          "Sintetiza los intereses y necesidades del usuario o cliente en la construcción de un producto comunicativo."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de esquemas de bases de datos y arquitectura de soluciones.",
-          "desarrollo": "Modelado del esquema relacional y definición del reto en equipos.",
-          "cierre": "Validación docente para asegurar la alineación con los indicadores del nivel."
+          "inicio": "Focalización: Análisis de requerimientos funcionales y estructuración lógica del problema.",
+          "desarrollo": "Creación del producto comunicativo respondiendo a las preguntas clave del reto de datos.",
+          "cierre": "Validación con docentes y compañeros de la claridad de los requerimientos delimitados."
         }
       },
       {
         "id": "etapa3_idear",
         "numero": 3,
-        "nombre": "Etapa 3: Idear",
-        "faseId": "fase2_desarrollo",
-        "faseNombre": "Fase II: Modelado y Co-creación",
-        "proposito": "Diseñar bocetos paramétricos para piezas 3D y estructurar prompts avanzados para generación de contenidos.",
+        "nombre": "Etapa 3: Idear (Etapa Inicial)",
+        "faseId": "fase1_investigacion",
+        "faseNombre": "A. Etapa Inicial (Empatizar / Definir / Idear)",
+        "proposito": "Generar alternativas creativas de solución digital, evaluar su impacto y seleccionar la propuesta más eficiente con justificación fundamentada.",
         "accionesClave": [
-          "Elaborar bocetos acotados en papel con medidas exactas antes del modelado CAD.",
-          "Formular prompts estructurados para asistir en la documentación y diseño conceptual."
+          "Generar una amplia variedad de ideas considerando la perspectiva del usuario y cómo beneficiarse de ellas en el día a día.",
+          "Fomentar el pensamiento amplio y creativo, minimizando juicios de valor y permitiendo el flujo de ideas imaginativas.",
+          "Seleccionar la idea más prometedora y justificar con claridad, con al menos dos ideas, por qué es la más eficiente frente a otras."
         ],
         "entregablesSugeridos": [
-          "Bocetos acotados de la pieza 3D",
-          "Registro de prompts y verificación crítica de fuentes"
+          "Bocetos conceptuales, esquemas relacionales o borradores de prompts",
+          "Justificación comparativa documentada de la solución seleccionada"
         ],
         "semanaSugeridaModulo1": [8, 9],
         "semanaSugeridaModulo2": [8, 9],
-        "criteriosEvaluacionMEP": [
-          "Aplica técnicas de ideación y formulación de prompts con pensamiento crítico.",
-          "Demuestra razonamiento espacial y precisión en los bocetos de diseño 3D."
+        "indicadorLogro": "Seleccionar la idea más eficiente para ofrecer una posible solución a un problema o situación por resolver. (Idear)",
+        "indicadoresEvaluacion": [
+          "Selecciona la idea que ofrezca la solución más eficiente para resolver el problema o situación.",
+          "Justifica de manera clara, con al menos dos ideas, por qué la solución elegida es la más eficiente, comparándola con otras."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Exploración de interfaces de diseño 3D y formulación ética de prompts.",
-          "desarrollo": "Diseño preliminar de modelos y contraste de datos asistidos por IA.",
-          "cierre": "Verificación de viabilidad dimensional y técnica de las propuestas."
+          "inicio": "Focalización: Pregunta generadora: ¿Cómo podrías usar esta solución en tu día a día?",
+          "desarrollo": "Diseño de alternativas conceptuales (bases de datos, modelos 3D o plataformas) y evaluación cruzada.",
+          "cierre": "Elección formal y redacción de la justificación con criterios de eficiencia y viabilidad."
         }
       },
       {
         "id": "etapa4_prototipar",
         "numero": 4,
-        "nombre": "Etapa 4: Prototipar",
+        "nombre": "Etapa 4: Prototipar (Etapa de Desarrollo)",
         "faseId": "fase2_desarrollo",
-        "faseNombre": "Fase II: Modelado y Co-creación",
-        "proposito": "Implementar la base de datos relacional, modelar la pieza 3D y estructurar los recursos digitales.",
+        "faseNombre": "B. Etapa de Desarrollo (Prototipar)",
+        "proposito": "Construir la solución digital (base de datos relacional, modelo 3D paramétrico o aplicación asistida por IA) de forma realista y factible.",
         "accionesClave": [
-          "Crear tablas relacionales y consultas de datos funcionales.",
-          "Modelar en software 3D exportando archivos listos para fabricación (.STL).",
-          "Integrar los recursos multimedia con criterios de seguridad y accesibilidad."
+          "A partir de la idea más prometedora seleccionada, crear un prototipo tangible o una representación visual simple y de bajo costo.",
+          "Reflexionar sobre los recursos tecnológicos necesarios y disponibles (software de base de datos, modelado 3D, conectividad).",
+          "Generar prototipos funcionales mediante base de datos relacional, modelo 3D, simulación o combinación de estos."
         ],
         "entregablesSugeridos": [
-          "Base de datos relacional funcional",
-          "Archivo de modelado 3D (.STL) y recursos multimedia"
+          "Base de datos relacional funcional o archivo de modelado 3D (.STL)",
+          "Recursos multimedia estructurados y documentación de consultas"
         ],
         "semanaSugeridaModulo1": [11, 12, 13, 14],
         "semanaSugeridaModulo2": [11, 12, 13, 14],
-        "criteriosEvaluacionMEP": [
-          "Construye bases de datos relacionales funcionales con consultas estructuradas.",
-          "Aplica herramientas de modelado 3D respetando medidas y operaciones booleanas."
-        ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Demostración de consultas SQL y modelado 3D.",
-          "desarrollo": "Taller práctico de bases de datos y refinamiento paramétrico 3D.",
-          "cierre": "Verificación de integridad de datos y geometría 3D."
+          "inicio": "Focalización: Verificación del entorno de desarrollo de bases de datos y software 3D.",
+          "desarrollo": "Creación de tablas, relaciones, modelado CAD 3D y estructuración de la interfaz.",
+          "cierre": "Validación de integridad de datos y prueba funcional del prototipo digital."
         }
       },
       {
         "id": "etapa5_evaluar_testear",
         "numero": 5,
-        "nombre": "Etapa 5: Evaluar y Testear",
+        "nombre": "Etapa 5: Probar / Evaluar (Etapa Final)",
         "faseId": "fase3_evaluacion",
-        "faseNombre": "Fase III: Auditoría y Demostración",
-        "proposito": "Auditar el licenciamiento de recursos (Creative Commons), evaluar desafíos éticos de la IA y presentar la solución.",
+        "faseNombre": "C. Etapa Final (Probar / Evaluar)",
+        "proposito": "Evaluar la efectividad del prototipo digital con usuarios reales, auditar el licenciamiento ético de recursos y sustentar los resultados.",
         "accionesClave": [
-          "Auditar citas y licencias de los recursos multimedia utilizados.",
-          "Reflexionar sobre sesgos y uso responsable de herramientas inteligentes.",
-          "Sustentar la solución digital completa en la Demostración de lo Aprendido."
+          "Evaluar el alcance del prototipo digital (qué funciona y qué no) recopilando retroalimentación de los usuarios.",
+          "Organizar pruebas de uso en situaciones cotidianas con personas usuarias del entorno.",
+          "Realizar sesiones de retroalimentación reflexiva: ¿Funcionó como esperabas? ¿Qué aprendiste sobre su aplicación práctica?",
+          "Aplicar mejoras según observaciones y auditar el respeto a los derechos de autor y ética de la IA."
         ],
         "entregablesSugeridos": [
-          "Portafolio digital con auditoría de licenciamiento",
-          "Sustentación pública de la solución"
+          "Registro de feedback y pruebas de usabilidad con usuarios",
+          "Portafolio digital con autoría ética y sustentación en la Demostración de lo Aprendido"
         ],
         "semanaSugeridaModulo1": [16, 17, 18],
         "semanaSugeridaModulo2": [16, 17, 18],
-        "criteriosEvaluacionMEP": [
-          "Aplica marcos legales de licenciamiento Creative Commons y derechos de autor.",
-          "Argumenta con rigor sobre los aspectos éticos de la IA y la solución desarrollada."
-        ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Pautas de evaluación de la sustentación y propiedad intelectual.",
-          "desarrollo": "Exhibición de la solución digital ante el grupo y sesión de preguntas.",
-          "cierre": "Sistematización de aprendizajes y cierre evaluativo."
+          "inicio": "Focalización: Revisión de la rúbrica de sustentación y auditoría de licencias Creative Commons.",
+          "desarrollo": "Demostración de la solución digital ante usuarios, recolección de observaciones y ajustes finales.",
+          "cierre": "Sustentación pública y cierre del ciclo evaluativo del proyecto."
         }
       }
     ]
   }
 ];
+

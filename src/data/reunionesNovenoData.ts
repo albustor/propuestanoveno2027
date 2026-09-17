@@ -4,54 +4,54 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
   {
     id: 'reunion-allan-1',
     tipo: 'trabajo_allan',
-    titulo: 'Jornada de Diseño Curricular y Articulación Pedagógica con Allan M.',
+    titulo: 'Jornada de Diseño Curricular y Articulación Pedagógica con Allan Morera',
     fecha: '2026-09-16',
     hora: '08:00',
-    participantes: ['Alberto Bustos Ortega', 'Allan M.'],
-    temasTratados: 'Revisión y diseño de estrategias metodológicas para los 10 saberes del Módulo 1 (Robótica, Computación Física y Algoritmos). Definición de los 3 momentos didácticos (Inicio, Desarrollo, Cierre), DUA, recursos unplugged y herramientas de evaluación. Debemos definir sobre el indicador sobre Entorno de Programación sobre el sofftware; si es textual o por bloques, esto de acuerdo al enfoque de mecanismos robóticos_ Caso de S4AEDU o EV3 Considerando seriamente el uso de simulaciones en el proceso que nos lleva principalmente a procesos de creación de prototipos, no indica que sean físicos aunque es una de las opciones.',
+    participantes: ['Allan Morera', 'Alberto Bustos'],
+    temasTratados: 'Revisión y validación de estrategias metodológicas para los 10 saberes del Módulo 1 (Robótica, Computación Física y Algoritmos) con base en el currículo oficial establecido para el nivel de 9° año. Definición de los 3 momentos didácticos (Inicio, Desarrollo, Cierre), DUA, recursos unplugged y herramientas de evaluación. Definición sobre el indicador de Entorno de Programación sobre software textual o por bloques de acuerdo al equipamiento institucional, y validación del uso estratégico de simuladores web para optimizar tiempos lectivos.',
     acuerdos: [
       {
         id: 'ac-allan-1',
-        acuerdo: 'Alinear los 10 indicadores de Módulo 1 a la matriz de distribución evaluativa (Cotidiano, Tareas, Proyecto).',
-        responsable: 'Alberto Bustos & Allan M.',
+        acuerdo: 'Validar que los 10 indicadores de Módulo 1 respondan a la matriz de distribución evaluativa (Cotidiano, Tareas, Proyecto).',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-20',
         completado: false
       },
       {
         id: 'ac-allan-2',
-        acuerdo: 'Estructurar el banco de WebApps y simuladores interactivos con códigos QR para el estudiantado.',
-        responsable: 'Allan M.',
+        acuerdo: 'Estructurar el catálogo de WebApps y simuladores interactivos con códigos QR como apoyo a la mediación docente.',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-25',
         completado: false
       },
       {
         id: 'ac-allan-3',
-        acuerdo: 'Vincular el prototipo domótico semestral con las 5 etapas de Design Thinking.',
-        responsable: 'Alberto Bustos',
+        acuerdo: 'Vincular el prototipo semestral con el marco metodológico de 5 etapas de Design Thinking.',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-30',
         completado: false
       },
       {
         id: 'ac-allan-4',
-        acuerdo: 'Compromiso: Considerar lo de software para el desarrollo de la actividad de acuerdo al equipamiento que tenga a disposición el docente.',
-        responsable: 'Alberto & Allan',
+        acuerdo: 'Considerar la flexibilidad de software para el desarrollo de actividades según el equipamiento que tenga a disposición el docente.',
+        responsable: 'Allan Morera & Alberto Bustos',
         completado: false
       },
       {
         id: 'ac-allan-5',
-        acuerdo: 'Las simulaciones son una oportunidad valiosa, considerando tiempo vrs lecciones perdidas',
-        responsable: 'Alberto & Allan',
+        acuerdo: 'Consolidar las simulaciones digitales como una alternativa valiosa para mitigar la limitación de kits y optimizar lecciones.',
+        responsable: 'Allan Morera & Alberto Bustos',
         completado: false
       },
       {
         id: 'ac-allan-6',
-        acuerdo: 'Se puede abrir la posibilidad de hacer procesos de prototipos físicos o digitales en todo lo relacionado a computación física y robótica, tomando en cuenta además programación y algoritmos',
-        responsable: 'Alberto & Allan',
+        acuerdo: 'Validar procesos de prototipos físicos o digitales en computación física y robótica, contemplando algoritmos y programación.',
+        responsable: 'Allan Morera & Alberto Bustos',
         completado: false
       }
     ],
-    avancesConAllan: 'Lectura y análisis de documentación base Reflexión sobre impacto y vinculación del indicador de logro con el perfil de salida del estudiante en Bosquejos de primeras ideas pedagógicas Análisis de software de programación Abordaje de ideas para ir dando forma a opciones desconectadas',
-    sintesisIA: 'Jornada altamente productiva. Se completó el diseño metodológico de Módulo 1 y se establecieron los acuerdos de equipamiento, software y simulaciones.',
+    avancesConAllan: 'Lectura y análisis de documentación curricular oficial. Validación del impacto y alineación del indicador de logro con el perfil del nivel. Bosquejos de mediación pedagógica, análisis de software de programación y diseño de secuencias desconectadas.',
+    sintesisIA: 'Jornada altamente productiva. Se avanzó en el desarrollo y validación de la propuesta de Módulo 1 para el nivel de noveno año.',
     estado: 'Completado',
     adjuntosOEnlaces: 'Propuesta Noveno Año 2026 - Módulo 1 y Planeador',
     timestamp: '2026-09-16T08:00:00.000Z'
@@ -62,20 +62,20 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
     titulo: 'Reunión de Coordinación Curricular y Capacitación PIA con Kevin Sánchez',
     fecha: '2026-09-16',
     hora: '09:30',
-    participantes: ['Kevin Sánchez Bogarín (Coordinador)', 'Alberto Bustos Ortega', 'Allan M.', 'Mariana'],
+    participantes: ['Kevin Sánchez (Coordinador)', 'Allan Morera', 'Alberto Bustos', 'Mariana'],
     temasTratados: 'Lineamientos para el uso de la herramienta PIA, criterios de consistencia curricular MEP 2026-2027, cronograma de cortes valorativos y estándares de calidad para la entrega a jefatura.',
     acuerdos: [
       {
         id: 'ac-coord-1',
         acuerdo: 'Cumplir con el cronograma oficial y preparar el primer corte valorativo para el 16 de octubre.',
-        responsable: 'Equipo Diseñador (Allan & Alberto)',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-10-16',
         completado: false
       },
       {
         id: 'ac-coord-2',
         acuerdo: 'Asegurar que todas las actividades de mediación integren pautas DUA y enfoque multi-escenario (conectado y desconectado).',
-        responsable: 'Alberto Bustos',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-10-10',
         completado: true
       }
@@ -90,17 +90,18 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
     titulo: 'Mesa de Trabajo de Nivel 9°: Contextualización y Recursos',
     fecha: '2026-09-11',
     hora: '10:00',
-    participantes: ['Leonardo', 'Kevin Sánchez', 'Allan M.', 'Alberto Bustos', 'Equipos de III Ciclo'],
-    temasTratados: 'Estudio de los módulos del programa de Formación Tecnológica y contextualización de tareas para 9° año frente a la transición con 7° y 8° año.',
+    participantes: ['Leonardo', 'Kevin Sánchez', 'Allan Morera', 'Alberto Bustos', 'Equipos de III Ciclo'],
+    temasTratados: 'Estudio de los módulos del programa oficial de Formación Tecnológica y contextualización de tareas para 9° año frente a la articulación con 7° y 8° año.',
     acuerdos: [
       {
         id: 'ac-nivel-1',
         acuerdo: 'Especializar los saberes de 9° año en computación física avanzada (sensores/actuadores) y modelos de datos relacionales / IA en Módulo 2.',
-        responsable: 'Equipo 9° Año',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-15',
         completado: true
       }
     ],
+    sintesisIA: 'Articulación de nivel completada para la transición curricular del tercer ciclo.',
     estado: 'Completado',
     timestamp: '2026-09-11T10:00:00.000Z'
   }

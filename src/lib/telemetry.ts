@@ -19,7 +19,7 @@ export const registrarEventoTelemetria = (
   accion: string,
   descripcion: string,
   detalles?: Record<string, any>,
-  usuario: string = 'Alberto Bustos Ortega / Allan M.'
+  usuario: string = 'Allan Morera & Alberto Bustos'
 ): EventoTelemetria => {
   const ahora = new Date();
   const evento: EventoTelemetria = {

@@ -5,7 +5,7 @@ import { SemanaPlaneamiento, ModuloCurricular } from '../types';
 export const exportarPlaneamientoPdf = (
   modulo: ModuloCurricular,
   semanas: SemanaPlaneamiento[],
-  docenteNombre = 'Alberto Bustos Ortega / Allan M.',
+  docenteNombre = 'Allan Morera & Alberto Bustos',
   institucion = 'Colegio Técnico Profesional / Liceo de Innovación'
 ) => {
   const doc = new jsPDF({

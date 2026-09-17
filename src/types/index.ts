@@ -227,7 +227,9 @@ export interface EtapaProyectoConfig {
   entregablesSugeridos: string[];
   semanaSugeridaModulo1: number[];
   semanaSugeridaModulo2: number[];
-  criteriosEvaluacionMEP: string[];
+  indicadorLogro?: string;
+  indicadorEvaluacion?: string;
+  indicadoresEvaluacion?: string[];
   actividadEnriquecida: {
     inicio: string;
     desarrollo: string;
@@ -434,6 +436,8 @@ export interface ReunionEquipoNivel {
   acuerdos: AcuerdoReunion[];
   avancesConAllan?: string; // Bitácora específica de co-trabajo con Allan
   sintesisIA?: string;
+  audioUrl?: string; // Grabación de audio vinculada al acta
+  audioNombre?: string;
   estado: 'Completado' | 'En Proceso' | 'Pendiente';
   adjuntosOEnlaces?: string;
   timestamp: string;
@@ -460,7 +464,7 @@ export interface EventoTelemetria {
   modulo: ModuloTelemetria;
   accion: string;
   descripcion: string;
-  usuario: string; // 'Alberto Bustos Ortega / Allan M.'
+  usuario: string; // 'Allan Morera & Alberto Bustos'
   detalles?: Record<string, any>;
 }
 
