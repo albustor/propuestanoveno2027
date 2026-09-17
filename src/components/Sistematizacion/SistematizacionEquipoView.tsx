@@ -404,6 +404,7 @@ export const SistematizacionEquipoView: React.FC = () => {
         participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
         temasTratados: datosActa.temasTratados || fuente,
         avancesConAllan: datosActa.avancesConAllan || fuente,
+        aspectosPuntuales: datosActa.aspectosPuntuales || `Resumen General:\nSe consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, asegurando la correspondencia con los indicadores oficiales de logro del MEP.\n\nAspectos Abordados por Viñeta:\n• Calibración Curricular: Verificación de consignas didácticas contra indicadores de logro.\n• Flexibilidad de Software: Alternativas en bloques y texto.\n• Simuladores Web: Integración de laboratorios virtuales interactivos.\n• Enfoque DUA: Actividades desconectadas unplugged y multiescenario.`,
         acuerdosTexto: datosActa.acuerdosTexto || `• [Allan Morera & Alberto Bustos]: Validación y consolidación de acuerdos de la sesión.`,
         acuerdos: datosActa.acuerdos || [],
         audioUrl: grabacionesJornada.length > 0 ? grabacionesJornada[0].url : undefined,
@@ -458,13 +459,14 @@ export const SistematizacionEquipoView: React.FC = () => {
     let contexto: any = {};
 
     if (typeof reunionData === 'object' && reunionData !== null) {
-      prompt = `Genera un informe pedagógico exhaustivo y estructurado para la sesión de trabajo: "${reunionData.titulo}", analizando los temas tratados ("${reunionData.temasTratados}"), los avances logrados ("${reunionData.avancesConAllan || ''}") y los acuerdos tomados (${reunionData.acuerdos.map(a => a.acuerdo).join('; ')}), con un enfoque pedagógico riguroso alineado a los programas MEP de 9° año.`;
+      prompt = `Genera un informe pedagógico exhaustivo y estructurado para la sesión de trabajo: "${reunionData.titulo}", analizando los temas tratados ("${reunionData.temasTratados}"), los avances logrados ("${reunionData.avancesConAllan || ''}"), los aspectos puntuales abordados ("${reunionData.aspectosPuntuales || ''}") y los acuerdos tomados (${reunionData.acuerdos.map(a => a.acuerdo).join('; ')}), con un enfoque pedagógico riguroso alineado a los programas MEP de 9° año.`;
       contexto = {
         tituloSesion: reunionData.titulo,
         fecha: reunionData.fecha,
         hora: reunionData.hora,
         participantes: reunionData.participantes,
         avancesEspecificos: reunionData.avancesConAllan,
+        aspectosPuntuales: reunionData.aspectosPuntuales,
         temasTratados: reunionData.temasTratados,
         acuerdos: reunionData.acuerdos,
         enfoque: reunionData.tipo === 'trabajo_allan' ? 'co_docencia' : 'pedagogico_curricular'
@@ -505,6 +507,9 @@ export const SistematizacionEquipoView: React.FC = () => {
       md += `- **Temas Tratados:** ${r.temasTratados}\n`;
       if (r.avancesConAllan) {
         md += `- **Avances con Allan:** ${r.avancesConAllan}\n`;
+      }
+      if (r.aspectosPuntuales) {
+        md += `\n### Aspectos Puntuales Abordados (Generales y por Viñeta):\n${r.aspectosPuntuales}\n`;
       }
       if (r.audioNombre) {
         md += `- **Audio Adjunto:** ${r.audioNombre}\n`;
@@ -1112,6 +1117,19 @@ export const SistematizacionEquipoView: React.FC = () => {
                     </div>
                   )}
 
+                  {/* Aspectos Puntuales Abordados (Generales y por Viñeta) */}
+                  {r.aspectosPuntuales && (
+                    <div className="mt-3.5 p-3.5 bg-gradient-to-br from-indigo-50/60 via-purple-50/30 to-white border border-indigo-100/90 rounded-xl text-xs space-y-1.5 shadow-2xs">
+                      <span className="font-bold text-indigo-950 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                        Aspectos Puntuales Abordados (Generales y por Viñeta):
+                      </span>
+                      <div className="text-zinc-700 whitespace-pre-line leading-relaxed font-sans text-xs">
+                        {r.aspectosPuntuales}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Temas Tratados */}
                   <div className="mt-3 text-xs text-zinc-700 leading-relaxed">
                     <span className="font-semibold text-zinc-900">Temas y Discusión:</span> {r.temasTratados}
@@ -1301,6 +1319,19 @@ export const SistematizacionEquipoView: React.FC = () => {
                       </div>
                     </div>
                   ) : null}
+
+                  {/* Aspectos Puntuales Abordados (Generales y por Viñeta) */}
+                  {r.aspectosPuntuales && (
+                    <div className="mt-3.5 p-3.5 bg-gradient-to-br from-indigo-50/60 via-purple-50/30 to-white border border-indigo-100/90 rounded-xl text-xs space-y-1.5 shadow-2xs">
+                      <span className="font-bold text-indigo-950 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                        Aspectos Puntuales Abordados (Generales y por Viñeta):
+                      </span>
+                      <div className="text-zinc-700 whitespace-pre-line leading-relaxed font-sans text-xs">
+                        {r.aspectosPuntuales}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="mt-3 text-xs text-zinc-700 leading-relaxed">
                     <span className="font-semibold text-zinc-900">Temas Abordados:</span> {r.temasTratados}
@@ -1665,6 +1696,14 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
     return `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas de los módulos 1 y 2 respondan con estricta fidelidad a los indicadores oficiales de logro de 9° año. (Plazo: 25-09-2026)\n• [Allan Morera]: Estructurar el catálogo de simuladores virtuales y WebApps con códigos QR interactivos para las guías docentes. (Plazo: 30-09-2026)\n• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con la matriz evaluativa del proyecto semestral y pautas DUA. (Plazo: 05-10-2026)\n• [Kevin Sánchez / Coordinación]: Gestionar la sesión inter-niveles con los equipos de 7° y 8° año para verificar la continuidad pedagógica. (Plazo: 10-10-2026)`;
   });
 
+  // Aspectos Puntuales Abordados (Generales y por Viñeta)
+  const [aspectosPuntuales, setAspectosPuntuales] = useState<string>(() => {
+    if (reunion.aspectosPuntuales && reunion.aspectosPuntuales.trim()) {
+      return reunion.aspectosPuntuales;
+    }
+    return `Resumen General:\nSe consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, garantizando la correspondencia con los indicadores oficiales de logro del MEP y la provisión de alternativas prácticas.\n\nAspectos Abordados por Viñeta:\n• Calibración Curricular: Verificación de que cada consigna pedagógica cumpla con los descriptores oficiales de 9° año.\n• Flexibilidad de Software: Alternativas en bloques (S4AEDU, MakeCode) y texto (Arduino IDE, Python) para mitigar brechas de hardware.\n• Simuladores Web y WebApps: Integración y validación de entornos interactivos (Wokwi, Tinkercad, MakeCode) con códigos QR directos.\n• Enfoque DUA y Multiescenario: Secuencias didácticas desconectadas (unplugged) para atención a la diversidad.\n• Proyecto Semestral (Design Thinking): Articulación de las 5 fases metodológicas con la matriz evaluativa del Tercer Ciclo.\n• Articulación Inter-Niveles: Seguimiento y alineación con los equipos de asesoría de 7° y 8° año.`;
+  });
+
   // Estados de Dictado por Voz y Grabación
   const [textoDictado, setTextoDictado] = useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -1962,6 +2001,7 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
         }
         if (datos.temasTratados) setTemasTratados(datos.temasTratados);
         if (datos.avancesConAllan) setAvancesConAllan(datos.avancesConAllan);
+        if (datos.aspectosPuntuales) setAspectosPuntuales(datos.aspectosPuntuales);
         if (datos.acuerdosTexto) setAcuerdosTexto(datos.acuerdosTexto);
         if (datos.acuerdos && Array.isArray(datos.acuerdos)) {
           setAcuerdos(datos.acuerdos);
@@ -1998,6 +2038,7 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 - Fecha y Hora: ${fecha} ${hora}
 - Participantes: ${participantes.join(', ')}
 - Notas de Dictado y Avances de Asesoría: ${fuenteAvances}
+- Aspectos Puntuales Abordados: ${aspectosPuntuales}
 - Temas Tratados y Agenda: ${temasTratados}
 - Acuerdos y Compromisos Unificados: ${acuerdosTexto}
 Enfócate en la relación técnica y pedagógica entre los indicadores oficiales de noveno año, la articulación inter-niveles con séptimo y octavo, las propuestas de mediación para el personal docente, la selección de software y el trabajo del equipo de asesoría curricular (Allan Morera & Alberto Bustos).`,
@@ -2008,6 +2049,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
           hora,
           participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
           avancesEspecificos: fuenteAvances,
+          aspectosPuntuales,
           temasTratados,
           acuerdos,
           enfoque: 'pedagogico_curricular'
@@ -2061,6 +2103,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
       participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
       temasTratados,
       avancesConAllan: avancesConAllan || textoDictado,
+      aspectosPuntuales,
       acuerdosTexto,
       acuerdos: acuerdosParseados.length > 0 ? acuerdosParseados : acuerdos,
       audioUrl: audioUrl || reunion.audioUrl,
@@ -2385,6 +2428,51 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
                 placeholder="Puntos clave validados, criterios técnicos de mediación e indicadores logrados..."
                 className="w-full border border-purple-200 bg-purple-50/40 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-700 resize-y font-sans leading-relaxed text-zinc-800"
               />
+            </div>
+
+            {/* SECCIÓN ASPECTOS PUNTUALES ABORDADOS (GENERALES Y POR VIÑETA) */}
+            <div className="pt-2 border-t border-zinc-200 space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                <label className="block font-bold text-zinc-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+                  📌 Aspectos Puntuales Abordados (Generales y por Viñeta):
+                </label>
+                <div className="flex items-center gap-1 flex-wrap">
+                  <span className="text-[10px] text-zinc-500 font-medium">Herramientas:</span>
+                  <button
+                    type="button"
+                    onClick={() => setAspectosPuntuales((prev) => (prev ? prev.trim() + '\n' : '') + `• `)}
+                    className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Viñeta
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectosPuntuales((prev) => (prev ? prev.trim() + '\n\n' : '') + `Resumen General:\n`)}
+                    className="px-2 py-0.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 border border-zinc-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Resumen General
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAspectosPuntuales(`Resumen General:\nSe consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, garantizando la correspondencia con los indicadores oficiales de logro del MEP.\n\nAspectos Abordados por Viñeta:\n• Calibración Curricular: Verificación de consignas didácticas contra indicadores oficiales.\n• Flexibilidad de Software: Alternativas en bloques y texto.\n• Simuladores Web: Integración de entornos interactivos (Wokwi, Tinkercad).\n• Enfoque DUA: Actividades desconectadas unplugged para inclusión plena.\n• Proyecto Semestral (Design Thinking): Articulación de fases y criterios evaluativos.\n• Articulación Inter-Niveles: Seguimiento y progresión con 7° y 8° año.`)}
+                    className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Plantilla Estándar
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                rows={4}
+                value={aspectosPuntuales}
+                onChange={(e) => setAspectosPuntuales(e.target.value)}
+                placeholder="Resumen General: ...&#10;&#10;Aspectos Abordados por Viñeta:&#10;• Punto 1: Detalle...&#10;• Punto 2: Detalle..."
+                className="w-full border border-indigo-200 bg-indigo-50/30 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-600 resize-y font-sans leading-relaxed text-zinc-800"
+              />
+              <p className="text-[10px] text-zinc-500">
+                Detalla la síntesis general del encuentro y el desglose punto por punto mediante viñetas para mayor claridad pedagógica y administrativa.
+              </p>
             </div>
 
             {/* GESTIÓN UNIFICADA DE ACUERDOS Y COMPROMISOS */}

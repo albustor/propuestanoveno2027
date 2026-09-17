@@ -51,6 +51,15 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
       }
     ],
     avancesConAllan: 'Lectura y análisis de documentación curricular oficial. Validación del impacto y alineación del indicador de logro con el perfil del nivel. Bosquejos de mediación pedagógica, análisis de software de programación y diseño de secuencias desconectadas.',
+    aspectosPuntuales: `Resumen General:
+Se validaron los 10 saberes e indicadores de logro del Módulo 1 (Robótica, Computación Física y Algoritmos) asegurando coherencia curricular para 9° año y alternativas de software y simulación adaptadas al entorno escolar.
+
+Aspectos Abordados por Viñeta:
+• Calibración de Indicadores de Logro: Contraste de verbos operativos para asegurar el cumplimiento del descriptor de III Ciclo sin fragmentación.
+• Flexibilidad de Entornos de Programación: Habilitación de herramientas en bloques y texto según el equipamiento del centro educativo.
+• Simuladores Web Interactivos: Integración de Wokwi, Tinkercad y MakeCode con códigos QR para mitigar limitaciones de kits físicos.
+• Metodología de Proyecto (Design Thinking): Estandarización de las 5 etapas del proyecto semestral.
+• Enfoque DUA y Multiescenario: Diseño de secuencias conectadas y desconectadas (unplugged) para atención inclusiva.`,
     sintesisIA: 'Jornada altamente productiva. Se avanzó en el desarrollo y validación de la propuesta de Módulo 1 para el nivel de noveno año.',
     estado: 'Completado',
     adjuntosOEnlaces: 'Propuesta Noveno Año 2026 - Módulo 1 y Planeador',

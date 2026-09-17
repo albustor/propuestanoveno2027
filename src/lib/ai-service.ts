@@ -58,6 +58,7 @@ export interface AIRequestPayload {
     opcionSimulacion?: 'simulador_web' | 'editor_codigo' | 'laboratorio_unplugged' | 'ia_interactiva';
     areas?: string[];
     indicadores?: string[];
+    aspectosPuntuales?: string;
     faseDesignThinking?: string;
     rolSecuencia?: string;
   };
@@ -510,7 +511,22 @@ Desarrollar y validar que la propuesta didáctica, orientaciones metodológicas,
 
 ---
 
-### 3. Acuerdos, compromisos y responsabilidades de la asesoría
+### 3. Aspectos puntuales abordados (generales y por viñeta)
+
+**Resumen General:**
+${payload.contexto?.aspectosPuntuales || 'Se abordaron de forma focalizada y sistemática los lineamientos curriculares de 9° año, asegurando la correspondencia estricta con los indicadores oficiales de logro del MEP y la provisión de alternativas prácticas adaptadas a los distintos contextos institucionales.'}
+
+**Aspectos Específicos por Viñeta:**
+• **Fidelidad al Currículo Oficial MEP:** Verificación de que cada experiencia de aprendizaje responda de manera idéntica al indicador de logro del nivel.
+• **Flexibilidad y Pluralidad de Software:** Habilitación de propuestas en bloques (S4AEDU, MakeCode) y código textual (Arduino C++, Python) para adaptarse al equipamiento disponible.
+• **Entornos de Simulación Interactiva:** Catalogación y validación de simuladores web (Wokwi, Tinkercad Circuits, PSeInt) con códigos QR en las guías docentes.
+• **Diseño Universal para el Aprendizaje (DUA):** Incorporación de actividades desconectadas (*unplugged*) y dinámicas multinivel para inclusión plena.
+• **Evaluación Integrada por Proyecto (Design Thinking):** Articulación de las 5 fases metodológicas con la matriz de evaluación y el REA MEP.
+• **Articulación Inter-Niveles:** Coordinación de la progresión pedagógica con los equipos de asesoría de 7° y 8° año.
+
+---
+
+### 4. Acuerdos, compromisos y responsabilidades de la asesoría
 
 ${acuerdos.length > 0 
   ? acuerdos.map((a, idx) => `* **${a.acuerdo.includes(':') ? a.acuerdo.split(':')[0] : `Compromiso ${idx + 1}`}**: ${a.acuerdo} *(Responsable(s): ${a.responsable || 'Allan Morera & Alberto Bustos'} — Estado: ${a.completado ? 'Cumplido' : 'En proceso'})*`).join('\n\n')
@@ -531,7 +547,7 @@ ${acuerdos.length > 0
 
 ---
 
-### 4. Próximas acciones operativas
+### 5. Próximas acciones operativas
 1. Validar la matriz de distribución evaluativa (trabajo cotidiano 45-50%, proyecto DT 30-40% y tareas 10%).
 2. Finalizar la tipificación abierta para las etapas de empatizar, definir, idear, prototipar y evaluar.
 3. Sincronizar las bitácoras y actas en la plataforma para la presentación de avances a la coordinación.`;
@@ -564,6 +580,18 @@ ${acuerdos.length > 0
       const avancesGenerados = textoDictado.length > 30
         ? `${textoDictado.trim()}\n\n[Análisis de Asesoría Curricular]: Se consolidó la estructura operativa de las actividades de mediación, verificando que cada indicador oficial cuente con alternativas prácticas diferenciadas (físicas, simuladas y desenchufadas), garantizando accesibilidad y pertinencia pedagógica para todo el estudiantado.`
         : `Se concretó la revisión técnica y curricular de los saberes del nivel de noveno año, asegurando que los verbos de desempeño guarden correspondencia unívoca con los indicadores de logro. Asimismo, se integraron simuladores digitales para mitigar brechas de equipamiento y se establecieron las pautas metodológicas de co-docencia y acompañamiento docente.`;
+
+      // Aspectos puntuales abordados (generales y por viñeta)
+      const aspectosPuntualesGenerado = `Resumen General:
+Se consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, garantizando la articulación entre el programa oficial de Formación Tecnológica y los recursos didácticos de apoyo para las personas docentes.
+
+Aspectos Abordados por Viñeta:
+• Calibración Curricular: Verificación de que las consignas didácticas cumplan con los verbos operativos y descriptores oficiales de 9° año.
+• Flexibilidad de Entornos de Programación: Inclusión de alternativas en bloques y texto para atender la diversidad de equipamiento institucional.
+• Simuladores Web y WebApps: Incorporación de laboratorios virtuales interactivos (Wokwi, Tinkercad, MakeCode) con códigos QR directos.
+• Inclusión y Pautas DUA: Creación de secuencias desconectadas (unplugged) y formatos multinivel para eliminar barreras de aprendizaje.
+• Metodología Design Thinking: Articulación de las 5 fases del proyecto semestral con la matriz evaluativa del Tercer Ciclo.
+• Coordinación Inter-Niveles: Seguimiento y alineación de la progresión de saberes con los equipos de 7° y 8° año.`;
 
       // Texto unificado de acuerdos y compromisos
       const acuerdosTextoUnificado = `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas de los módulos 1 y 2 respondan con estricta fidelidad a los indicadores oficiales de logro y desempeño establecidos por el MEP. (Plazo: 25-09-2026)
@@ -607,6 +635,7 @@ ${acuerdos.length > 0
         participantes: ["Allan Morera", "Alberto Bustos (Asesoría Curricular)", "Kevin Sánchez (Coordinación)"],
         temasTratados: temasTratadosGenerado,
         avancesConAllan: avancesGenerados,
+        aspectosPuntuales: aspectosPuntualesGenerado,
         acuerdosTexto: acuerdosTextoUnificado,
         acuerdos: acuerdosArray,
         estado: 'Completado'
