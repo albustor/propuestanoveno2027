@@ -1,118 +1,119 @@
 import { AsignacionIndicadorEvaluacion, CorrelacionIndicadores, MatrizEvaluacionNoveno, ComponenteEvaluacionTipo } from '../types';
 import { MODULOS_NOVENO_OFICIAL } from './curriculoNovenoOficial';
 
-// Correlaciones Pedagógicas Oficiales Recomendadas para 9° Año MEP
+// Correlaciones Pedagógicas Oficiales para 9° Año MEP (Organizadas por Continuidad y Similitud Técnica)
 export const CORRELACIONES_OFICIALES_NOVENO: CorrelacionIndicadores[] = [
   // --- MÓDULO 1 ---
   {
     id: 'corr-m1-domotica-integral',
-    titulo: 'Sinergia 1: Sistema Domótico y Automatización Escolar/Comunitaria',
+    titulo: 'Sinergia 1: Sistema Domótico, Control y Actuación Física',
     moduloId: 1,
     componentePrincipal: 'proyecto',
     componentesSecundarios: ['trabajo_cotidiano'],
-    saberesIds: ['domotica', 'microcontrolador', 'sensor', 'actuador', 'entorno_programacion'],
-    saberesNombres: ['Domótica', 'Microcontrolador', 'Sensor', 'Actuador', 'Entorno de Programación'],
+    saberesIds: ['domotica', 'microcontrolador', 'sensor', 'actuador', 'prototipos', 'entorno_programacion'],
+    saberesNombres: ['Domótica', 'Microcontrolador', 'Sensor', 'Actuador', 'Prototipos', 'Entorno de Programación'],
     indicadoresTextos: [
       'Construir prototipos domóticos que respondan a necesidades reales de accesibilidad y ahorro de energía.',
       'Aplicar las funciones de un microcontrolador, utilizando pines digitales y analógicos, conexión a VCC y GND.',
       'Integrar un sensor en un prototipo, utilizando sus datos como entrada.',
       'Integrar un actuador en un prototipo para ejecutar acciones físicas automatizadas.',
+      'Construir prototipos integrando componentes mecánicos y electrónicos.',
       'Programar algoritmos mediante bloques o texto en el entorno de desarrollo.'
     ],
-    justificacionPedagogica: 'Esta correlación articula la entrada sensorial del entorno con el procesamiento del microcontrolador y la respuesta física de los actuadores, integrándose directamente en el eje central del Proyecto Semestral (Design Thinking).',
-    actividadIntegradaSugerida: 'Diseño, ensamble y programación de una maqueta de aula inteligente con iluminación automática por presencia y ventilación condicional por temperatura.',
-    instrumentoEvaluacion: 'Rúbrica Analítica de Proyecto Integrado (Fase 2: Prototipado y Fase 3: Evaluación)',
+    justificacionPedagogica: 'Esta correlación articula el lazo completo de control físico: captura sensorial del entorno → procesamiento lógico en microcontrolador → respuesta física en actuadores → ensamblaje del prototipo domótico programado.',
+    actividadIntegradaSugerida: 'Proyecto / Reto Integrador: Diseño, ensamble y programación de un sistema automatizado con sensores de presencia/luz y actuadores mecánicos o luminosos.',
+    instrumentoEvaluacion: 'Rúbrica Analítica de Desempeño Técnico y Proceso de Prototipado',
     esSugerenciaIA: false
   },
   {
     id: 'corr-m1-cinematica-algoritmos',
-    titulo: 'Sinergia 2: Mecánica Robótica y Lógica Condicional',
+    titulo: 'Sinergia 2: Cinemática Robótica y Lógica Condicional',
     moduloId: 1,
     componentePrincipal: 'trabajo_cotidiano',
     componentesSecundarios: ['tareas'],
-    saberesIds: ['movimiento_mecanismos', 'algoritmo', 'estructuras_control'],
-    saberesNombres: ['Movimiento en mecanismos', 'Algoritmo', 'Estructuras de control'],
+    saberesIds: ['movimiento_mecanismos', 'algoritmo'],
+    saberesNombres: ['Movimiento en mecanismos', 'Algoritmo'],
     indicadoresTextos: [
       'Identificar el movimiento en mecanismos robóticos, diferenciando el movimiento de entrada y salida.',
-      'Formular algoritmos estructurados para resolver problemas técnicos.',
-      'Implementar estructuras de control condicionales y repetitivas.'
+      'Formular algoritmos estructurados para resolver problemas técnicos.'
     ],
-    justificacionPedagogica: 'Vincula la relación de transmisión mecánica (engranajes, poleas) con las decisiones lógicas y bucles de control que regulan el arranque, velocidad y parada de los motores.',
-    actividadIntegradaSugerida: 'Laboratorio de calibración: cálculo de relación de transmisión física emparejado con diagrama de flujo condicional que evita sobrecarga mecánica.',
-    instrumentoEvaluacion: 'Escala de Desempeño en Trabajo Cotidiano (Observación de Proceso y Bitácora)',
+    justificacionPedagogica: 'Vincula la relación de transmisión mecánica (engranajes, poleas) con las decisiones lógicas y diagramas de flujo condicionales que regulan el sentido de giro, velocidad y parada de los sistemas.',
+    actividadIntegradaSugerida: 'Laboratorio Práctico: Cálculo de relación de transmisión mecánica emparejado con diagrama de flujo condicional de control.',
+    instrumentoEvaluacion: 'Escala de Desempeño en Trabajo Cotidiano (Bitácora de Laboratorio)',
     esSugerenciaIA: false
   },
   {
     id: 'corr-m1-seguridad-datos',
-    titulo: 'Sinergia 3: Gestión Ética y Confiabilidad del Dato en IoT',
+    titulo: 'Sinergia 3: Almacenamiento e Interconexión de Dispositivos (IoT)',
     moduloId: 1,
     componentePrincipal: 'tareas',
     componentesSecundarios: ['trabajo_cotidiano'],
-    saberesIds: ['dato', 'practicas_actitudes_m1'],
-    saberesNombres: ['Dato', 'Prácticas y Actitudes'],
+    saberesIds: ['almacenamiento_datos', 'iot'],
+    saberesNombres: ['Almacenamiento de datos', 'Internet de las cosas (IoT)'],
     indicadoresTextos: [
-      'Gestionar datos provenientes de dispositivos y sensores con responsabilidad.',
-      'Aplicar actitudes de precisión, persistencia y resiliencia ante el error.'
+      'Gestionar y registrar datos provenientes de dispositivos y sensores con responsabilidad.',
+      'Reconocer la interacción entre dispositivos inteligentes interconectados en red.'
     ],
-    justificacionPedagogica: 'Permite al estudiantado analizar de forma autónoma y reflexiva cómo los dispositivos recolectan información ambiental y las implicaciones éticas de su almacenamiento.',
-    actividadIntegradaSugerida: 'Tarea de investigación aplicada: Auditoría de privacidad de un dispositivo inteligente doméstico y decálogo de seguridad digital.',
-    instrumentoEvaluacion: 'Lista de Cotejo Formativa con Criterios de Rigor Ético',
+    justificacionPedagogica: 'Permite al estudiantado analizar cómo los dispositivos recolectan y transmiten variables en red, desarrollando hábitos de gestión confiable y segura de la información.',
+    actividadIntegradaSugerida: 'Tarea de Investigación Aplicada: Auditoría de transmisión de datos en dispositivos IoT y registro estructurado de variables sensoriales.',
+    instrumentoEvaluacion: 'Lista de Cotejo Formativa con Criterios de Rigor Técnico',
     esSugerenciaIA: false
   },
 
   // --- MÓDULO 2 ---
   {
     id: 'corr-m2-solucion-comunitaria-3d-bd',
-    titulo: 'Sinergia 4: Plataforma de Diagnóstico Comunitario, Modelado 3D y Base de Datos',
+    titulo: 'Sinergia 4: Plataforma Digital, Base de Datos, Modelado 3D e IA Generativa',
     moduloId: 2,
     componentePrincipal: 'proyecto',
     componentesSecundarios: ['trabajo_cotidiano'],
-    saberesIds: ['plataformas_contenido', 'gestor_bd', 'modelado_3d', 'herramientas_generativas'],
-    saberesNombres: ['Plataformas de Contenido', 'Gestor de Bases de Datos', 'Modelado 3D', 'Herramientas Generativas'],
+    saberesIds: ['plataformas_contenido', 'base_datos', 'contenido_multimedia_3d', 'herramientas_generativas'],
+    saberesNombres: ['Plataformas de Contenido', 'Bases de Datos', 'Contenido Multimedia 3D', 'Herramientas Generativas'],
     indicadoresTextos: [
       'Diseñar formularios e instrumentos digitales para recolección de datos comunitarios.',
       'Estructurar y consultar bases de datos relacionales para procesar información.',
       'Diseñar modelos tridimensionales paramétricos para soluciones físicas.',
       'Utilizar herramientas de IA generativa de forma crítica y creativa.'
     ],
-    justificacionPedagogica: 'Crea un flujo de ingeniería completo: recolección de necesidades comunitarias con formularios → procesamiento relacional en BD → modelado 3D de la carcasa o accesorio → asistencia de IA para documentación.',
-    actividadIntegradaSugerida: 'Proyecto Semestral: Sistema de inventario escolar o reporte comunitario con soporte 3D diseñado en CAD y base de datos con consultas funcionales.',
-    instrumentoEvaluacion: 'Rúbrica Analítica de Proyecto Semestral (3 Fases / 5 Etapas)',
+    justificacionPedagogica: 'Crea un flujo de ingeniería digital completo: recolección de requerimientos con formularios → diseño relacional y consultas SQL → modelado 3D de la pieza física → asistencia de IA generativa para documentación y diseño.',
+    actividadIntegradaSugerida: 'Proyecto Integrado: Sistema de gestión con recolección en línea, base de datos relacional y modelado 3D de soporte físico.',
+    instrumentoEvaluacion: 'Rúbrica Analítica de Proyecto Digital y Consultas SQL',
     esSugerenciaIA: false
   },
   {
     id: 'corr-m2-redes-ciberseguridad',
-    titulo: 'Sinergia 5: Arquitectura de Redes y Ciberdefensa Activa',
+    titulo: 'Sinergia 5: Arquitectura de Redes, Sistemas Operativos y Ciberdefensa',
     moduloId: 2,
     componentePrincipal: 'trabajo_cotidiano',
     componentesSecundarios: ['tareas'],
-    saberesIds: ['redes_comunicacion', 'riesgos_linea', 'huella_digital'],
-    saberesNombres: ['Redes de Comunicación', 'Riesgos en Línea', 'Huella Digital'],
+    saberesIds: ['redes_comunicacion', 'sistema_operativo', 'riesgos_linea', 'huella_digital'],
+    saberesNombres: ['Redes de Comunicación', 'Sistemas Operativos', 'Riesgos en Línea', 'Huella Digital'],
     indicadoresTextos: [
       'Analizar la topología y protocolos de transferencia en redes de computadoras.',
+      'Reconocer las funciones y administración básica del sistema operativo.',
       'Identificar amenazas y protocolos de seguridad cibernética.',
       'Reconocer el impacto de la huella digital y la identidad en la web.'
     ],
-    justificacionPedagogica: 'La comprensión de cómo viajan los paquetes IP fundamenta la adopción de protocolos seguros (HTTPS, 2FA) y la prevención de ingeniería social.',
-    actividadIntegradaSugerida: 'Taller de ciberseguridad en clase: simulación de paquetes de red y auditoría de contraseñas seguras y huella digital.',
+    justificacionPedagogica: 'La comprensión de la arquitectura de redes y el sistema operativo fundamenta la adopción de medidas defensivas (HTTPS, 2FA, cifrado) y la gestión responsable de la identidad digital.',
+    actividadIntegradaSugerida: 'Taller de Ciberdefensa: Simulación de topología de red, configuración defensiva en SO y auditoría de huella digital.',
     instrumentoEvaluacion: 'Escala de Desempeño y Registro en Bitácora Cotidiana',
     esSugerenciaIA: false
   },
   {
     id: 'corr-m2-etica-ia-licencias',
-    titulo: 'Sinergia 6: Ética de la Inteligencia Artificial y Propiedad Intelectual',
+    titulo: 'Sinergia 6: Ética de la IA y Propiedad Intelectual',
     moduloId: 2,
     componentePrincipal: 'tareas',
     componentesSecundarios: ['trabajo_cotidiano'],
     saberesIds: ['desafios_ia', 'derechos_autor'],
-    saberesNombres: ['Desafíos de la IA', 'Derechos de Autor y Licencias'],
+    saberesNombres: ['Desafíos de la IA', 'Derechos de Autor'],
     indicadoresTextos: [
       'Evaluar sesgos, privacidad e impacto social en el uso de IA.',
       'Aplicar marcos de licenciamiento Creative Commons y derechos de autor en productos digitales.'
     ],
-    justificacionPedagogica: 'Fomenta el juicio ético independiente en el uso de herramientas de inteligencia artificial y el respeto riguroso a la autoría intelectual.',
-    actividadIntegradaSugerida: 'Tarea de análisis crítico: Ensayo comparativo sobre sesgos en modelos de IA y aplicación de licencias abiertas a un repositorio de recursos.',
-    instrumentoEvaluacion: 'Rúbrica Sintética de Tarea de Pensamiento Crítico',
+    justificacionPedagogica: 'Fomenta el juicio crítico autónomo en la interacción con sistemas generativos y el respeto estricto a las licencias de autoría intelectual.',
+    actividadIntegradaSugerida: 'Tarea de Análisis Crítico: Matriz comparativa de sesgos algorítmicos y auditoría de licenciamiento Creative Commons.',
+    instrumentoEvaluacion: 'Rúbrica Sintética de Tarea y Pensamiento Crítico',
     esSugerenciaIA: false
   }
 ];
@@ -124,41 +125,38 @@ export const generarAsignacionesPorDefecto = (): Record<string, AsignacionIndica
   MODULOS_NOVENO_OFICIAL.forEach((modulo) => {
     modulo.areas.forEach((area) => {
       area.saberes.forEach((saber) => {
-        // Determinación inteligente de componentes según naturaleza del saber
         const componentes: ComponenteEvaluacionTipo[] = ['trabajo_cotidiano']; // Base cotidiana
 
         let instrumentoSugerido = 'Escala de desempeño / Bitácora de proceso';
         let correlacionId: string | undefined = undefined;
 
-        // Asignaciones por saber en Módulo 1
+        // Asignaciones en Módulo 1 (Robótica y Programación)
         if (modulo.id === 1) {
-          if (['domotica', 'microcontrolador', 'sensor', 'actuador'].includes(saber.id)) {
+          if (['domotica', 'microcontrolador', 'sensor', 'actuador', 'prototipos', 'entorno_programacion'].includes(saber.id)) {
             componentes.push('proyecto');
-            instrumentoSugerido = 'Rúbrica de proceso de prototipado y desempeño en clase';
+            instrumentoSugerido = 'Rúbrica de proceso de prototipado y desempeño técnico';
             correlacionId = 'corr-m1-domotica-integral';
-          } else if (['movimiento_mecanismos', 'algoritmo', 'estructuras_control'].includes(saber.id)) {
-            componentes.push('tareas');
-            instrumentoSugerido = 'Lista de cotejo cinemática y prueba práctica';
+          } else if (['movimiento_mecanismos', 'algoritmo'].includes(saber.id)) {
+            instrumentoSugerido = 'Escala de observación de laboratorio y bitácora';
             correlacionId = 'corr-m1-cinematica-algoritmos';
-          } else if (['dato', 'practicas_actitudes_m1'].includes(saber.id)) {
+          } else if (['almacenamiento_datos', 'iot'].includes(saber.id)) {
             componentes.push('tareas');
-            instrumentoSugerido = 'Rúbrica de reporte y auditoría de datos';
+            instrumentoSugerido = 'Lista de cotejo formativa y reporte de datos IoT';
             correlacionId = 'corr-m1-seguridad-datos';
           }
         } 
-        // Asignaciones por saber en Módulo 2
+        // Asignaciones en Módulo 2 (Ciencia de Datos e IA)
         else if (modulo.id === 2) {
-          if (['plataformas_contenido', 'gestor_bd', 'modelado_3d', 'herramientas_generativas'].includes(saber.id)) {
+          if (['plataformas_contenido', 'base_datos', 'contenido_multimedia_3d', 'herramientas_generativas'].includes(saber.id)) {
             componentes.push('proyecto');
-            instrumentoSugerido = 'Rúbrica de producto digital y consultas relacionales';
+            instrumentoSugerido = 'Rúbrica de solución digital y consultas relacionales SQL';
             correlacionId = 'corr-m2-solucion-comunitaria-3d-bd';
-          } else if (['redes_comunicacion', 'riesgos_linea', 'huella_digital'].includes(saber.id)) {
-            componentes.push('tareas');
+          } else if (['redes_comunicacion', 'sistema_operativo', 'riesgos_linea', 'huella_digital'].includes(saber.id)) {
             instrumentoSugerido = 'Escala de desempeño en simulación de redes y ciberseguridad';
             correlacionId = 'corr-m2-redes-ciberseguridad';
           } else if (['desafios_ia', 'derechos_autor'].includes(saber.id)) {
             componentes.push('tareas');
-            instrumentoSugerido = 'Rúbrica de ensayo crítico y licenciamiento';
+            instrumentoSugerido = 'Rúbrica de ensayo crítico y licenciamiento Creative Commons';
             correlacionId = 'corr-m2-etica-ia-licencias';
           }
         }
@@ -172,7 +170,7 @@ export const generarAsignacionesPorDefecto = (): Record<string, AsignacionIndica
           moduloId: modulo.id as 1 | 2,
           componentes: Array.from(new Set(componentes)),
           instrumentoSugerido,
-          observaciones: `Asignación oficial recomendada para ${modulo.nombre.split(':')[0]}.`,
+          observaciones: `Asignación articulada por sinergia técnica para ${modulo.nombre.split(':')[0]}.`,
           correlacionId
         };
       });

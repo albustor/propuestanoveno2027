@@ -36,26 +36,43 @@ export const ProyectoFasesEtapasView: React.FC = () => {
       <div className="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                Componente Proyecto • Design Thinking / ABP
-              </span>
-              <span className="text-xs text-zinc-500 font-medium">3 Fases • 5 Etapas por Semestre</span>
+              <div className="flex items-center space-x-2">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                  Componente Proyecto • Metodología Design Thinking (DT)
+                </span>
+                <span className="text-xs text-zinc-500 font-medium">3 Fases • 5 Etapas de DT</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
+                {proyecto.tituloProyecto}
+              </h1>
+              <p className="text-sm text-zinc-600 max-w-4xl leading-relaxed">
+                <strong className="text-zinc-800">Marco Metodológico:</strong> {proyecto.problemaContextual}
+              </p>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
-              {proyecto.tituloProyecto}
-            </h1>
-            <p className="text-sm text-zinc-600 max-w-4xl leading-relaxed">
-              <strong className="text-zinc-800">Problema Contextual:</strong> {proyecto.problemaContextual}
-            </p>
-          </div>
 
-          {/* Badge Fijo Módulo 1 */}
-          <div className="flex items-center space-x-2 shrink-0 self-start lg:self-center">
-            <span className="px-3.5 py-1.5 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-              <span>🤖</span> Prototipado Domótico & Robótica (Módulo 1)
-            </span>
-          </div>
+            {/* Selector de Módulo */}
+            <div className="flex items-center space-x-2 shrink-0 self-start lg:self-center">
+              <button
+                onClick={() => setSelectedModulo(1)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  selectedModulo === 1 
+                    ? 'bg-emerald-600 text-white shadow-2xs' 
+                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                }`}
+              >
+                🤖 Módulo 1: Robótica (DT)
+              </button>
+              <button
+                onClick={() => setSelectedModulo(2)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  selectedModulo === 2 
+                    ? 'bg-emerald-600 text-white shadow-2xs' 
+                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                }`}
+              >
+                💾 Módulo 2: Datos & IA (DT)
+              </button>
+            </div>
         </div>
       </div>
 
@@ -209,8 +226,15 @@ export const ProyectoFasesEtapasView: React.FC = () => {
               </div>
 
               <div className="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-4 space-y-2">
-                <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">Criterios de Evaluación MEP:</span>
-                <ul className="space-y-1.5">
+                <div>
+                  <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider block">
+                    Desempeños de la Etapa Design Thinking (DT):
+                  </span>
+                  <span className="text-[10px] text-emerald-700 italic">
+                    (Los indicadores curriculares de logro se vincularán al tipificar el proyecto)
+                  </span>
+                </div>
+                <ul className="space-y-1.5 mt-1">
                   {activeEtapa.criteriosEvaluacionMEP.map((crit, idx) => (
                     <li key={idx} className="text-xs text-emerald-950 flex items-start space-x-1.5">
                       <span className="text-emerald-700 font-bold">•</span>

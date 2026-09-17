@@ -1,11 +1,11 @@
-// Catálogo del Proyecto Curricular por Fases y Etapas (MEP 2026 - Noveno Año)
+// Catálogo del Proyecto Curricular por Fases y Etapas (Design Thinking / DT - Noveno Año)
 import { ProyectoSemestral } from '../types';
 
 export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
   {
     "moduloId": 1,
-    "tituloProyecto": "Prototipo Domótico Automatizado para Ahorro Energético y Accesibilidad",
-    "problemaContextual": "La comunidad escolar y los hogares enfrentan un alto consumo eléctrico y barreras de accesibilidad que pueden resolverse con sistemas automatizados.",
+    "tituloProyecto": "Marco Metodológico de Proyecto por Design Thinking (DT) — Robótica & Computación Física",
+    "problemaContextual": "Espacio de ideación y diagnóstico contextual abierto: la problemática comunitaria y el reto de automatización específico serán tipificados y validados por el equipo docente según los saberes e indicadores que se vinculen a las 5 etapas de DT.",
     "fases": [
       {
         "id": "fase1_investigacion",
@@ -25,14 +25,14 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "id": "fase2_desarrollo",
         "numero": 2,
         "nombre": "Fase II: Ideación, Diseño y Construcción Técnica",
-        "descripcion": "Generación creativa de alternativas, formulación de algoritmos en pseudocódigo/flujogramas y ensamble del prototipo domótico.",
+        "descripcion": "Generación creativa de alternativas, formulación de algoritmos en pseudocódigo/flujogramas y ensamble del prototipo tecnológico.",
         "etapas": [
           "etapa3_idear",
           "etapa4_prototipar"
         ],
         "evidenciasEsperadas": [
           "Diagramas de flujo y esquemas de conexionado de pines",
-          "Prototipo domótico funcional operativo (físico o simulado)"
+          "Prototipo tecnológico funcional operativo (físico o simulado)"
         ]
       },
       {
@@ -56,31 +56,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 1: Empatizar",
         "faseId": "fase1_investigacion",
         "faseNombre": "Fase I: Comprensión y Diagnóstico",
-        "proposito": "Comprender las necesidades reales de los usuarios mediante observación directa y escucha activa en el entorno escolar o comunal.",
+        "proposito": "Comprender las necesidades reales de las personas usuarias mediante observación directa y escucha activa en el entorno escolar o comunal.",
         "accionesClave": [
-          "Observar y registrar de forma directa situaciones de consumo eléctrico o barreras de accesibilidad en el colegio.",
-          "Conversar y escuchar activamente a conserjes, docentes y compañeros sobre retos y necesidades cotidianas."
+          "Observar y registrar de forma directa situaciones problemáticas o necesidades cotidianas en el colegio o comunidad.",
+          "Conversar y escuchar activamente a las personas involucradas para identificar puntos de mejora y oportunidades de automatización."
         ],
         "entregablesSugeridos": [
           "Mapa de empatía de las personas usuarias",
           "Bitácora de observación directa de necesidades"
         ],
-        "semanaSugeridaModulo1": [
-          3,
-          4
-        ],
-        "semanaSugeridaModulo2": [
-          3,
-          4
-        ],
+        "semanaSugeridaModulo1": [3, 4],
+        "semanaSugeridaModulo2": [3, 4],
         "criteriosEvaluacionMEP": [
-          "Identifica con sensibilidad y respeto situaciones problemáticas reales en su contexto educativo.",
-          "Registra información cualitativa relevante de los usuarios sin sesgos ni suposiciones."
+          "Aplica técnicas de observación y escucha activa para identificar necesidades reales del contexto.",
+          "Sistematiza la información cualitativa recopilada en instrumentos visuales como mapas de empatía."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Diálogo guiado sobre situaciones cotidianas que requieren soluciones automatizadas o accesibles en la institución.",
-          "desarrollo": "Recorrido de observación guiada en equipos y construcción colaborativa del mapa de empatía.",
-          "cierre": "Plenaria: Puesta en común de los principales hallazgos y dolores identificados en las personas usuarias."
+          "inicio": "Focalización: Diálogo guiado sobre situaciones cotidianas que requieren soluciones innovadoras o automatizadas.",
+          "desarrollo": "Recorrido de observación en equipos y construcción colaborativa del mapa de empatía.",
+          "cierre": "Plenaria: Puesta en común de los principales hallazgos y necesidades identificadas."
         }
       },
       {
@@ -89,31 +83,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 2: Definir",
         "faseId": "fase1_investigacion",
         "faseNombre": "Fase I: Comprensión y Diagnóstico",
-        "proposito": "Sintetizar las observaciones del entorno y formular el desafío tecnológico central mediante la pregunta detonante de diseño: ¿Cómo podríamos...?",
+        "proposito": "Sintetizar los hallazgos y formular el desafío tecnológico central mediante la pregunta detonante de diseño: ¿Cómo podríamos...?",
         "accionesClave": [
-          "Sintetizar los hallazgos de la empatía y redactar la declaración precisa del problema.",
-          "Establecer la lista de requerimientos técnicos y funcionales del reto (sensores, actuadores, condiciones de operación)."
+          "Sintetizar los hallazgos de la empatía y redactar la declaración precisa del reto de diseño.",
+          "Establecer la lista preliminar de requerimientos funcionales y técnicos necesarios para la solución."
         ],
         "entregablesSugeridos": [
           "Declaración del reto de diseño (Problem Statement)",
           "Lista de especificaciones y requerimientos funcionales"
         ],
-        "semanaSugeridaModulo1": [
-          5,
-          6
-        ],
-        "semanaSugeridaModulo2": [
-          5,
-          6
-        ],
+        "semanaSugeridaModulo1": [5, 6],
+        "semanaSugeridaModulo2": [5, 6],
         "criteriosEvaluacionMEP": [
-          "Delimita el reto técnico con claridad, pertinencia contextual y viabilidad pedagógica.",
-          "Establece requerimientos funcionales coherentes con los indicadores curriculares del nivel."
+          "Delimita el reto técnico con claridad mediante la formulación estructurada de la pregunta de diseño.",
+          "Establece especificaciones y requerimientos técnicos viables acordes al nivel de 9° año."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de declaraciones de problemas amplias vs. retos de diseño bien focalizados.",
+          "inicio": "Focalización: Análisis de problemas amplios vs. retos de diseño bien acotados.",
           "desarrollo": "Redacción colaborativa de la pregunta '¿Cómo podríamos...?' y definición de especificaciones técnicas.",
-          "cierre": "Validación formativa con el docente para asegurar la alineación con los indicadores oficiales."
+          "cierre": "Validación con el equipo docente para asegurar la viabilidad del reto."
         }
       },
       {
@@ -122,31 +110,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 3: Idear",
         "faseId": "fase2_desarrollo",
         "faseNombre": "Fase II: Ideación y Construcción",
-        "proposito": "Generar múltiples soluciones creativas y diseñar la lógica algorítmica y los esquemas de conexión antes del ensamblaje.",
+        "proposito": "Generar múltiples alternativas creativas y estructurar la lógica algorítmica y esquemas de conexión antes de la construcción.",
         "accionesClave": [
-          "Realizar sesiones de lluvia de ideas (Brainstorming) y bocetos conceptuales de la maqueta.",
-          "Diseñar el diagrama de flujo estructurado y el pseudocódigo del sistema automático."
+          "Realizar sesiones de lluvia de ideas (Brainstorming) y bocetos conceptuales de la solución.",
+          "Diseñar el diagrama de flujo y los esquemas lógicos previos a la implementación técnica."
         ],
         "entregablesSugeridos": [
           "Diagrama de flujo normalizado",
-          "Boceto a escala de la maqueta domótica"
+          "Boceto conceptual del prototipo con lista de materiales"
         ],
-        "semanaSugeridaModulo1": [
-          8,
-          9
-        ],
-        "semanaSugeridaModulo2": [
-          8,
-          9
-        ],
+        "semanaSugeridaModulo1": [8, 9],
+        "semanaSugeridaModulo2": [8, 9],
         "criteriosEvaluacionMEP": [
-          "Diseña algoritmos estructurados con adecuada simbología y lógica secuencial.",
-          "Propone soluciones innovadoras y viables para el problema definido."
+          "Genera y evalúa múltiples alternativas creativas de solución seleccionando la más pertinente.",
+          "Diseña diagramas de flujo y esquemas lógicos con adecuada simbología técnica."
         ],
         "actividadEnriquecida": {
           "inicio": "Focalización: Dinámica de pensamiento lateral y divergente.",
-          "desarrollo": "Diagramación del algoritmo en Draw.io/PSeInt y diseño del circuito en simulador.",
-          "cierre": "Prueba de escritorio para validar la lógica algorítmica."
+          "desarrollo": "Diagramación del algoritmo y diseño del circuito preliminar en papel o simulador.",
+          "cierre": "Prueba de escritorio para validar la lógica algorítmica propuesta."
         }
       },
       {
@@ -155,36 +137,26 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 4: Prototipar",
         "faseId": "fase2_desarrollo",
         "faseNombre": "Fase II: Ideación y Construcción",
-        "proposito": "Construir el prototipo funcional integrando la placa microcontroladora, sensores, actuadores y el código depurado.",
+        "proposito": "Construir el prototipo funcional integrando componentes de hardware, simulación y programación modular.",
         "accionesClave": [
-          "Ensamblar la estructura física o maqueta con materiales reusables.",
-          "Cablear los circuitos en protoboard y programar el microcontrolador en bloques o texto.",
-          "Integrar los subsistemas mecánicos y electrónicos en un conjunto cohesivo."
+          "Construir la estructura física o interactiva con materiales disponibles o simuladores web.",
+          "Conectar los componentes técnicos y programar el algoritmo en bloques o texto.",
+          "Integrar los subsistemas mecánicos, sensoriales y de software en una solución funcional."
         ],
         "entregablesSugeridos": [
-          "Prototipo funcional operativo",
+          "Prototipo funcional operativo (físico o digital)",
           "Código fuente comentado y modularizado"
         ],
-        "semanaSugeridaModulo1": [
-          11,
-          12,
-          13,
-          14
-        ],
-        "semanaSugeridaModulo2": [
-          11,
-          12,
-          13,
-          14
-        ],
+        "semanaSugeridaModulo1": [11, 12, 13, 14],
+        "semanaSugeridaModulo2": [11, 12, 13, 14],
         "criteriosEvaluacionMEP": [
-          "Aplica correctamente las funciones del microcontrolador, sensores y actuadores.",
-          "Demuestra orden, seguridad y buenas prácticas en el cableado y programación."
+          "Construye el prototipo integrando hardware programable o simulaciones interactivas.",
+          "Implementa el código funcional demostrando orden, depuración y buenas prácticas."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Verificación de lista de componentes y medidas de seguridad.",
+          "inicio": "Focalización: Verificación de componentes y normas de seguridad en el laboratorio.",
           "desarrollo": "Montaje intensivo, programación y prueba individual de cada subsistema.",
-          "cierre": "Integración final y verificación del primer encendido seguro."
+          "cierre": "Integración de componentes y primera prueba de funcionamiento integral."
         }
       },
       {
@@ -193,82 +165,74 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 5: Evaluar y Testear",
         "faseId": "fase3_evaluacion",
         "faseNombre": "Fase III: Validación y Socialización",
-        "proposito": "Validar el funcionamiento del prototipo en condiciones reales, corregir fallas mediante depuración y presentar los resultados.",
+        "proposito": "Validar el funcionamiento del prototipo en condiciones reales, corregir fallos mediante depuración y presentar los resultados.",
         "accionesClave": [
-          "Ejecutar la matriz de pruebas de funcionamiento y registrar fallas (debugging).",
-          "Aplicar coevaluación con la rúbrica oficial del MEP.",
+          "Ejecutar pruebas de funcionamiento sistemáticas y registrar las mejoras en la bitácora.",
+          "Aplicar procesos de coevaluación y retroalimentación entre equipos.",
           "Presentar el proyecto en la Demostración de lo Aprendido (Feria Tecnológica)."
         ],
         "entregablesSugeridos": [
           "Informe técnico final con bitácora de depuración",
-          "Demostración pública del prototipo"
+          "Demostración pública del funcionamiento del prototipo"
         ],
-        "semanaSugeridaModulo1": [
-          16,
-          17,
-          18
-        ],
-        "semanaSugeridaModulo2": [
-          16,
-          17,
-          18
-        ],
+        "semanaSugeridaModulo1": [16, 17, 18],
+        "semanaSugeridaModulo2": [16, 17, 18],
         "criteriosEvaluacionMEP": [
-          "Demuestra la funcionalidad del prototipo resolviendo el reto inicial planteado.",
-          "Comunica los resultados con claridad técnica, fundamentación y vocabulario preciso."
+          "Valida el funcionamiento del prototipo verificando el cumplimiento del reto planteado.",
+          "Comunica con claridad técnica los resultados, aprendizajes y proceso de depuración."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Preparación del stand de demostración y criterios de la rúbrica sumativa.",
-          "desarrollo": "Exhibición y demostración en vivo ante jurado/compañeros y ronda de preguntas.",
-          "cierre": "Sistematización de aprendizajes y entrega final de calificaciones formativas y sumativas."
+          "inicio": "Focalización: Preparación de la demostración y revisión de criterios de evaluación.",
+          "desarrollo": "Exhibición y demostración en vivo ante compañeros y docentes.",
+          "cierre": "Sistematización de aprendizajes y retroalimentación final."
         }
       }
     ]
   },
   {
     "moduloId": 2,
-    "tituloProyecto": "Solución Digital Comunitaria: Base de Datos, Modelado 3D y Campaña de Ciberseguridad",
-    "problemaContextual": "Las organizaciones comunales y colegios requieren sistematizar inventarios, diseñar piezas ergonómicas y educar a los jóvenes en ciudadanía digital y ética IA.",
+    "tituloProyecto": "Marco Metodológico de Proyecto por Design Thinking (DT) — Ciencia de Datos & IA",
+    "problemaContextual": "Espacio de ideación y diagnóstico contextual abierto: la problemática digital comunitaria y la solución específica (base de datos, modelado 3D, IA o ciberseguridad) serán tipificadas y validadas por el equipo docente según los indicadores vinculados.",
     "fases": [
       {
         "id": "fase1_investigacion",
         "numero": 1,
         "nombre": "Fase I: Diagnóstico e Instrumentación Digital",
-        "descripcion": "Diseño de encuestas en línea, optimización de sistemas operativos y levantamiento de requerimientos.",
+        "descripcion": "Diseño de encuestas en línea, análisis del entorno y levantamiento de requerimientos de información.",
         "etapas": [
           "etapa1_empatizar",
           "etapa2_definir"
         ],
         "evidenciasEsperadas": [
-          "Formulario digital con análisis estadístico",
-          "Esquema de requerimientos de la base de datos"
+          "Formulario digital con análisis de necesidades",
+          "Esquema de requerimientos funcionales de la solución"
         ]
       },
       {
         "id": "fase2_desarrollo",
         "numero": 2,
-        "nombre": "Fase II: Modelado Relacional, Diseño 3D y Co-creación con IA",
-        "descripcion": "Creación de tablas relacionales en SQL, modelado paramétrico 3D y generación de contenidos con prompts estructurados.",
+        "nombre": "Fase II: Modelado, Diseño 3D y Co-creación con IA",
+        "descripcion": "Estructuración de datos, modelado paramétrico 3D y generación de contenidos con prompts estructurados.",
         "etapas": [
           "etapa3_idear",
           "etapa4_prototipar"
         ],
         "evidenciasEsperadas": [
-          "Base de datos relacional operativa con consultas",
-          "Modelo 3D en formato .STL y campaña multimedia"
+          "Estructura relacional de base de datos",
+          "Modelo 3D y recursos multimedia documentados"
         ]
       },
       {
         "id": "fase3_evaluacion",
         "numero": 3,
-        "nombre": "Fase III: Auditoría Ética, Ciberseguridad y Demostración",
-        "descripcion": "Revisión de licencias Creative Commons, verificación APA 7, análisis de riesgos en línea y exposición final.",
+        "nombre": "Fase III: Auditoría Ética, Seguridad y Socialización",
+        "descripcion": "Revisión de licencias Creative Commons, análisis de riesgos digitales y exposición comunitaria.",
         "etapas": [
           "etapa5_evaluar_testear"
         ],
         "evidenciasEsperadas": [
-          "Portafolio auditado con citas APA 7 y licencias CC",
-          "Sustentación comunitaria de la solución"
+          "Portafolio digital con licenciamiento y autoría ética",
+          "Sustentación de la solución digital"
         ]
       }
     ],
@@ -279,31 +243,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 1: Empatizar",
         "faseId": "fase1_investigacion",
         "faseNombre": "Fase I: Diagnóstico e Instrumentación",
-        "proposito": "Diseñar y aplicar encuestas digitales estructuradas para conocer necesidades de gestión y riesgos digitales.",
+        "proposito": "Diseñar y aplicar instrumentos digitales para conocer necesidades de gestión de información y ciudadanía digital.",
         "accionesClave": [
-          "Crear formularios en Microsoft Forms / Google Forms con validación de respuestas.",
-          "Aplicar la encuesta a una muestra representativa de estudiantes y docentes."
+          "Diseñar formularios o encuestas en plataformas digitales con validación de datos.",
+          "Aplicar el instrumento a una muestra del colegio o comunidad para recabar insumos."
         ],
         "entregablesSugeridos": [
-          "Formulario digital publicado con código QR",
-          "Informe estadístico de respuestas"
+          "Formulario digital publicado",
+          "Informe preliminar de necesidades identificadas"
         ],
-        "semanaSugeridaModulo1": [
-          3,
-          4
-        ],
-        "semanaSugeridaModulo2": [
-          3,
-          4
-        ],
+        "semanaSugeridaModulo1": [3, 4],
+        "semanaSugeridaModulo2": [3, 4],
         "criteriosEvaluacionMEP": [
-          "Formula preguntas claras, pertinentes y sin sesgo metodológico.",
-          "Aplica buenas prácticas de privacidad y consentimiento informado."
+          "Formula instrumentos digitales claros y estructurados para recolectar información contextual.",
+          "Aplica normas éticas de privacidad y consentimiento informado en la captura de datos."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de metodologías de muestreo y diseño de preguntas.",
-          "desarrollo": "Configuración técnica del formulario con lógica de salto condicional.",
-          "cierre": "Recolección piloto y validación de gráficos estadísticos."
+          "inicio": "Focalización: Métodos de recolección de datos y diseño de encuestas en línea.",
+          "desarrollo": "Configuración técnica del formulario y pilotaje con usuarios del entorno.",
+          "cierre": "Análisis preliminar de respuestas obtenidas."
         }
       },
       {
@@ -312,31 +270,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 2: Definir",
         "faseId": "fase1_investigacion",
         "faseNombre": "Fase I: Diagnóstico e Instrumentación",
-        "proposito": "Definir la arquitectura de red y el modelo entidad-relación para la solución de datos.",
+        "proposito": "Definir los requerimientos de la base de datos, topología de red y alcance de la solución digital.",
         "accionesClave": [
-          "Identificar entidades, atributos y relaciones clave para la base de datos.",
-          "Diseñar el esquema de red local que soportará el intercambio seguro de datos."
+          "Identificar entidades, atributos y relaciones clave para el procesamiento de información.",
+          "Delimitar el reto de diseño digital y los requerimientos técnicos de ciberseguridad."
         ],
         "entregablesSugeridos": [
-          "Diagrama Entidad-Relación (DER)",
-          "Topología de red LAN simulada"
+          "Diagrama Entidad-Relación preliminar",
+          "Declaración del reto de diseño digital"
         ],
-        "semanaSugeridaModulo1": [
-          5,
-          6
-        ],
-        "semanaSugeridaModulo2": [
-          5,
-          6
-        ],
+        "semanaSugeridaModulo1": [5, 6],
+        "semanaSugeridaModulo2": [5, 6],
         "criteriosEvaluacionMEP": [
-          "Estructura entidades y claves primarias/foráneas con integridad referencial.",
-          "Configura direccionamiento IP y protocolos de red adecuados."
+          "Estructura requerimientos técnicos y modelos de datos con claridad y pertinencia.",
+          "Define el reto digital delimitando los alcances de la solución."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Análisis de diagramas de red y esquemas de bases de datos.",
-          "desarrollo": "Modelado del DER en papel o Draw.io y simulación de red en Packet Tracer.",
-          "cierre": "Revisión cruzada para eliminar redundancias."
+          "inicio": "Focalización: Análisis de esquemas de bases de datos y arquitectura de soluciones.",
+          "desarrollo": "Modelado del esquema relacional y definición del reto en equipos.",
+          "cierre": "Validación docente para asegurar la alineación con los indicadores del nivel."
         }
       },
       {
@@ -345,31 +297,25 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 3: Idear",
         "faseId": "fase2_desarrollo",
         "faseNombre": "Fase II: Modelado y Co-creación",
-        "proposito": "Diseñar bocetos paramétricos para el modelado 3D y estructurar prompts avanzados para contenidos educativos.",
+        "proposito": "Diseñar bocetos paramétricos para piezas 3D y estructurar prompts avanzados para generación de contenidos.",
         "accionesClave": [
-          "Dibujar bocetos 3D en papel isométrico acotando medidas exactas en milímetros.",
-          "Redactar prompts con técnica R-C-T-R para asistir en redacción técnica."
+          "Elaborar bocetos acotados en papel con medidas exactas antes del modelado CAD.",
+          "Formular prompts estructurados para asistir en la documentación y diseño conceptual."
         ],
         "entregablesSugeridos": [
-          "Bocetos acotados en vistas ortogonales",
-          "Guía de prompts y fact-checking"
+          "Bocetos acotados de la pieza 3D",
+          "Registro de prompts y verificación crítica de fuentes"
         ],
-        "semanaSugeridaModulo1": [
-          8,
-          9
-        ],
-        "semanaSugeridaModulo2": [
-          8,
-          9
-        ],
+        "semanaSugeridaModulo1": [8, 9],
+        "semanaSugeridaModulo2": [8, 9],
         "criteriosEvaluacionMEP": [
-          "Aplica técnicas de ingeniería de prompts con sentido crítico y verificación.",
-          "Demuestra visión espacial y precisión matemática en los bocetos 3D."
+          "Aplica técnicas de ideación y formulación de prompts con pensamiento crítico.",
+          "Demuestra razonamiento espacial y precisión en los bocetos de diseño 3D."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Exploración de interfaces 3D y ejemplos de prompts efectivos.",
-          "desarrollo": "Modelado preliminar y contraste de datos generados por IA.",
-          "cierre": "Consolidación de la matriz de verificación de fuentes."
+          "inicio": "Focalización: Exploración de interfaces de diseño 3D y formulación ética de prompts.",
+          "desarrollo": "Diseño preliminar de modelos y contraste de datos asistidos por IA.",
+          "cierre": "Verificación de viabilidad dimensional y técnica de las propuestas."
         }
       },
       {
@@ -378,36 +324,26 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 4: Prototipar",
         "faseId": "fase2_desarrollo",
         "faseNombre": "Fase II: Modelado y Co-creación",
-        "proposito": "Implementar la base de datos relacional, modelar la pieza 3D definitiva y compilar el contenido multimedia.",
+        "proposito": "Implementar la base de datos relacional, modelar la pieza 3D y estructurar los recursos digitales.",
         "accionesClave": [
-          "Crear las tablas en DB Browser / MS Access y programar consultas SQL.",
-          "Modelar la pieza 3D en Tinkercad exportando archivo .STL para manufactura.",
-          "Producir la campaña de ciberseguridad con recursos multimedia."
+          "Crear tablas relacionales y consultas de datos funcionales.",
+          "Modelar en software 3D exportando archivos listos para fabricación (.STL).",
+          "Integrar los recursos multimedia con criterios de seguridad y accesibilidad."
         ],
         "entregablesSugeridos": [
-          "Archivo de Base de Datos relacional (.db)",
-          "Archivo 3D (.stl) y recursos gráficos"
+          "Base de datos relacional funcional",
+          "Archivo de modelado 3D (.STL) y recursos multimedia"
         ],
-        "semanaSugeridaModulo1": [
-          11,
-          12,
-          13,
-          14
-        ],
-        "semanaSugeridaModulo2": [
-          11,
-          12,
-          13,
-          14
-        ],
+        "semanaSugeridaModulo1": [11, 12, 13, 14],
+        "semanaSugeridaModulo2": [11, 12, 13, 14],
         "criteriosEvaluacionMEP": [
-          "Crea tablas relacionadas funcionales y ejecuta consultas precisas.",
-          "Aplica funciones booleanas (unión/hueco) en el modelado 3D."
+          "Construye bases de datos relacionales funcionales con consultas estructuradas.",
+          "Aplica herramientas de modelado 3D respetando medidas y operaciones booleanas."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Demostración de consultas SQL y operaciones booleanas 3D avanzadas.",
-          "desarrollo": "Laboratorio intensivo de bases de datos y diseño espacial.",
-          "cierre": "Inspección de integridad de datos y verificación dimensional de piezas."
+          "inicio": "Focalización: Demostración de consultas SQL y modelado 3D.",
+          "desarrollo": "Taller práctico de bases de datos y refinamiento paramétrico 3D.",
+          "cierre": "Verificación de integridad de datos y geometría 3D."
         }
       },
       {
@@ -416,34 +352,26 @@ export const PROYECTOS_SEMESTRALES_NOVENO: ProyectoSemestral[] = [
         "nombre": "Etapa 5: Evaluar y Testear",
         "faseId": "fase3_evaluacion",
         "faseNombre": "Fase III: Auditoría y Demostración",
-        "proposito": "Auditar el cumplimiento de derechos de autor (APA 7 / Creative Commons), evaluar riesgos éticos de la IA y exponer la solución.",
+        "proposito": "Auditar el licenciamiento de recursos (Creative Commons), evaluar desafíos éticos de la IA y presentar la solución.",
         "accionesClave": [
-          "Revisar la tabla de citas y atribuciones garantizando el uso legal de recursos.",
-          "Participar en el debate sobre sesgos y desafíos éticos de la IA.",
-          "Presentar la solución completa en la Demostración de lo Aprendido."
+          "Auditar citas y licencias de los recursos multimedia utilizados.",
+          "Reflexionar sobre sesgos y uso responsable de herramientas inteligentes.",
+          "Sustentar la solución digital completa en la Demostración de lo Aprendido."
         ],
         "entregablesSugeridos": [
-          "Portafolio digital integral con auditoría ética",
-          "Sustentación de la solución ante la comunidad"
+          "Portafolio digital con auditoría de licenciamiento",
+          "Sustentación pública de la solución"
         ],
-        "semanaSugeridaModulo1": [
-          16,
-          17,
-          18
-        ],
-        "semanaSugeridaModulo2": [
-          16,
-          17,
-          18
-        ],
+        "semanaSugeridaModulo1": [16, 17, 18],
+        "semanaSugeridaModulo2": [16, 17, 18],
         "criteriosEvaluacionMEP": [
-          "Aplica rigurosamente la normativa APA 7 y el licenciamiento Creative Commons.",
-          "Argumenta con solvencia sobre los desafíos éticos de la tecnología."
+          "Aplica marcos legales de licenciamiento Creative Commons y derechos de autor.",
+          "Argumenta con rigor sobre los aspectos éticos de la IA y la solución desarrollada."
         ],
         "actividadEnriquecida": {
-          "inicio": "Focalización: Pautas de la rúbrica de sustentación y auditoría de propiedad intelectual.",
-          "desarrollo": "Exposición oral de proyectos y demostración práctica de la base de datos y modelo 3D.",
-          "cierre": "Retroalimentación formativa y consolidación de calificaciones finales."
+          "inicio": "Focalización: Pautas de evaluación de la sustentación y propiedad intelectual.",
+          "desarrollo": "Exhibición de la solución digital ante el grupo y sesión de preguntas.",
+          "cierre": "Sistematización de aprendizajes y cierre evaluativo."
         }
       }
     ]

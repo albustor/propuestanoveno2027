@@ -32,8 +32,8 @@ export const ExportCenterView: React.FC = () => {
         tituloSemana: `Semana ${num}: ${saber ? saber.nombre : 'Consolidación'}`,
         saberesSeleccionados: saber ? [saber.id] : [],
         esSemanaDedicadaAProyecto: num === 17 || num === 18,
-        etapaProyectoAsociada: saber?.etapaProyectoRecomendada,
-        actividadProyectoEnSemana: saber?.etapaProyectoRecomendada ? `Aplicación de etapa ${saber.etapaProyectoRecomendada}` : '',
+        etapaProyectoAsociada: undefined,
+        actividadProyectoEnSemana: '',
         momentoInicio: {
           estrategia: saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Focalización y motivación.',
           tiempo: '15 min'

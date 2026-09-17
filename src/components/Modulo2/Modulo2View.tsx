@@ -233,11 +233,6 @@ export const Modulo2View: React.FC = () => {
                       <div className="space-y-1.5 pr-4">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-bold text-zinc-900 text-sm">{saber.nombre}</span>
-                          {saber.etapaProyectoRecomendada && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                              Vinculado a {saber.etapaProyectoRecomendada.replace('_', ' ').toUpperCase()}
-                            </span>
-                          )}
 
                           {isCustom && (
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center space-x-1">

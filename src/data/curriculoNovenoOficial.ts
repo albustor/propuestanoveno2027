@@ -31,8 +31,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Movimiento en mecanismos",
             "indicador": "Identificar el movimiento en mecanismos robóticos, diferenciando el movimiento de entrada y salida, a partir de la observación y análisis de simulaciones o prototipos básicos que integren sensores y actuadores.",
             "descripcion": "Análisis cinemático de engranajes, poleas, bielas y cálculo de relación de transmisión (torque vs. velocidad).",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -117,8 +115,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Microcontrolador",
             "indicador": "Aplicar las funciones de un microcontrolador, utilizando pines digitales y analógicos, conexión a VCC y GND y comunicación con sensores y actuadores durante la simulación o construcción de prototipos.",
             "descripcion": "Arquitectura de placas (Arduino / Micro:bit / ESP32), mapeo de pines I/O, alimentación y señales PWM.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -203,8 +199,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Sensor",
             "indicador": "Integrar un sensor en un prototipo, utilizando sus datos como entrada para generar respuestas automatizadas mediante un microcontrolador.",
             "descripcion": "Lectura y calibración de variables físicas con ultrasonido HC-SR04, fotorresistencia LDR y sensor de temperatura.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -289,8 +283,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Actuador",
             "indicador": "Integrar un actuador en un prototipo, programando su activación como respuesta a entradas digitales o condiciones del sistema mediante un microcontrolador.",
             "descripcion": "Control angular de servomotores (0-180°), zumbadores piezoeléctricos y relevadores de potencia.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -375,8 +367,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Domótica",
             "indicador": "Analizar los usos, aplicaciones y beneficios de la domótica, mediante la creación o simulación de un prototipo que responda a necesidades reales en un entorno cotidiano.",
             "descripcion": "Sistemas inteligentes para el hogar: ahorro de energía, confort, seguridad perimetral y accesibilidad universal.",
-            "faseProyectoRecomendada": "fase1_investigacion",
-            "etapaProyectoRecomendada": "etapa3_idear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -461,8 +451,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Prototipos",
             "indicador": "Construir prototipos que integren sensores, actuadores y un microcontrolador, a partir de una necesidad identificada en su contexto.",
             "descripcion": "Integración completa de hardware, software y maqueta física en una solución funcional replicable.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -558,8 +546,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Entorno de programación textual o bloques para mecanismos robóticos",
             "indicador": "Diseñar soluciones automatizadas en un entorno de programación textual o por bloques para programar mecanismos robóticos.",
             "descripcion": "Uso de IDEs visuales y textuales (MakeCode, Arduino IDE, Python) estructurando funciones y eventos.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -644,8 +630,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Algoritmo",
             "indicador": "Diseñar un algoritmo para resolver un problema, representándolo de forma estructurada mediante pseudocódigo o diagrama de flujo.",
             "descripcion": "Lógica algorítmica formal con simbología normalizada de flujogramas y pruebas de escritorio en papel.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa3_idear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -741,8 +725,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Internet de las cosas (IoT)",
             "indicador": "Analizar el funcionamiento y aplicaciones del Internet de las cosas (IoT), mediante la simulación de sistemas que integren sensores y actuadores para la automatización de tareas en contextos cotidianos.",
             "descripcion": "Conectividad en red de objetos físicos: telemetría en la nube, dashboards visuales y accionamiento remoto.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -827,8 +809,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Almacenamiento de datos",
             "indicador": "Reconocer el ciclo de vida del dato en el almacenamiento de datos, identificando las etapas de creación, uso, conservación y eliminación responsable de la información en contextos educativos o personales.",
             "descripcion": "Gobernanza del dato: ciclo vital (Creación -> Almacenamiento -> Procesamiento -> Backup -> Eliminación segura).",
-            "faseProyectoRecomendada": "fase1_investigacion",
-            "etapaProyectoRecomendada": "etapa2_definir",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -941,8 +921,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Redes de comunicación",
             "indicador": "Reconocer las redes de comunicación a partir de su arquitectura, protocolos (como HTTP, HTTPS y TCP/IP) e interfaces, comprendiendo su funcionamiento durante el intercambio de datos.",
             "descripcion": "Topologías de red, modelo cliente-servidor, direccionamiento IPv4/IPv6 y protocolos de internet.",
-            "faseProyectoRecomendada": "fase1_investigacion",
-            "etapaProyectoRecomendada": "etapa2_definir",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1027,8 +1005,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Sistema Operativo",
             "indicador": "Aplicar técnicas de optimización del sistema operativo, identificando cómo gestionar memoria, desfragmentar discos, limpiar caché y actualizar el sistema para el mejoramiento del desempeño de dispositivos.",
             "descripcion": "Mantenimiento preventivo: gestión de memoria RAM, procesos en segundo plano, temporales y parches.",
-            "faseProyectoRecomendada": "fase1_investigacion",
-            "etapaProyectoRecomendada": "etapa2_definir",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1113,8 +1089,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Herramienta de productividad (gestor de bases de datos)",
             "indicador": "Utilizar un gestor de bases de datos como herramienta de productividad para la creación de tablas, estableciendo relaciones entre ellas y realizando consultas en la organización de la información.",
             "descripcion": "Modelado relacional: tablas, campos, clave primaria (PK), clave foránea (FK), relaciones 1:N y consultas de filtro.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1199,8 +1173,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Herramientas de creación de contenido multimedia",
             "indicador": "Utilizar herramientas de creación de contenido multimedia para el modelado 3D, aplicando funciones básicas de creación y edición en productos digitales.",
             "descripcion": "Modelado 3D espacial en ejes X-Y-Z: primitivas, operaciones booleanas (agrupar, hueco) y exportación .STL.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa4_prototipar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1285,8 +1257,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Plataformas de creación de contenido",
             "indicador": "Crear encuestas o formularios mediante plataformas de creación de contenido, ajustando su formato y estructura al propósito de recolección o evaluación de datos.",
             "descripcion": "Instrumentación digital: encuestas, validación de campos, lógica de ramificación y exportación estadística.",
-            "faseProyectoRecomendada": "fase1_investigacion",
-            "etapaProyectoRecomendada": "etapa1_empatizar",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1371,8 +1341,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Derechos de autor y licenciamiento",
             "indicador": "Reconocer la importancia de los derechos de autor y el licenciamiento, aplicando buenas prácticas de uso ético y legal de contenidos digitales.",
             "descripcion": "Propiedad intelectual: Copyright, dominio público, licencias Creative Commons (CC) y normas de citación APA 7.",
-            "faseProyectoRecomendada": "fase3_evaluacion",
-            "etapaProyectoRecomendada": "etapa5_evaluar_testear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1457,8 +1425,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Huella digital",
             "indicador": "Analizar la utilidad e implicaciones de la huella digital, valorando cómo las acciones en línea afectan la identidad, reputación y seguridad personal en entornos digitales.",
             "descripcion": "Rastros digitales: metadatos EXIF, cookies de rastreo y construcción de una identidad digital profesional.",
-            "faseProyectoRecomendada": "fase3_evaluacion",
-            "etapaProyectoRecomendada": "etapa5_evaluar_testear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1543,8 +1509,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Riesgos en línea",
             "indicador": "Analizar riesgos en línea (acceso a información inapropiada, ciberadicción, ciberacoso y el sexting), valorando estrategias de prevención y autocuidado en sus interacciones digitales.",
             "descripcion": "Prevención y autocuidado: ciberacoso, phishing, grooming y protocolos institucionales del MEP.",
-            "faseProyectoRecomendada": "fase3_evaluacion",
-            "etapaProyectoRecomendada": "etapa5_evaluar_testear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1640,8 +1604,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Herramientas generativas",
             "indicador": "Aplicar herramientas generativas con inteligencia artificial en la producción de contenido digital, considerando criterios de seguridad, propiedad intelectual y responsabilidad digital.",
             "descripcion": "Ingeniería de prompts estructurada (Rol, Contexto, Tarea, Restricción), fact-checking y co-creación.",
-            "faseProyectoRecomendada": "fase2_desarrollo",
-            "etapaProyectoRecomendada": "etapa3_idear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",
@@ -1726,8 +1688,6 @@ export const MODULOS_NOVENO_OFICIAL: ModuloCurricular[] = [
             "nombre": "Desafíos de la IA",
             "indicador": "Reconocer los desafíos de la inteligencia artificial, identificando riesgos como sesgos, manipulación de información, dependencia tecnológica y privacidad de datos, reflexionando sobre su impacto en la vida laboral, personal y social.",
             "descripcion": "Impacto ético y social: sesgos algorítmicos, deepfakes, desinformación y futuro del empleo juvenil.",
-            "faseProyectoRecomendada": "fase3_evaluacion",
-            "etapaProyectoRecomendada": "etapa5_evaluar_testear",
             "estrategiaMetodologica": {
               "inicio": {
                 "titulo": "Momento 1: Inicio (Focalización y Activación)",

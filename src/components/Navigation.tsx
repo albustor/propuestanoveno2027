@@ -20,8 +20,8 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, onTabChange }
     },
     {
       id: 'proyecto',
-      label: 'Proyecto Semestral',
-      shortLabel: 'Proyecto ABP',
+      label: 'Proyecto: Design Thinking (DT)',
+      shortLabel: 'Design Thinking (DT)',
       icon: Sparkles,
       badge: '5 Etapas',
       color: 'emerald'

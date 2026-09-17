@@ -191,15 +191,22 @@ export const DistribucionEvaluacionView: React.FC = () => {
     notificarGuardado();
   };
 
-  // Generar Sugerencia IA
+  // Generar y Aplicar Organización Automática con IA basada en Sinergias y Continuidad
   const handleGenerarSugerenciaIA = async () => {
     setModalIAModeloAbierto(true);
     setCargandoIA(true);
+
     try {
+      // 1. Aplicar automáticamente la distribución basada en continuidad técnica y similitud
+      const defaultState = resetDistribucionEvaluacionLocal();
+      setMatriz({ ...defaultState });
+      notificarGuardado('¡Distribución y sinergias aplicadas automáticamente!');
+
+      // 2. Obtener el análisis y justificación pedagógica estructurada de la IA
       const res = await processAICascade({
         prompt: `Analiza los 10 saberes e indicadores de 9° año para el ${
           moduloFiltro === 1 ? 'Módulo 1 (Robótica y Algoritmos)' : moduloFiltro === 2 ? 'Módulo 2 (Ciencia de Datos e IA)' : 'Currículo Completo de 9° Año'
-        } y genera una propuesta óptima y visual de correlación y distribución de componentes evaluativos (Trabajo Cotidiano 45-50%, Proyecto 30-40%, Tareas 10%) según el REA MEP.`,
+        } y genera una propuesta ejecutiva de correlación por continuidad técnica y distribución de componentes evaluativos (Trabajo Cotidiano 45-50%, Proyecto 30-40%, Tareas 10%) según el REA MEP.`,
         tipo: 'distribucion_correlacion_evaluacion_ia',
         contexto: {
           modulo: moduloFiltro === 'todos' ? 1 : moduloFiltro,
@@ -370,13 +377,42 @@ export const DistribucionEvaluacionView: React.FC = () => {
 
         {/* Filtros de Módulo y Modos de Vista */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6 pt-5 border-t border-zinc-100">
-          {/* Identificador Fijo de Módulo 1 */}
-          <div className="flex items-center space-x-2">
-            <div className="px-4 py-2 bg-gradient-to-r from-sky-600 to-blue-700 text-white rounded-2xl text-xs font-bold flex items-center space-x-2 shadow-xs">
-              <Cpu className="w-4 h-4 text-sky-200" />
-              <span>Módulo 1: Robótica, Algoritmos & Computación Física</span>
-              <span className="ml-1.5 px-2 py-0.5 bg-white/20 text-white rounded-lg text-[10px] font-black">10 Indicadores</span>
-            </div>
+          {/* Selector de Módulo */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setModuloFiltro(1)}
+              className={`px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center space-x-2 transition-all ${
+                moduloFiltro === 1
+                  ? 'bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-xs'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+              }`}
+            >
+              <Cpu className="w-4 h-4" />
+              <span>Módulo 1: Robótica (10 Ind.)</span>
+            </button>
+
+            <button
+              onClick={() => setModuloFiltro(2)}
+              className={`px-3.5 py-2 rounded-2xl text-xs font-bold flex items-center space-x-2 transition-all ${
+                moduloFiltro === 2
+                  ? 'bg-gradient-to-r from-indigo-600 to-purple-700 text-white shadow-xs'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Módulo 2: Datos & IA (10 Ind.)</span>
+            </button>
+
+            <button
+              onClick={() => setModuloFiltro('todos')}
+              className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all ${
+                moduloFiltro === 'todos'
+                  ? 'bg-zinc-900 text-white shadow-xs'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+              }`}
+            >
+              <span>Ver Ambos (20)</span>
+            </button>
           </div>
 
           {/* Switch de Modo Visual */}
@@ -948,10 +984,11 @@ export const DistribucionEvaluacionView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-zinc-900">
-                    Propuesta de Distribución y Sinergias Evaluativas con IA
+                    Organización Pedagógica y Correlación de Indicadores por IA
                   </h3>
-                  <p className="text-[11px] text-zinc-500">
-                    Alineamiento al REA MEP 2026 (Cotidiano 45-50%, Proyecto 30-40%, Tareas 10%).
+                  <p className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Sinergias aplicadas automáticamente al Tablero y Matriz de Evaluación</span>
                   </p>
                 </div>
               </div>
@@ -964,12 +1001,22 @@ export const DistribucionEvaluacionView: React.FC = () => {
               {cargandoIA ? (
                 <div className="py-12 text-center text-zinc-500 space-y-3">
                   <div className="animate-spin w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto" />
-                  <p className="font-bold text-sm text-zinc-800">Generando distribución balanceada y sinergias con IA...</p>
-                  <p className="text-xs text-zinc-400">Verificando coherencia entre hardware, algoritmos y datos.</p>
+                  <p className="font-bold text-sm text-zinc-800">Organizando indicadores por similitud técnica y continuidad...</p>
+                  <p className="text-xs text-zinc-400">Verificando sinergias entre hardware, algoritmos y datos.</p>
                 </div>
               ) : (
-                <div className="prose prose-xs max-w-none text-zinc-800 whitespace-pre-line font-mono bg-zinc-50 p-4.5 rounded-2xl border border-zinc-200">
-                  {respuestaIA}
+                <div className="space-y-3">
+                  <div className="p-3 bg-emerald-50/80 border border-emerald-200 rounded-xl text-xs text-emerald-950 flex items-center justify-between">
+                    <span className="font-medium">
+                      🎯 <strong>Distribución Normativa REA:</strong> Trabajo Cotidiano (45-50%), Proyecto DT (30-40%), Tareas (10%).
+                    </span>
+                    <span className="text-[10px] bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-md font-bold">
+                      100% Sincronizado
+                    </span>
+                  </div>
+                  <div className="prose prose-xs max-w-none text-zinc-800 whitespace-pre-line font-mono bg-zinc-50 p-4.5 rounded-2xl border border-zinc-200">
+                    {respuestaIA}
+                  </div>
                 </div>
               )}
             </div>
@@ -987,10 +1034,13 @@ export const DistribucionEvaluacionView: React.FC = () => {
                   Copiar Análisis
                 </button>
                 <button
-                  onClick={() => setModalIAModeloAbierto(false)}
-                  className="px-4 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold"
+                  onClick={() => {
+                    setModalIAModeloAbierto(false);
+                    setVistaModo('kanban');
+                  }}
+                  className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
                 >
-                  Listo
+                  Ver en Tablero Kanban →
                 </button>
               </div>
             </div>
