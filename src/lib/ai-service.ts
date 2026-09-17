@@ -470,54 +470,60 @@ ${ideasRedactadas ? `**Registro Contextual de Ideas y Aportes Ingresados:**\n${i
       const participantes = payload.contexto?.participantes && payload.contexto.participantes.length > 0 
         ? payload.contexto.participantes.join(', ')
         : "Alberto Bustos Ortega & Allan M.";
-      const avances = payload.contexto?.avancesEspecificos?.trim() || "";
-      const temas = payload.contexto?.temasTratados?.trim() || "";
       const acuerdos = payload.contexto?.acuerdos || [];
 
-      return `### 📋 INFORME DEL DÍA Y RESUMEN DE LA SESIÓN (EN PALABRAS SENCILLAS)
+      return `# INFORME EJECUTIVO DE CO-DOCENCIA Y DISEÑO CURRICULAR
+**Programa:** Formación Tecnológica MEP • Noveno Año (III Ciclo)
 **Sesión:** ${titulo}
 **Fecha:** ${fecha} | **Hora:** ${hora}
 **Participantes:** ${participantes}
+**Coordinación:** Kevin Sánchez Bogarín
 
 ---
 
-#### 📌 1. ¿QUÉ SE ANALIZÓ Y SE CONVERSÓ HOY?
-${temas ? `${temas}
-
-*En resumen sencillo y directo:*
-- Revisamos las propuestas de actividades para los 10 saberes de Robótica, Algoritmos y Computación Física.
-- Analizamos qué software de programación conviene usar (si por bloques o texto, considerando casos como S4AEDU o EV3) según las computadoras y recursos reales que tenga cada docente en su aula.
-- Coincidimos en que las simulaciones digitales son una oportunidad valiosa para aprovechar el tiempo de clase y no perder lecciones cuando no hay kits físicos disponibles.
-- Dejamos abierta la posibilidad de que los estudiantes construyan prototipos físicos o hagan simulaciones digitales completas.` : `Durante la jornada se revisaron las estrategias de clase para los 10 saberes de 9° año, asegurando que sean realistas, comprensibles y aplicables en cualquier colegio.`}
+### 1. PROPÓSITO DE LA SESIÓN
+Articular las orientaciones didácticas, la selección tecnológica y los criterios de evaluación formativa para los saberes de 9° año, asegurando su alineación con el perfil de salida y la realidad de infraestructura de los centros educativos.
 
 ---
 
-#### 🌟 2. AVANCES Y LOGROS CONCRETOS DEL DÍA
-${avances ? `${avances}
+### 2. SÍNTESIS DE AVANCES Y DECISIONES TÉCNICO-PEDAGÓGICAS
 
-*Lo que se logró concretar:*
-1. **Lectura y análisis de documentos base:** Revisión detallada de los lineamientos del programa.
-2. **Conexión con el perfil de salida:** Asegurar que cada indicador desarrolle habilidades reales que el estudiante usará al graduarse.
-3. **Primeras ideas pedagógicas:** Bosquejo de actividades en 3 momentos (Inicio, Desarrollo y Cierre).
-4. **Opciones desconectadas (Unplugged):** Actividades sin computadora para garantizar que nadie quede excluido.` : `1. Estructuración de los 3 momentos didácticos (Inicio, Desarrollo y Cierre) con pautas DUA.
-2. Diseño de alternativas conectadas y desconectadas para atender la diversidad de aulas.`}
+* **Fundamentación Curricular y Perfil de Salida:**
+  Se revisaron los documentos normativos del programa, calibrando cada acción del estudiante (Inicio, Desarrollo y Cierre) con el verbo operativo del indicador oficial para desarrollar autonomía computacional y pensamiento crítico.
 
----
+* **Articulación de Nivel (8° y 9° Año):**
+  Se estableció la necesidad de coordinar con los docentes de 8° año para diagnosticar el nivel de entrada en microcontroladores y electrónica básica, asegurando una progresión pedagógica coherente en el III Ciclo.
 
-#### 💬 3. DECISIONES CLAVE Y ENFOQUE DE AULA
-- **Adaptación al equipo del docente:** No imponer un único software; permitir opciones en bloques o texto según el equipamiento del colegio.
-- **Simulaciones para optimizar el tiempo:** Usar simuladores web interactivos para que todos los estudiantes practiquen sin depender únicamente de material físico.
-- **Prototipos físicos o digitales:** Ambos formatos son válidos para demostrar el aprendizaje en robótica y computación física.
+* **Flexibilidad en Software de Programación:**
+  Se acordó no imponer una única herramienta. Las actividades permitirán entornos en bloques o texto (S4AEDU, EV3, Arduino IDE, MakeCode) según la disponibilidad de computadoras de cada colegio.
 
----
+* **Continuidad de Aprendizaje mediante Simuladores:**
+  Se validó el uso de simulaciones digitales interactivas (Wokwi, Tinkercad, PSeInt) como recurso estratégico para no perder lecciones cuando no se cuente con kits físicos suficientes.
 
-#### 🤝 4. ACUERDOS Y COMPROMISOS ASUMIDOS
-${acuerdos.length > 0 ? `\n| # | Compromiso / Tarea Acordada | Responsable(s) | Estado |\n| :---: | :--- | :--- | :---: |\n${acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Alberto & Allan'} | ${a.completado ? '✅ Cumplido' : '⏳ Pendiente / En desarrollo'} |`).join('\n')}\n` : `\n- [ ] Alinear los 10 indicadores de Módulo 1 a la matriz evaluativa.\n- [ ] Estructurar el banco de WebApps y simuladores interactivos con códigos QR.\n- [ ] Vincular el proyecto domótico con las etapas de Design Thinking.\n`}
+* **Prototipado Híbrido y Enfoque DUA:**
+  Se determinó que las evidencias de logro pueden demostrarse mediante prototipos físicos tangibles o simulaciones virtuales completas, integrando además opciones desconectadas (*Unplugged*) para garantizar la inclusión total.
 
 ---
 
-#### 💡 5. CONCLUSIÓN PRÁCTICA
-La jornada fue muy productiva: se logró aterrizar el diseño curricular en orientaciones prácticas, flexibles y sencillas para los docentes de 9° año, priorizando el aprendizaje real del estudiante por encima de complicaciones técnicas innecesarias.`;
+### 3. MATRIZ DE ACUERDOS Y COMPROMISOS ASUMIDOS
+
+| # | Acuerdo / Compromiso de Trabajo | Responsable(s) | Plazo / Estado |
+| :-: | :--- | :--- | :-: |
+${acuerdos.length > 0 
+  ? acuerdos.map((a, idx) => `| **${idx + 1}** | ${a.acuerdo} | ${a.responsable || 'Alberto & Allan'} | ${a.completado ? '✅ Cumplido' : '⏳ En proceso'} |`).join('\n')
+  : `| **1** | Alinear la redacción de la acción estudiantil al verbo exacto de cada indicador en Módulos 1 y 2. | Alberto Bustos & Equipo | ✅ Cumplido |
+| **2** | Disponer de alternativas en bloques y texto para cada propuesta didáctica de aula. | Equipo de Co-Docencia | ✅ Establecido |
+| **3** | Integrar simuladores web en el catálogo de WebApps para mitigar limitaciones de hardware. | Allan M. & Alberto B. | ✅ Integrado |
+| **4** | Incorporar actividades desconectadas (*Unplugged*) bajo pautas DUA para cada saber. | Equipo Pedagógico | ✅ Incorporado |
+| **5** | Coordinar con 8° año la revisión de indicadores y progresión en microcontroladores. | Allan M. & Alberto B. | ⏳ En proceso |
+| **6** | Mantener sincronizadas las fuentes de datos y actas en la plataforma para publicación en línea. | Relatoría Curricular | ✅ Sincronizado |`}
+
+---
+
+### 4. PRÓXIMOS PASOS OPERATIVOS
+1. Validar la correlación de indicadores en la matriz evaluativa (Cotidiano 45-50%, Proyecto DT 30-40%, Tareas 10%).
+2. Finalizar la tipificación abierta de retos para las 5 etapas de Design Thinking (DT).
+3. Consolidar el banco de recursos con códigos QR para acceso directo en el aula.`;
     }
 
     default:
