@@ -492,6 +492,36 @@ export const toggleAcuerdoReunionLocal = (
   }
 };
 
+export const deleteAudioFromReunionLocal = (
+  reunionId: string,
+  audioId: string
+): ReunionEquipoNivel[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const all = getAllReunionesLocal();
+    const reunion = all.find((r) => r.id === reunionId);
+    if (reunion) {
+      if (reunion.audiosMultiples) {
+        reunion.audiosMultiples = reunion.audiosMultiples.filter((a) => a.id !== audioId);
+      }
+      if (reunion.audiosMultiples && reunion.audiosMultiples.length === 0) {
+        reunion.audioUrl = undefined;
+        reunion.audioNombre = undefined;
+      }
+      localStorage.setItem(KEY_REUNIONES_EQUIPO, JSON.stringify(all));
+      registrarEventoTelemetria(
+        'REUNIONES_ALLAN',
+        'AUDIO_ELIMINADO',
+        `Se eliminó un audio del acta "${reunion.titulo}".`,
+        { reunionId, audioId }
+      );
+    }
+    return all;
+  } catch (e) {
+    return [];
+  }
+};
+
 // -------------------------------------------------------------
 // SEGUIMIENTO DE SABERES PROCEDIMENTALES Y ACTITUDINALES (MEP 2026)
 // -------------------------------------------------------------

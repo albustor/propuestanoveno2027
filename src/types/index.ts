@@ -425,6 +425,16 @@ export interface AcuerdoReunion {
   completado: boolean;
 }
 
+export interface GrabacionAudioItem {
+  id: string;
+  nombre: string;
+  url: string;
+  hora: string;
+  duracionSegundos?: number;
+  transcripcion?: string;
+  timestamp: string;
+}
+
 export interface ReunionEquipoNivel {
   id: string;
   tipo: TipoReunion;
@@ -437,8 +447,9 @@ export interface ReunionEquipoNivel {
   acuerdosTexto?: string; // Texto unificado de acuerdos y compromisos
   avancesConAllan?: string; // Bitácora específica de co-trabajo con Allan
   sintesisIA?: string;
-  audioUrl?: string; // Grabación de audio vinculada al acta
+  audioUrl?: string; // Grabación de audio principal vinculada al acta
   audioNombre?: string;
+  audiosMultiples?: GrabacionAudioItem[]; // Lista de grabaciones de audio acumuladas en la jornada
   estado: 'Completado' | 'En Proceso' | 'Pendiente';
   adjuntosOEnlaces?: string;
   timestamp: string;

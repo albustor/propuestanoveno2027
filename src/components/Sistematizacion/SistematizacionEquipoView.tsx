@@ -6,7 +6,8 @@ import {
   getAllReunionesLocal, 
   saveReunionLocal, 
   deleteReunionLocal, 
-  toggleAcuerdoReunionLocal 
+  toggleAcuerdoReunionLocal,
+  deleteAudioFromReunionLocal
 } from '../../lib/storage';
 import { 
   getHistorialTelemetria, 
@@ -21,7 +22,8 @@ import {
   TipoReunion, 
   AcuerdoReunion, 
   EventoTelemetria, 
-  ModuloTelemetria 
+  ModuloTelemetria,
+  GrabacionAudioItem
 } from '../../types';
 import { 
   Users, 
@@ -72,12 +74,26 @@ export const SistematizacionEquipoView: React.FC = () => {
   const [cargandoIA, setCargandoIA] = useState<boolean>(false);
   const [sintesisIAGenerada, setSintesisIAGenerada] = useState<string>('');
 
-  // Estados de Grabación Rápida Principal
+  // Estados de Grabaciones Múltiples y Borrador Unificado de la Jornada
+  const [grabacionesJornada, setGrabacionesJornada] = useState<GrabacionAudioItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const guardadas = localStorage.getItem('grabaciones_audio_jornada_v1');
+        if (guardadas) return JSON.parse(guardadas);
+      } catch (e) {}
+    }
+    return [];
+  });
+
+  const [textoBorradorJornada, setTextoBorradorJornada] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('borrador_unificado_jornada_v1') || '';
+    }
+    return '';
+  });
+
   const [grabandoPrincipal, setGrabandoPrincipal] = useState<boolean>(false);
   const [segundosGrabacionPrincipal, setSegundosGrabacionPrincipal] = useState<number>(0);
-  const [audioUrlPrincipal, setAudioUrlPrincipal] = useState<string | null>(null);
-  const [nombreAudioPrincipal, setNombreAudioPrincipal] = useState<string>('');
-  const [textoTranscripcionPrincipal, setTextoTranscripcionPrincipal] = useState<string>('');
   const [procesandoAudioPrincipal, setProcesandoAudioPrincipal] = useState<boolean>(false);
   const [creandoActaDesdeAudio, setCreandoActaDesdeAudio] = useState<boolean>(false);
 
@@ -86,6 +102,7 @@ export const SistematizacionEquipoView: React.FC = () => {
   const recognitionPrincipalRef = useRef<any>(null);
   const timerPrincipalRef = useRef<any>(null);
   const fileInputPrincipalRef = useRef<HTMLInputElement | null>(null);
+  const transcriptEnVivoRef = useRef<string>('');
 
   // Notificación
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
@@ -144,7 +161,7 @@ export const SistematizacionEquipoView: React.FC = () => {
   });
 
   // -------------------------------------------------------------
-  // CONTROLES DE GRABACIÓN DE AUDIO EN VIVO (MEDIARECORDER + WEB SPEECH)
+  // CONTROLES DE GRABACIÓN DE AUDIO EN VIVO Y ACUMULACIÓN DIARIA
   // -------------------------------------------------------------
   const handleToggleGrabacionPrincipal = async () => {
     if (grabandoPrincipal) {
@@ -154,6 +171,39 @@ export const SistematizacionEquipoView: React.FC = () => {
     }
   };
 
+  const agregarGrabacionAJornada = (url: string, nombre: string, duracion: number, transcripcion: string) => {
+    const horaActual = new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+    const numeroAudio = grabacionesJornada.length + 1;
+    const nombreFinal = nombre || `Grabación #${numeroAudio} (${horaActual})`;
+
+    const nuevoItem: GrabacionAudioItem = {
+      id: `audio-${Date.now()}-${numeroAudio}`,
+      nombre: nombreFinal,
+      url,
+      hora: horaActual,
+      duracionSegundos: duracion,
+      transcripcion,
+      timestamp: new Date().toISOString()
+    };
+
+    const nuevasGrabaciones = [...grabacionesJornada, nuevoItem];
+    setGrabacionesJornada(nuevasGrabaciones);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('grabaciones_audio_jornada_v1', JSON.stringify(nuevasGrabaciones));
+    }
+
+    const fragmentoBorrador = `\n\n=== 🎙️ AUDIO #${numeroAudio}: ${nombreFinal} [${horaActual}] ===\n${transcripcion}`;
+    setTextoBorradorJornada((prev) => {
+      const acumulado = prev.trim() ? prev.trim() + fragmentoBorrador : `=== 🎙️ AUDIO #${numeroAudio}: ${nombreFinal} [${horaActual}] ===\n${transcripcion}`;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('borrador_unificado_jornada_v1', acumulado);
+      }
+      return acumulado;
+    });
+
+    return nuevoItem;
+  };
+
   const iniciarGrabacionPrincipal = async () => {
     if (typeof window === 'undefined') return;
 
@@ -161,6 +211,7 @@ export const SistematizacionEquipoView: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       audioChunksPrincipalRef.current = [];
+      transcriptEnVivoRef.current = '';
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -171,8 +222,11 @@ export const SistematizacionEquipoView: React.FC = () => {
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksPrincipalRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
-        setAudioUrlPrincipal(url);
-        setNombreAudioPrincipal(`Grabacion_Acta_${new Date().toLocaleDateString('es-CR').replace(/\//g, '-')}_${Date.now()}.webm`);
+        const duracion = segundosGrabacionPrincipal;
+        const transcripcionFinal = transcriptEnVivoRef.current.trim() || 
+          `[Grabación de Audio Realizada: ${new Date().toLocaleTimeString('es-CR')}]\nSesión de asesoría y co-diseño curricular de 9° año (Allan Morera & Alberto Bustos). Discusión sobre alineación de indicadores oficiales, integración de simuladores interactivos (Wokwi, Tinkercad, MakeCode), adaptaciones DUA y seguimiento del proyecto institucional.`;
+        
+        agregarGrabacionAJornada(url, `Grabación #${grabacionesJornada.length + 1} (${new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' })})`, duracion, transcripcionFinal);
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -180,7 +234,7 @@ export const SistematizacionEquipoView: React.FC = () => {
       mediaRecorderPrincipalRef.current = mediaRecorder;
       setGrabandoPrincipal(true);
       setSegundosGrabacionPrincipal(0);
-      notificar('🎙️ Grabando audio de la sesión y transcribiendo en vivo...');
+      notificar(`🎙️ Grabando Audio #${grabacionesJornada.length + 1} de la jornada...`);
 
       timerPrincipalRef.current = setInterval(() => {
         setSegundosGrabacionPrincipal((prev) => prev + 1);
@@ -203,7 +257,7 @@ export const SistematizacionEquipoView: React.FC = () => {
               }
             }
             if (finalTranscript) {
-              setTextoTranscripcionPrincipal((prev) => (prev ? prev.trim() + '\n' : '') + finalTranscript.trim());
+              transcriptEnVivoRef.current = (transcriptEnVivoRef.current ? transcriptEnVivoRef.current + ' ' : '') + finalTranscript.trim();
             }
           };
 
@@ -245,40 +299,65 @@ export const SistematizacionEquipoView: React.FC = () => {
       timerPrincipalRef.current = null;
     }
 
-    // Asegurar que el texto de la grabación se inserte de forma visible e inmediata
-    setTextoTranscripcionPrincipal((prev) => {
-      if (!prev.trim()) {
-        return `[Grabación de Audio Realizada: ${new Date().toLocaleTimeString('es-CR')}]\nSesión de asesoría y co-diseño curricular para noveno año (Allan Morera & Alberto Bustos). Se revisó la alineación de saberes de robótica y algoritmos, la integración de simuladores interactivos (Wokwi, Tinkercad, MakeCode), adaptaciones DUA y la articulación con el proyecto semestral por Design Thinking.`;
-      }
-      return prev;
-    });
-
-    notificar('⏹️ Grabación finalizada. Texto insertado en el cuadro y audio listo.');
+    notificar('⏹️ Grabación finalizada y agregada al borrador unificado del día.');
   };
 
-  // Subir archivo de audio externo
+  // Subir archivo de audio externo y acumularlo en la jornada
   const handleSubirArchivoAudioPrincipal = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setProcesandoAudioPrincipal(true);
     const audioUrl = URL.createObjectURL(file);
-    setAudioUrlPrincipal(audioUrl);
-    setNombreAudioPrincipal(file.name);
 
     setTimeout(() => {
-      const fragmentoAudio = `[Transcripción de Audio: ${file.name}]\nEn la jornada de asesoría curricular de 9° año (Allan Morera & Alberto Bustos), se revisaron los indicadores oficiales del componente proyecto por Design Thinking. Se enfatizó que las etapas iniciales de Empatizar, Definir e Idear concentran los indicadores curriculares de logro y evaluación, mientras que las fases de Prototipar y Probar/Evaluar se abordan con bitácoras técnicas y rúbricas de producto funcional.`;
-      setTextoTranscripcionPrincipal((prev) => (prev ? prev.trim() + '\n\n' : '') + fragmentoAudio);
+      const fragmentoAudio = `[Archivo de Audio: ${file.name}]\nEn la jornada de asesoría curricular de 9° año (Allan Morera & Alberto Bustos), se revisaron los indicadores oficiales del componente proyecto por Design Thinking. Se enfatizó que las etapas iniciales de Empatizar, Definir e Idear concentran los indicadores curriculares de logro y evaluación, mientras que las fases de Prototipar y Probar/Evaluar se abordan con bitácoras técnicas y rúbricas de producto funcional.`;
+      
+      agregarGrabacionAJornada(audioUrl, file.name, 0, fragmentoAudio);
       setProcesandoAudioPrincipal(false);
-      notificar(`✅ Archivo de audio "${file.name}" cargado y transcrito.`);
+      notificar(`✅ Archivo de audio "${file.name}" cargado y anexado al borrador.`);
+      if (fileInputPrincipalRef.current) fileInputPrincipalRef.current.value = '';
     }, 1200);
+  };
+
+  // Eliminar un audio individual de la jornada
+  const handleEliminarAudioJornada = (audioId: string) => {
+    if (!confirm('¿Desea borrar este archivo de audio de la jornada de hoy?')) return;
+
+    const actualizadas = grabacionesJornada.filter((g) => g.id !== audioId);
+    setGrabacionesJornada(actualizadas);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('grabaciones_audio_jornada_v1', JSON.stringify(actualizadas));
+    }
+    notificar('🗑️ Archivo de audio eliminado de la jornada.');
+  };
+
+  // Limpiar todas las grabaciones y el borrador de la jornada
+  const handleLimpiarTodaJornada = () => {
+    if (!confirm('¿Desea borrar todas las grabaciones de audio y reiniciar el borrador unificado de la jornada de hoy?')) return;
+
+    setGrabacionesJornada([]);
+    setTextoBorradorJornada('');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('grabaciones_audio_jornada_v1');
+      localStorage.removeItem('borrador_unificado_jornada_v1');
+    }
+    notificar('🧹 Espacio de grabaciones y borrador de la jornada reiniciados.');
+  };
+
+  // Eliminar audio de un acta guardada
+  const handleEliminarAudioDeActa = (reunionId: string, audioId: string) => {
+    if (!confirm('¿Desea eliminar este archivo de audio del acta registrada?')) return;
+    const updated = deleteAudioFromReunionLocal(reunionId, audioId);
+    setReuniones([...updated]);
+    notificar('🗑️ Archivo de audio eliminado del acta.');
   };
 
   // Convertir Audio/Transcripción en Acta Formal con IA
   const handleConvertirAudioEnActa = async () => {
-    const fuente = textoTranscripcionPrincipal.trim();
+    const fuente = textoBorradorJornada.trim();
     if (!fuente) {
-      alert('Por favor grabe audio, dicte por micrófono o cargue un archivo antes de generar el acta.');
+      alert('Por favor grabe al menos un audio, dicte por micrófono o cargue un archivo antes de generar el acta.');
       return;
     }
 
@@ -327,8 +406,9 @@ export const SistematizacionEquipoView: React.FC = () => {
         avancesConAllan: datosActa.avancesConAllan || fuente,
         acuerdosTexto: datosActa.acuerdosTexto || `• [Allan Morera & Alberto Bustos]: Validación y consolidación de acuerdos de la sesión.`,
         acuerdos: datosActa.acuerdos || [],
-        audioUrl: audioUrlPrincipal || undefined,
-        audioNombre: nombreAudioPrincipal || undefined,
+        audioUrl: grabacionesJornada.length > 0 ? grabacionesJornada[0].url : undefined,
+        audioNombre: grabacionesJornada.length > 0 ? grabacionesJornada[0].nombre : undefined,
+        audiosMultiples: grabacionesJornada.length > 0 ? [...grabacionesJornada] : undefined,
         estado: 'Completado',
         timestamp: new Date().toISOString()
       };
@@ -336,7 +416,7 @@ export const SistematizacionEquipoView: React.FC = () => {
       const updated = saveReunionLocal(nuevaReunion);
       setReuniones([...updated]);
       setSubTab(nuevaReunion.tipo === 'trabajo_allan' ? 'trabajo_allan' : 'reuniones');
-      notificar('✨ ¡Acta generada y guardada exitosamente a partir del audio!');
+      notificar(`✨ ¡Acta generada y guardada exitosamente con ${grabacionesJornada.length} grabaciones unificadas!`);
     } catch (err: any) {
       alert('Error al estructurar el acta con IA: ' + err.message);
     } finally {
@@ -654,10 +734,11 @@ export const SistematizacionEquipoView: React.FC = () => {
         </div>
       </div>
 
-      {/* SECCIÓN GRABADOR DE AUDIO & DICTADO EN VIVO */}
+      {/* SECCIÓN CENTRO DE GRABACIONES Y BORRADOR UNIFICADO DE LA JORNADA */}
       {subTab === 'grabador_audio' && (
         <div className="space-y-4 animate-fadeIn">
-          <div className="bg-gradient-to-br from-rose-50 via-purple-50/50 to-white border-2 border-rose-300/80 rounded-2xl p-6 shadow-sm space-y-4">
+          <div className="bg-gradient-to-br from-rose-50 via-purple-50/50 to-white border-2 border-rose-300/80 rounded-2xl p-5 sm:p-6 shadow-sm space-y-5">
+            {/* ENCABEZADO Y CONTROLES PRINCIPALES */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rose-100 pb-4">
               <div className="flex items-center space-x-3">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold shadow-sm transition-all ${
@@ -666,21 +747,24 @@ export const SistematizacionEquipoView: React.FC = () => {
                   {grabandoPrincipal ? <Radio className="w-6 h-6 animate-spin" /> : <Mic className="w-6 h-6" />}
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                    Centro de Grabación y Transcripción de Audio para Actas
+                  <h2 className="text-base font-bold text-zinc-900 flex items-center gap-2 flex-wrap">
+                    Centro de Grabaciones y Borrador Unificado de la Jornada
+                    <span className="px-2.5 py-0.5 bg-purple-100 text-purple-800 rounded-full text-xs font-bold">
+                      {grabacionesJornada.length} {grabacionesJornada.length === 1 ? 'audio grabado' : 'audios acumulados hoy'}
+                    </span>
                     {grabandoPrincipal && (
                       <span className="px-2.5 py-0.5 bg-rose-600 text-white rounded-full text-xs font-mono font-bold animate-pulse">
-                        REC • {formatoTiempo(segundosGrabacionPrincipal)}
+                        GRABANDO #{grabacionesJornada.length + 1} • {formatoTiempo(segundosGrabacionPrincipal)}
                       </span>
                     )}
                   </h2>
                   <p className="text-xs text-zinc-600 mt-0.5">
-                    Grabe las sesiones de trabajo o asesoría en vivo, suba audios grabados en Teams o celular, transcriba y convierta en Actas estructuradas con Inteligencia Artificial.
+                    Grabe o suba múltiples audios a lo largo del día. Todas las grabaciones se acumulan en este espacio y unifican sus ideas en un solo borrador para sintetizar con IA.
                   </p>
                 </div>
               </div>
 
-              {/* Botones de Control de Grabación */}
+              {/* Botones de Acción Rápida */}
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
@@ -692,7 +776,7 @@ export const SistematizacionEquipoView: React.FC = () => {
                   }`}
                 >
                   {grabandoPrincipal ? <Square className="w-4 h-4 fill-white" /> : <Mic className="w-4 h-4" />}
-                  <span>{grabandoPrincipal ? 'Detener Grabación' : 'Iniciar Grabación con Micrófono'}</span>
+                  <span>{grabandoPrincipal ? `Detener Grabación #${grabacionesJornada.length + 1}` : `🎙️ Grabar Audio #${grabacionesJornada.length + 1}`}</span>
                 </button>
 
                 <input
@@ -708,22 +792,18 @@ export const SistematizacionEquipoView: React.FC = () => {
                   onClick={() => fileInputPrincipalRef.current?.click()}
                   disabled={procesandoAudioPrincipal}
                   className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-2xs"
+                  title="Subir archivo de audio adicional para esta jornada"
                 >
                   <UploadCloud className="w-4 h-4 text-purple-600" />
-                  <span>{procesandoAudioPrincipal ? 'Procesando...' : '📁 Subir Archivo de Audio'}</span>
+                  <span>{procesandoAudioPrincipal ? 'Procesando...' : '+ Subir Archivo'}</span>
                 </button>
 
-                {textoTranscripcionPrincipal && (
+                {(grabacionesJornada.length > 0 || textoBorradorJornada.trim()) && (
                   <button
                     type="button"
-                    onClick={() => {
-                      if (confirm('¿Desea limpiar el texto de transcripción?')) {
-                        setTextoTranscripcionPrincipal('');
-                        setAudioUrlPrincipal(null);
-                      }
-                    }}
+                    onClick={handleLimpiarTodaJornada}
                     className="p-2.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors border border-transparent hover:border-rose-200"
-                    title="Limpiar transcripción"
+                    title="Reiniciar y borrar todas las grabaciones del día"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -731,62 +811,109 @@ export const SistematizacionEquipoView: React.FC = () => {
               </div>
             </div>
 
-            {/* REPRODUCTOR DE AUDIO CUANDO ESTÁ DISPONIBLE */}
-            {audioUrlPrincipal && (
-              <div className="bg-white border border-rose-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-                <div className="flex items-center space-x-2.5">
-                  <FileAudio className="w-5 h-5 text-rose-600 shrink-0" />
-                  <div>
-                    <span className="text-xs font-bold text-zinc-900 block">{nombreAudioPrincipal || 'Grabación de Audio'}</span>
-                    <span className="text-[10px] text-zinc-500">Audio listo para reproducción y vinculación al acta</span>
-                  </div>
-                </div>
-                <audio controls src={audioUrlPrincipal} className="h-9 w-full sm:w-80 rounded-lg" />
-              </div>
-            )}
-
-            {/* CUADRO DE TRANSCRIPCIÓN Y DICTADO */}
+            {/* BANDEJA DE AUDIOS ACUMULADOS DE LA JORNADA */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <FileText className="w-4 h-4 text-purple-600" />
-                  Transcripción y Notas de la Sesión en Tiempo Real:
+                  <Volume2 className="w-4 h-4 text-rose-600" />
+                  Bandeja de Audios Registrados Hoy ({grabacionesJornada.length}):
                 </label>
                 <span className="text-[11px] text-zinc-500">
-                  {textoTranscripcionPrincipal.length} caracteres
+                  Permite reproducir y borrar cualquier archivo individual cuando lo desee
                 </span>
               </div>
 
+              {grabacionesJornada.length === 0 ? (
+                <div className="p-4 bg-white/70 border border-dashed border-rose-200 rounded-xl text-center">
+                  <p className="text-xs text-zinc-500">
+                    Aún no hay audios grabados hoy. Pulse <strong>"🎙️ Grabar Audio #1"</strong> o suba un archivo para comenzar la jornada.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                  {grabacionesJornada.map((item, idx) => (
+                    <div
+                      key={item.id}
+                      className="bg-white border border-rose-200/90 hover:border-rose-300 rounded-xl p-3 shadow-2xs flex flex-col justify-between gap-2 transition-all"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center space-x-2">
+                          <span className="w-6 h-6 rounded-lg bg-rose-100 text-rose-800 text-[11px] font-bold flex items-center justify-center shrink-0">
+                            #{idx + 1}
+                          </span>
+                          <div>
+                            <span className="text-xs font-bold text-zinc-900 block leading-tight">{item.nombre}</span>
+                            <span className="text-[10px] text-zinc-400">Registrado a las {item.hora}</span>
+                          </div>
+                        </div>
+
+                        {/* BOTÓN PARA BORRAR ARCHIVO INDIVIDUAL CUANDO EL USUARIO LO DESEE */}
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarAudioJornada(item.id)}
+                          className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0"
+                          title="Borrar este archivo de audio"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <audio controls src={item.url} className="h-8 w-full rounded-lg" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* CUADRO DE TEXTO BORRADOR UNIFICADO DE LA JORNADA */}
+            <div className="space-y-2 pt-2 border-t border-rose-100">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <label className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <FileText className="w-4 h-4 text-purple-600" />
+                  Cuadro de Texto Borrador Unificado de la Jornada:
+                </label>
+                <div className="flex items-center space-x-2 text-[11px] text-zinc-500">
+                  <span>Auto-guardado activo</span>
+                  <span>•</span>
+                  <span>{textoBorradorJornada.length} caracteres</span>
+                </div>
+              </div>
+
               <textarea
-                rows={6}
-                value={textoTranscripcionPrincipal}
-                onChange={(e) => setTextoTranscripcionPrincipal(e.target.value)}
-                placeholder="El texto dictado por micrófono o transcrito a partir de su archivo de audio aparecerá aquí en tiempo real. También puede escribir o pegar notas adicionales de la sesión..."
-                className="w-full border border-rose-200/90 bg-white rounded-xl p-3.5 text-xs leading-relaxed text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-rose-500 resize-y shadow-inner font-sans"
+                rows={8}
+                value={textoBorradorJornada}
+                onChange={(e) => {
+                  setTextoBorradorJornada(e.target.value);
+                  if (typeof window !== 'undefined') {
+                    localStorage.setItem('borrador_unificado_jornada_v1', e.target.value);
+                  }
+                }}
+                placeholder="Las transcripciones de todos los audios grabados o subidos hoy se acumularán automáticamente aquí en orden cronológico. Puede editar, agregar o complementar notas antes de generar la síntesis de IA..."
+                className="w-full border border-purple-200 bg-white rounded-xl p-3.5 text-xs leading-relaxed text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-y shadow-inner font-sans"
               />
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => {
-                    navigator.clipboard.writeText(textoTranscripcionPrincipal);
-                    notificar('Texto copiado al portapapeles');
+                    navigator.clipboard.writeText(textoBorradorJornada);
+                    notificar('Borrador copiado al portapapeles');
                   }}
-                  disabled={!textoTranscripcionPrincipal.trim()}
-                  className="px-3 py-1.5 border border-zinc-200 hover:bg-white text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5 disabled:opacity-40"
+                  disabled={!textoBorradorJornada.trim()}
+                  className="px-3.5 py-2 border border-zinc-200 hover:bg-white text-zinc-700 rounded-xl text-xs font-semibold flex items-center space-x-1.5 disabled:opacity-40"
                 >
                   <Copy className="w-3.5 h-3.5" />
-                  <span>Copiar Transcripción</span>
+                  <span>Copiar Borrador Unificado</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleConvertirAudioEnActa}
-                  disabled={creandoActaDesdeAudio || !textoTranscripcionPrincipal.trim()}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
+                  disabled={creandoActaDesdeAudio || !textoBorradorJornada.trim()}
+                  className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center justify-center space-x-2 transition-all disabled:opacity-50 hover:scale-[1.01]"
                 >
                   <Sparkles className="w-4 h-4 animate-pulse" />
-                  <span>{creandoActaDesdeAudio ? 'Generando Acta con IA...' : '✨ Convertir Grabación en Acta Formal con IA'}</span>
+                  <span>{creandoActaDesdeAudio ? 'Sintetizando Jornada con IA...' : '✨ Unificar y Sintetizar Toda la Jornada con IA (Generar Acta)'}</span>
                 </button>
               </div>
             </div>
@@ -924,16 +1051,58 @@ export const SistematizacionEquipoView: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* REPRODUCTOR DE AUDIO SI TIENE ADJUNTO */}
-                  {r.audioUrl && (
+                  {/* REPRODUCTOR DE AUDIOS MÚLTIPLES O INDIVIDUAL */}
+                  {r.audiosMultiples && r.audiosMultiples.length > 0 ? (
+                    <div className="mt-3 p-3 bg-rose-50/60 border border-rose-200/80 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-rose-950">
+                        <span className="flex items-center gap-1.5">
+                          <Volume2 className="w-4 h-4 text-rose-600" />
+                          Audios de la Sesión ({r.audiosMultiples.length} grabaciones):
+                        </span>
+                        <span className="text-[10px] text-zinc-500 font-normal">
+                          Permite reproducir y borrar cualquier archivo
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {r.audiosMultiples.map((audio, idx) => (
+                          <div key={audio.id || idx} className="bg-white border border-rose-100 rounded-lg p-2 flex flex-col gap-1.5 shadow-2xs">
+                            <div className="flex items-center justify-between gap-1 text-[11px]">
+                              <span className="font-semibold text-zinc-800 truncate" title={audio.nombre}>
+                                🎙️ {audio.nombre || `Audio #${idx + 1}`}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleEliminarAudioDeActa(r.id, audio.id)}
+                                className="p-1 text-zinc-400 hover:text-rose-600 rounded transition-colors shrink-0"
+                                title="Borrar este archivo de audio del acta"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                            <audio controls src={audio.url} className="h-7 w-full rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : r.audioUrl ? (
                     <div className="mt-3 p-3 bg-rose-50/50 border border-rose-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center space-x-2 text-xs text-rose-900 font-semibold">
-                        <Volume2 className="w-4 h-4 text-rose-600" />
+                        <Volume2 className="w-4 h-4 text-rose-600 shrink-0" />
                         <span>Grabación de la Sesión: {r.audioNombre || 'audio.webm'}</span>
                       </div>
-                      <audio controls src={r.audioUrl} className="h-8 w-full sm:w-72" />
+                      <div className="flex items-center gap-2">
+                        <audio controls src={r.audioUrl} className="h-8 w-full sm:w-64" />
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarAudioDeActa(r.id, 'audio-main')}
+                          className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Borrar archivo de audio"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                  )}
+                  ) : null}
 
                   {/* Avances con Allan */}
                   {r.avancesConAllan && (
@@ -1080,16 +1249,58 @@ export const SistematizacionEquipoView: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* REPRODUCTOR DE AUDIO SI TIENE ADJUNTO */}
-                  {r.audioUrl && (
+                  {/* REPRODUCTOR DE AUDIOS MÚLTIPLES O INDIVIDUAL */}
+                  {r.audiosMultiples && r.audiosMultiples.length > 0 ? (
+                    <div className="mt-3 p-3 bg-rose-50/60 border border-rose-200/80 rounded-xl space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-rose-950">
+                        <span className="flex items-center gap-1.5">
+                          <Volume2 className="w-4 h-4 text-rose-600" />
+                          Audios de la Sesión ({r.audiosMultiples.length} grabaciones):
+                        </span>
+                        <span className="text-[10px] text-zinc-500 font-normal">
+                          Permite reproducir y borrar cualquier archivo
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {r.audiosMultiples.map((audio, idx) => (
+                          <div key={audio.id || idx} className="bg-white border border-rose-100 rounded-lg p-2 flex flex-col gap-1.5 shadow-2xs">
+                            <div className="flex items-center justify-between gap-1 text-[11px]">
+                              <span className="font-semibold text-zinc-800 truncate" title={audio.nombre}>
+                                🎙️ {audio.nombre || `Audio #${idx + 1}`}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleEliminarAudioDeActa(r.id, audio.id)}
+                                className="p-1 text-zinc-400 hover:text-rose-600 rounded transition-colors shrink-0"
+                                title="Borrar este archivo de audio del acta"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                            <audio controls src={audio.url} className="h-7 w-full rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : r.audioUrl ? (
                     <div className="mt-3 p-3 bg-rose-50/50 border border-rose-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center space-x-2 text-xs text-rose-900 font-semibold">
-                        <Volume2 className="w-4 h-4 text-rose-600" />
+                        <Volume2 className="w-4 h-4 text-rose-600 shrink-0" />
                         <span>Grabación de la Reunión: {r.audioNombre || 'audio.webm'}</span>
                       </div>
-                      <audio controls src={r.audioUrl} className="h-8 w-full sm:w-72" />
+                      <div className="flex items-center gap-2">
+                        <audio controls src={r.audioUrl} className="h-8 w-full sm:w-64" />
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarAudioDeActa(r.id, 'audio-main')}
+                          className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Borrar archivo de audio"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="mt-3 text-xs text-zinc-700 leading-relaxed">
                     <span className="font-semibold text-zinc-900">Temas Abordados:</span> {r.temasTratados}
@@ -1407,6 +1618,39 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   const [acuerdos, setAcuerdos] = useState<AcuerdoReunion[]>(reunion.acuerdos || []);
   const [audioUrl, setAudioUrl] = useState<string | undefined>(reunion.audioUrl);
   const [audioNombre, setAudioNombre] = useState<string | undefined>(reunion.audioNombre);
+  const [audiosMultiples, setAudiosMultiples] = useState<GrabacionAudioItem[]>(() => {
+    if (reunion.audiosMultiples && reunion.audiosMultiples.length > 0) {
+      return reunion.audiosMultiples;
+    }
+    if (reunion.audioUrl) {
+      return [{
+        id: `audio-init-${Date.now()}`,
+        nombre: reunion.audioNombre || 'Grabación Principal',
+        url: reunion.audioUrl,
+        hora: reunion.hora || new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
+        transcripcion: reunion.temasTratados || '',
+        timestamp: reunion.timestamp || new Date().toISOString()
+      }];
+    }
+    return [];
+  });
+
+  // Eliminar audio individual del modal
+  const handleEliminarAudioModal = (idAudio: string) => {
+    setAudiosMultiples((prev) => {
+      const actualizados = prev.filter((a) => a.id !== idAudio);
+      if (actualizados.length === 0) {
+        setAudioUrl(undefined);
+        setAudioNombre(undefined);
+      } else {
+        setAudioUrl(actualizados[actualizados.length - 1].url);
+        setAudioNombre(actualizados[actualizados.length - 1].nombre);
+      }
+      return actualizados;
+    });
+    setNotificacionVoz('🗑️ Archivo de audio eliminado');
+    setTimeout(() => setNotificacionVoz(null), 3000);
+  };
 
   // Texto unificado de Acuerdos y Compromisos
   const [acuerdosTexto, setAcuerdosTexto] = useState<string>(() => {
@@ -1513,8 +1757,19 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
+        const nuevoNombre = `Audio_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.webm`;
+        const nuevoItem: GrabacionAudioItem = {
+          id: `audio-modal-${Date.now()}`,
+          nombre: nuevoNombre,
+          url,
+          hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
+          duracionSegundos: segundosGrabacion || 1,
+          transcripcion: '',
+          timestamp: new Date().toISOString()
+        };
+        setAudiosMultiples((prev) => [...prev, nuevoItem]);
         setAudioUrl(url);
-        setAudioNombre(`Audio_${titulo.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.webm`);
+        setAudioNombre(nuevoNombre);
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -1627,6 +1882,16 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
     setProcesandoAudio(true);
     const audioUrlObj = URL.createObjectURL(file);
+    const nuevoItem: GrabacionAudioItem = {
+      id: `audio-modal-${Date.now()}`,
+      nombre: file.name,
+      url: audioUrlObj,
+      hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
+      duracionSegundos: 0,
+      transcripcion: '',
+      timestamp: new Date().toISOString()
+    };
+    setAudiosMultiples((prev) => [...prev, nuevoItem]);
     setAudioUrl(audioUrlObj);
     setAudioNombre(file.name);
     setNotificacionVoz(`📁 Analizando archivo de audio: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)...`);
@@ -1654,12 +1919,13 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
     }, 1200);
   };
 
-  // Limpiar texto de dictado
+  // Limpiar texto de dictado y audios
   const handleLimpiarDictado = () => {
     if (confirm('¿Desea limpiar el cuadro de dictado de la sesión?')) {
       setTextoDictado('');
       setAudioUrl(undefined);
       setAudioNombre(undefined);
+      setAudiosMultiples([]);
       if (typeof window !== 'undefined') {
         localStorage.removeItem('dictado_sesion_asesoria');
       }
@@ -1799,6 +2065,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
       acuerdos: acuerdosParseados.length > 0 ? acuerdosParseados : acuerdos,
       audioUrl: audioUrl || reunion.audioUrl,
       audioNombre: audioNombre || reunion.audioNombre,
+      audiosMultiples: audiosMultiples.length > 0 ? audiosMultiples : undefined,
       estado,
       timestamp: new Date().toISOString()
     };
@@ -1898,12 +2165,12 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
                   <span>{procesandoAudio ? 'Transcribiendo...' : '📁 Subir Audio'}</span>
                 </button>
 
-                {textoDictado && (
+                {(textoDictado || audiosMultiples.length > 0) && (
                   <button
                     type="button"
                     onClick={handleLimpiarDictado}
                     className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                    title="Limpiar cuadro de dictado"
+                    title="Limpiar cuadro de dictado y audios"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -1911,16 +2178,66 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
               </div>
             </div>
 
-            {/* Reproductor de Audio si existe */}
-            {audioUrl && (
+            {/* Reproductor de Audios Múltiples con botón de Borrado Individual */}
+            {audiosMultiples.length > 0 ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-bold text-purple-950">
+                  <span className="flex items-center gap-1">
+                    <Volume2 className="w-3.5 h-3.5 text-purple-600" />
+                    Archivos de Audio Adjuntos ({audiosMultiples.length}):
+                  </span>
+                  <span className="text-[10px] text-zinc-500 font-normal">
+                    Permite borrar cualquier audio con el botón 🗑️
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {audiosMultiples.map((a, idx) => (
+                    <div key={a.id || idx} className="bg-white border border-purple-200 rounded-xl p-2.5 flex flex-col gap-1.5 shadow-2xs">
+                      <div className="flex items-center justify-between gap-1 text-[11px]">
+                        <div className="flex items-center space-x-1.5 truncate">
+                          <span className="w-5 h-5 rounded-md bg-purple-100 text-purple-800 text-[10px] font-bold flex items-center justify-center shrink-0">
+                            #{idx + 1}
+                          </span>
+                          <span className="font-semibold text-zinc-800 truncate" title={a.nombre}>
+                            {a.nombre || `Audio #${idx + 1}`}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleEliminarAudioModal(a.id)}
+                          className="p-1 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors shrink-0"
+                          title="Borrar este archivo de audio"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                      <audio controls src={a.url} className="h-7 w-full rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : audioUrl ? (
               <div className="bg-white border border-purple-200 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
                 <div className="flex items-center space-x-2 text-xs font-semibold text-purple-900">
                   <FileAudio className="w-4 h-4 text-purple-600 shrink-0" />
                   <span>{audioNombre || 'Grabación vinculada a la sesión'}</span>
                 </div>
-                <audio controls src={audioUrl} className="h-8 w-full sm:w-64" />
+                <div className="flex items-center gap-2">
+                  <audio controls src={audioUrl} className="h-8 w-full sm:w-64" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAudioUrl(undefined);
+                      setAudioNombre(undefined);
+                    }}
+                    className="p-1 text-zinc-400 hover:text-rose-600 rounded"
+                    title="Borrar este audio"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            )}
+            ) : null}
 
             {/* Aviso o Notificación de Audio */}
             {notificacionVoz && (
