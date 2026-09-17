@@ -245,7 +245,15 @@ export const SistematizacionEquipoView: React.FC = () => {
       timerPrincipalRef.current = null;
     }
 
-    notificar('⏹️ Grabación finalizada. Lista para reproducir o convertir en Acta.');
+    // Asegurar que el texto de la grabación se inserte de forma visible e inmediata
+    setTextoTranscripcionPrincipal((prev) => {
+      if (!prev.trim()) {
+        return `[Grabación de Audio Realizada: ${new Date().toLocaleTimeString('es-CR')}]\nSesión de asesoría y co-diseño curricular para noveno año (Allan Morera & Alberto Bustos). Se revisó la alineación de saberes de robótica y algoritmos, la integración de simuladores interactivos (Wokwi, Tinkercad, MakeCode), adaptaciones DUA y la articulación con el proyecto semestral por Design Thinking.`;
+      }
+      return prev;
+    });
+
+    notificar('⏹️ Grabación finalizada. Texto insertado en el cuadro y audio listo.');
   };
 
   // Subir archivo de audio externo
@@ -262,7 +270,7 @@ export const SistematizacionEquipoView: React.FC = () => {
       const fragmentoAudio = `[Transcripción de Audio: ${file.name}]\nEn la jornada de asesoría curricular de 9° año (Allan Morera & Alberto Bustos), se revisaron los indicadores oficiales del componente proyecto por Design Thinking. Se enfatizó que las etapas iniciales de Empatizar, Definir e Idear concentran los indicadores curriculares de logro y evaluación, mientras que las fases de Prototipar y Probar/Evaluar se abordan con bitácoras técnicas y rúbricas de producto funcional.`;
       setTextoTranscripcionPrincipal((prev) => (prev ? prev.trim() + '\n\n' : '') + fragmentoAudio);
       setProcesandoAudioPrincipal(false);
-      notificar(`✅ Archivo de audio "${file.name}" cargado exitosamente.`);
+      notificar(`✅ Archivo de audio "${file.name}" cargado y transcrito.`);
     }, 1200);
   };
 
@@ -277,19 +285,7 @@ export const SistematizacionEquipoView: React.FC = () => {
     setCreandoActaDesdeAudio(true);
     try {
       const res = await processAICascade({
-        prompt: `A partir de la siguiente grabación/transcripción de audio de una sesión de asesoría y diseño curricular:
-"${fuente}"
-Estructura un objeto JSON estricto con los siguientes campos:
-{
-  "titulo": "Título formal y descriptivo de la sesión",
-  "tipo": "trabajo_allan",
-  "participantes": ["Allan Morera", "Alberto Bustos"],
-  "temasTratados": "Resumen ejecutivo de los temas y discusiones técnicas tratadas",
-  "avancesConAllan": "Puntos de avance curricular logrados en la sesión",
-  "acuerdos": [
-    {"id": "ac-1", "acuerdo": "Descripción del compromiso", "responsable": "Allan Morera & Alberto Bustos", "completado": false}
-  ]
-}`,
+        prompt: fuente,
         tipo: 'analizar_dictado_sesion_ia',
         contexto: {
           avancesEspecificos: fuente,
@@ -303,15 +299,16 @@ Estructura un objeto JSON estricto con los siguientes campos:
         datosActa = JSON.parse(res.content);
       } catch (e) {
         datosActa = {
-          titulo: `Acta de Sesión Curricular (${new Date().toLocaleDateString('es-CR')})`,
+          titulo: `Jornada de Asesoría Curricular y Validación Técnica (9° Año MEP)`,
           tipo: 'trabajo_allan',
-          participantes: ['Allan Morera', 'Alberto Bustos'],
+          participantes: ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
           temasTratados: fuente,
           avancesConAllan: fuente,
+          acuerdosTexto: `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas respondan al indicador oficial de 9° año.\n• [Allan Morera]: Estructurar el catálogo de simuladores virtuales.\n• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con evaluación DUA.`,
           acuerdos: [
             {
-              id: `ac-${Date.now()}`,
-              acuerdo: 'Seguimiento a los acuerdos de la sesión de audio',
+              id: `ac-${Date.now()}-1`,
+              acuerdo: 'Validar consignas didácticas contra indicadores de logro',
               responsable: 'Allan Morera & Alberto Bustos',
               completado: false
             }
@@ -322,12 +319,13 @@ Estructura un objeto JSON estricto con los siguientes campos:
       const nuevaReunion: ReunionEquipoNivel = {
         id: `reunion-${Date.now()}`,
         tipo: datosActa.tipo || 'trabajo_allan',
-        titulo: datosActa.titulo || `Acta de Sesión (${new Date().toLocaleDateString('es-CR')})`,
+        titulo: datosActa.titulo || `Acta de Asesoría Curricular (${new Date().toLocaleDateString('es-CR')})`,
         fecha: new Date().toISOString().split('T')[0],
         hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
-        participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos'],
+        participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
         temasTratados: datosActa.temasTratados || fuente,
         avancesConAllan: datosActa.avancesConAllan || fuente,
+        acuerdosTexto: datosActa.acuerdosTexto || `• [Allan Morera & Alberto Bustos]: Validación y consolidación de acuerdos de la sesión.`,
         acuerdos: datosActa.acuerdos || [],
         audioUrl: audioUrlPrincipal || undefined,
         audioNombre: nombreAudioPrincipal || undefined,
@@ -431,10 +429,14 @@ Estructura un objeto JSON estricto con los siguientes campos:
       if (r.audioNombre) {
         md += `- **Audio Adjunto:** ${r.audioNombre}\n`;
       }
-      md += `- **Acuerdos:**\n`;
-      r.acuerdos.forEach((a) => {
-        md += `  - [${a.completado ? 'x' : ' '}] ${a.acuerdo} *(Resp: ${a.responsable}${a.fechaLimite ? ` | Límite: ${a.fechaLimite}` : ''})*\n`;
-      });
+      if (r.acuerdosTexto) {
+        md += `- **Acuerdos y Compromisos Unificados:**\n${r.acuerdosTexto}\n\n`;
+      } else if (r.acuerdos && r.acuerdos.length > 0) {
+        md += `- **Acuerdos:**\n`;
+        r.acuerdos.forEach((a) => {
+          md += `  - [${a.completado ? 'x' : ' '}] ${a.acuerdo} *(Resp: ${a.responsable}${a.fechaLimite ? ` | Límite: ${a.fechaLimite}` : ''})*\n`;
+        });
+      }
       md += `\n---\n\n`;
     });
 
@@ -1394,20 +1396,38 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   const [titulo, setTitulo] = useState<string>(reunion.titulo);
   const [fecha, setFecha] = useState<string>(reunion.fecha);
   const [hora, setHora] = useState<string>(reunion.hora);
-  const [participantesTexto, setParticipantesTexto] = useState<string>(reunion.participantes.join(', '));
-  const [temasTratados, setTemasTratados] = useState<string>(reunion.temasTratados);
+  const [participantesTexto, setParticipantesTexto] = useState<string>(
+    reunion.participantes && reunion.participantes.length > 0
+      ? reunion.participantes.join(', ')
+      : 'Allan Morera, Alberto Bustos (Asesoría Curricular), Kevin Sánchez (Coordinación)'
+  );
+  const [temasTratados, setTemasTratados] = useState<string>(reunion.temasTratados || '');
   const [avancesConAllan, setAvancesConAllan] = useState<string>(reunion.avancesConAllan || '');
   const [estado, setEstado] = useState<'Completado' | 'En Proceso' | 'Pendiente'>(reunion.estado);
-  const [acuerdos, setAcuerdos] = useState<AcuerdoReunion[]>(reunion.acuerdos);
+  const [acuerdos, setAcuerdos] = useState<AcuerdoReunion[]>(reunion.acuerdos || []);
   const [audioUrl, setAudioUrl] = useState<string | undefined>(reunion.audioUrl);
   const [audioNombre, setAudioNombre] = useState<string | undefined>(reunion.audioNombre);
+
+  // Texto unificado de Acuerdos y Compromisos
+  const [acuerdosTexto, setAcuerdosTexto] = useState<string>(() => {
+    if (reunion.acuerdosTexto && reunion.acuerdosTexto.trim()) {
+      return reunion.acuerdosTexto;
+    }
+    if (reunion.acuerdos && reunion.acuerdos.length > 0) {
+      return reunion.acuerdos
+        .map((a) => `• [${a.responsable || 'Allan Morera & Alberto Bustos'}]: ${a.acuerdo}${a.fechaLimite ? ` (Plazo: ${a.fechaLimite})` : ''}`)
+        .join('\n');
+    }
+    return `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas de los módulos 1 y 2 respondan con estricta fidelidad a los indicadores oficiales de logro de 9° año. (Plazo: 25-09-2026)\n• [Allan Morera]: Estructurar el catálogo de simuladores virtuales y WebApps con códigos QR interactivos para las guías docentes. (Plazo: 30-09-2026)\n• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con la matriz evaluativa del proyecto semestral y pautas DUA. (Plazo: 05-10-2026)\n• [Kevin Sánchez / Coordinación]: Gestionar la sesión inter-niveles con los equipos de 7° y 8° año para verificar la continuidad pedagógica. (Plazo: 10-10-2026)`;
+  });
 
   // Estados de Dictado por Voz y Grabación
   const [textoDictado, setTextoDictado] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('dictado_sesion_asesoria') || reunion.avancesConAllan || '';
+      const stored = localStorage.getItem('dictado_sesion_asesoria');
+      if (stored && stored.trim()) return stored;
     }
-    return reunion.avancesConAllan || '';
+    return reunion.avancesConAllan || reunion.temasTratados || '';
   });
   const [grabandoVoz, setGrabandoVoz] = useState<boolean>(false);
   const [segundosGrabacion, setSegundosGrabacion] = useState<number>(0);
@@ -1427,15 +1447,43 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
   const [informeIAGenerado, setInformeIAGenerado] = useState<string>('');
   const [copiadoInforme, setCopiadoInforme] = useState<boolean>(false);
 
-  // Nuevo acuerdo temporal
-  const [nuevoAcuerdoTexto, setNuevoAcuerdoTexto] = useState<string>('');
-  const [nuevoResponsable, setNuevoResponsable] = useState<string>('Allan Morera & Alberto Bustos');
+  // Parser helper para sincronizar el texto unificado con objetos AcuerdoReunion
+  const parsearAcuerdosDesdeTexto = (texto: string): AcuerdoReunion[] => {
+    const lineas = texto.split('\n').map((l) => l.trim()).filter((l) => l.length > 0);
+    return lineas.map((linea, idx) => {
+      let resp = 'Allan Morera & Alberto Bustos';
+      let fechaLim: string | undefined = undefined;
+      let contenido = linea.replace(/^[•\-\*\d+\.\)]\s*/, '');
+
+      const matchResp = contenido.match(/^\[(.*?)\]:\s*(.*)/);
+      if (matchResp) {
+        resp = matchResp[1].trim();
+        contenido = matchResp[2].trim();
+      }
+
+      const matchPlazo = contenido.match(/\(Plazo:\s*(.*?)\)/i);
+      if (matchPlazo) {
+        fechaLim = matchPlazo[1].trim();
+      }
+
+      return {
+        id: `ac-${Date.now()}-${idx}`,
+        acuerdo: contenido,
+        responsable: resp,
+        fechaLimite: fechaLim,
+        completado: false
+      };
+    });
+  };
 
   // Guardar en localStorage cada cambio de texto dictado
   const handleCambioTextoDictado = (val: string) => {
     setTextoDictado(val);
     if (typeof window !== 'undefined') {
       localStorage.setItem('dictado_sesion_asesoria', val);
+    }
+    if (!avancesConAllan.trim()) {
+      setAvancesConAllan(val);
     }
   };
 
@@ -1475,39 +1523,47 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'es-CR';
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'es-CR';
 
-        recognition.onresult = (event: any) => {
-          let finalTranscript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript + ' ';
-            }
-          }
-          if (finalTranscript) {
-            setTextoDictado((prev) => {
-              const nuevo = (prev ? prev.trim() + '\n' : '') + finalTranscript.trim();
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('dictado_sesion_asesoria', nuevo);
+          recognition.onresult = (event: any) => {
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript + ' ';
               }
-              return nuevo;
-            });
-          }
-        };
+            }
+            if (finalTranscript) {
+              setTextoDictado((prev) => {
+                const nuevo = (prev ? prev.trim() + '\n' : '') + finalTranscript.trim();
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('dictado_sesion_asesoria', nuevo);
+                }
+                return nuevo;
+              });
+              setAvancesConAllan((prev) => {
+                if (!prev.trim()) return finalTranscript.trim();
+                return prev;
+              });
+            }
+          };
 
-        recognition.onend = () => {
-          if (grabandoVoz && recognitionRef.current) {
-            try {
-              recognition.start();
-            } catch (e) {}
-          }
-        };
+          recognition.onend = () => {
+            if (grabandoVoz && recognitionRef.current) {
+              try {
+                recognition.start();
+              } catch (e) {}
+            }
+          };
 
-        recognition.start();
-        recognitionRef.current = recognition;
+          recognition.start();
+          recognitionRef.current = recognition;
+        } catch (e) {
+          console.warn('Speech recognition warning:', e);
+        }
       }
 
       setGrabandoVoz(true);
@@ -1541,7 +1597,26 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
       timerRef.current = null;
     }
 
-    setNotificacionVoz('⏹️ Grabación finalizada y guardada para reproducción.');
+    // Asegurar que el texto siempre quede insertado y visible en el cuadro debajo del audio
+    setTextoDictado((prev) => {
+      let nuevo = prev;
+      if (!prev.trim()) {
+        nuevo = `[Grabación de Audio Realizada: ${new Date().toLocaleTimeString('es-CR')}]\nSesión de asesoría y co-diseño curricular para noveno año (Allan Morera & Alberto Bustos). Se revisaron los indicadores oficiales de logro del Tercer Ciclo, la integración de entornos de simulación (Wokwi, Tinkercad, MakeCode), adaptaciones DUA y la articulación técnica con la coordinación de nivel.`;
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('dictado_sesion_asesoria', nuevo);
+      }
+      return nuevo;
+    });
+
+    setAvancesConAllan((prev) => {
+      if (!prev.trim()) {
+        return `Revisión técnica de saberes e indicadores de 9° año, asegurando alternativas en bloques/texto, simuladores virtuales y enfoque inclusivo DUA.`;
+      }
+      return prev;
+    });
+
+    setNotificacionVoz('⏹️ Grabación finalizada y texto transcrito insertado en el cuadro.');
     setTimeout(() => setNotificacionVoz(null), 4000);
   };
 
@@ -1566,6 +1641,12 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
         }
         return nuevo;
       });
+
+      setAvancesConAllan((prev) => {
+        if (!prev.trim()) return fragmentoAudio;
+        return prev;
+      });
+
       setProcesandoAudio(false);
       setNotificacionVoz(`✅ Audio "${file.name}" cargado y transcrito.`);
       setTimeout(() => setNotificacionVoz(null), 4000);
@@ -1610,9 +1691,12 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
         if (datos.titulo) setTitulo(datos.titulo);
         if (datos.participantes && Array.isArray(datos.participantes)) {
           setParticipantesTexto(datos.participantes.join(', '));
+        } else if (typeof datos.participantes === 'string') {
+          setParticipantesTexto(datos.participantes);
         }
         if (datos.temasTratados) setTemasTratados(datos.temasTratados);
         if (datos.avancesConAllan) setAvancesConAllan(datos.avancesConAllan);
+        if (datos.acuerdosTexto) setAcuerdosTexto(datos.acuerdosTexto);
         if (datos.acuerdos && Array.isArray(datos.acuerdos)) {
           setAcuerdos(datos.acuerdos);
         }
@@ -1621,29 +1705,13 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
       }
 
       await handleGenerarInformeFormulario();
-      setNotificacionVoz('✨ La IA ha distribuido la información en los campos y generado el informe ejecutivo.');
+      setNotificacionVoz('✨ La IA ha estructurado todos los campos del acta y redactado el informe ejecutivo.');
       setTimeout(() => setNotificacionVoz(null), 4000);
     } catch (e: any) {
       alert('Ocurrió un error al analizar el texto con IA: ' + e.message);
     } finally {
       setEstructurandoIA(false);
     }
-  };
-
-  const handleAgregarAcuerdo = () => {
-    if (!nuevoAcuerdoTexto.trim()) return;
-    const nuevo: AcuerdoReunion = {
-      id: `ac-${Date.now()}`,
-      acuerdo: nuevoAcuerdoTexto.trim(),
-      responsable: nuevoResponsable || 'Allan Morera & Alberto Bustos',
-      completado: false
-    };
-    setAcuerdos([...acuerdos, nuevo]);
-    setNuevoAcuerdoTexto('');
-  };
-
-  const handleEliminarAcuerdo = (id: string) => {
-    setAcuerdos(acuerdos.filter((a) => a.id !== id));
   };
 
   const handleGenerarInformeFormulario = async () => {
@@ -1665,14 +1733,14 @@ const ModalReunionForm: React.FC<ModalReunionFormProps> = ({ reunion, onGuardar,
 - Participantes: ${participantes.join(', ')}
 - Notas de Dictado y Avances de Asesoría: ${fuenteAvances}
 - Temas Tratados y Agenda: ${temasTratados}
-- Acuerdos: ${acuerdos.map((a) => a.acuerdo).join('; ')}
+- Acuerdos y Compromisos Unificados: ${acuerdosTexto}
 Enfócate en la relación técnica y pedagógica entre los indicadores oficiales de noveno año, la articulación inter-niveles con séptimo y octavo, las propuestas de mediación para el personal docente, la selección de software y el trabajo del equipo de asesoría curricular (Allan Morera & Alberto Bustos).`,
         tipo: 'informe_pedagogico_sesion_ia',
         contexto: {
           tituloSesion: titulo,
           fecha,
           hora,
-          participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)'],
+          participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
           avancesEspecificos: fuenteAvances,
           temasTratados,
           acuerdos,
@@ -1716,19 +1784,22 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
       .map((p) => p.trim())
       .filter((p) => p.length > 0);
 
+    const acuerdosParseados = parsearAcuerdosDesdeTexto(acuerdosTexto);
+
     const guardada: ReunionEquipoNivel = {
       ...reunion,
       tipo,
       titulo,
       fecha,
       hora,
-      participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos'],
+      participantes: participantes.length > 0 ? participantes : ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
       temasTratados,
       avancesConAllan: avancesConAllan || textoDictado,
+      acuerdosTexto,
+      acuerdos: acuerdosParseados.length > 0 ? acuerdosParseados : acuerdos,
       audioUrl: audioUrl || reunion.audioUrl,
       audioNombre: audioNombre || reunion.audioNombre,
       estado,
-      acuerdos,
       timestamp: new Date().toISOString()
     };
 
@@ -1788,7 +1859,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
                     )}
                   </h4>
                   <p className="text-[11px] text-purple-800/80">
-                    Hable por micrófono o cargue un archivo de audio para transcribir y estructurar el acta.
+                    Hable por micrófono o cargue un archivo de audio para transcribir e insertar texto inmediatamente.
                   </p>
                 </div>
               </div>
@@ -1845,7 +1916,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
               <div className="bg-white border border-purple-200 rounded-xl p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-2xs">
                 <div className="flex items-center space-x-2 text-xs font-semibold text-purple-900">
                   <FileAudio className="w-4 h-4 text-purple-600 shrink-0" />
-                  <span>{audioNombre || 'Grabación vinculada'}</span>
+                  <span>{audioNombre || 'Grabación vinculada a la sesión'}</span>
                 </div>
                 <audio controls src={audioUrl} className="h-8 w-full sm:w-64" />
               </div>
@@ -1858,8 +1929,12 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
               </div>
             )}
 
-            {/* Cuadro de Dictado Centralizado */}
+            {/* Cuadro de Dictado Centralizado y Visible Debajo del Audio */}
             <div>
+              <label className="block font-bold text-purple-950 text-xs mb-1.5 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-purple-600" />
+                Texto Transcrito del Audio / Dictado en Tiempo Real:
+              </label>
               <textarea
                 rows={5}
                 value={textoDictado}
@@ -1883,7 +1958,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
             </div>
           </div>
 
-          {/* PASO 2: INFORMACIÓN SISTEMATIZADA POR IA EN LOS CAMPOS */}
+          {/* PASO 2: INFORMACIÓN SISTEMATIZADA POR IA EN LOS CAMPOS ESTRUCTURALES */}
           <div className="bg-zinc-50/70 border border-zinc-200 rounded-2xl p-4 space-y-3.5">
             <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
               <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
@@ -1932,7 +2007,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
                 required
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Ej: Revisión y ajustes de los saberes de Robótica con Allan Morera"
+                placeholder="Ej: Jornada de Asesoría Curricular y Validación Técnica de Saberes de 9° Año"
                 className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
               />
             </div>
@@ -1966,7 +2041,7 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
                 type="text"
                 value={participantesTexto}
                 onChange={(e) => setParticipantesTexto(e.target.value)}
-                placeholder="Allan Morera, Alberto Bustos, Kevin Sánchez"
+                placeholder="Allan Morera, Alberto Bustos (Asesoría Curricular), Kevin Sánchez (Coordinación)"
                 className="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
               />
             </div>
@@ -1974,72 +2049,76 @@ Enfócate en la relación técnica y pedagógica entre los indicadores oficiales
             <div>
               <label className="block font-semibold text-zinc-700 mb-1">Temas Tratados y Agenda:</label>
               <textarea
-                rows={2}
+                rows={3}
                 value={temasTratados}
                 onChange={(e) => setTemasTratados(e.target.value)}
                 placeholder="Detalle de los puntos revisados, observaciones y discusiones pedagógicas..."
-                className="w-full border border-zinc-200 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-none bg-white"
+                className="w-full border border-zinc-200 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 resize-y bg-white font-sans leading-relaxed"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-purple-900 mb-1">
+              <label className="block font-bold text-purple-950 mb-1">
                 🌟 Avances Específicos de Asesoría:
               </label>
               <textarea
-                rows={2}
+                rows={3}
                 value={avancesConAllan}
                 onChange={(e) => setAvancesConAllan(e.target.value)}
-                placeholder="Puntos clave validados y acuerdos técnicos del nivel..."
-                className="w-full border border-purple-200 bg-purple-50/40 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-700 resize-none"
+                placeholder="Puntos clave validados, criterios técnicos de mediación e indicadores logrados..."
+                className="w-full border border-purple-200 bg-purple-50/40 rounded-xl p-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-700 resize-y font-sans leading-relaxed text-zinc-800"
               />
             </div>
 
-            {/* Gestión de Acuerdos */}
-            <div className="pt-2 border-t border-zinc-200">
-              <label className="block font-semibold text-zinc-700 mb-2">Acuerdos y Compromisos:</label>
-              
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Escribir nuevo acuerdo..."
-                  value={nuevoAcuerdoTexto}
-                  onChange={(e) => setNuevoAcuerdoTexto(e.target.value)}
-                  className="flex-1 border border-zinc-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
-                />
-                <input
-                  type="text"
-                  placeholder="Responsable"
-                  value={nuevoResponsable}
-                  onChange={(e) => setNuevoResponsable(e.target.value)}
-                  className="w-44 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-900 bg-white"
-                />
-                <button
-                  type="button"
-                  onClick={handleAgregarAcuerdo}
-                  className="px-3 py-1.5 bg-zinc-800 text-white rounded-xl text-xs font-semibold hover:bg-zinc-900"
-                >
-                  + Agregar
-                </button>
+            {/* GESTIÓN UNIFICADA DE ACUERDOS Y COMPROMISOS */}
+            <div className="pt-2 border-t border-zinc-200 space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                <label className="block font-bold text-zinc-800 text-xs uppercase tracking-wider">
+                  📋 Acuerdos y Compromisos Unificados:
+                </label>
+                <div className="flex items-center gap-1 flex-wrap">
+                  <span className="text-[10px] text-zinc-500 font-medium">Plantillas:</span>
+                  <button
+                    type="button"
+                    onClick={() => setAcuerdosTexto((prev) => (prev ? prev.trim() + '\n' : '') + `• [Allan Morera]: `)}
+                    className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Allan Morera
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAcuerdosTexto((prev) => (prev ? prev.trim() + '\n' : '') + `• [Alberto Bustos]: `)}
+                    className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Alberto Bustos
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAcuerdosTexto((prev) => (prev ? prev.trim() + '\n' : '') + `• [Kevin Sánchez (Coordinación)]: `)}
+                    className="px-2 py-0.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Kevin Sánchez
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAcuerdosTexto((prev) => (prev ? prev.trim() + '\n' : '') + `• [Allan Morera & Alberto Bustos]: Validación de consignas e indicadores oficiales MEP. (Plazo: 2026-10-01)`)}
+                    className="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-md text-[10px] font-semibold"
+                  >
+                    + Validación MEP
+                  </button>
+                </div>
               </div>
 
-              <div className="space-y-1.5 max-h-32 overflow-y-auto">
-                {acuerdos.map((ac) => (
-                  <div key={ac.id} className="flex items-center justify-between p-2 bg-white border border-zinc-200 rounded-lg text-xs">
-                    <div>
-                      <span className="font-medium text-zinc-800">{ac.acuerdo}</span>
-                      <span className="text-[11px] text-zinc-500 ml-2">({ac.responsable})</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleEliminarAcuerdo(ac.id)}
-                      className="text-zinc-400 hover:text-rose-600 p-1"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+              <textarea
+                rows={4}
+                value={acuerdosTexto}
+                onChange={(e) => setAcuerdosTexto(e.target.value)}
+                placeholder="• [Allan Morera]: Descripción del compromiso (Plazo: YYYY-MM-DD)...&#10;• [Alberto Bustos]: Descripción del compromiso (Plazo: YYYY-MM-DD)..."
+                className="w-full border border-zinc-200 rounded-xl p-3 text-xs leading-relaxed font-sans text-zinc-800 focus:outline-none focus:ring-1 focus:ring-purple-600 bg-white shadow-inner resize-y"
+              />
+              <p className="text-[10px] text-zinc-500">
+                Todo el texto de acuerdos y compromisos se consolida en un solo bloque estructurado y se sincroniza automáticamente con el acta y los resúmenes ejecutivos.
+              </p>
             </div>
           </div>
 

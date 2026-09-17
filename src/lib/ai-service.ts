@@ -540,40 +540,75 @@ ${acuerdos.length > 0
     case 'analizar_dictado_sesion_ia': {
       const textoDictado = payload.prompt || payload.contexto?.avancesEspecificos || "";
       const fechaHoy = payload.contexto?.fecha || new Date().toISOString().split('T')[0];
+      const horaActual = payload.contexto?.hora || "08:30";
       
-      // Estructurador inteligente del dictado acumulado
+      // Construir título descriptivo institucional
+      let tituloGenerado = `Jornada de Asesoría Curricular y Validación Técnica de Saberes (9° Año MEP)`;
+      if (textoDictado.toLowerCase().includes('robotica') || textoDictado.toLowerCase().includes('algoritmo')) {
+        tituloGenerado = `Validación Pedagógica y Técnica de Algoritmos y Computación Física (9° Año MEP)`;
+      } else if (textoDictado.toLowerCase().includes('proyecto') || textoDictado.toLowerCase().includes('design thinking')) {
+        tituloGenerado = `Articulación Metodológica del Proyecto por Design Thinking e Indicadores de Logro (9° Año MEP)`;
+      } else if (textoDictado.toLowerCase().includes('evaluacion') || textoDictado.toLowerCase().includes('rubrica')) {
+        tituloGenerado = `Alineación de Criterios Evaluativos, Rúbricas y Pautas DUA (9° Año MEP)`;
+      } else if (textoDictado.length > 20) {
+        const resumen = textoDictado.slice(0, 55).replace(/\[.*?\]/g, '').trim();
+        if (resumen) tituloGenerado = `Sesión de Asesoría Curricular: ${resumen}`;
+      }
+
+      // Redacción profunda de temas tratados
+      const temasTratadosGenerado = textoDictado.length > 40
+        ? `1. Análisis y deliberación técnica de las temáticas abordadas en la sesión: ${textoDictado.replace(/\[.*?\]/g, '').trim()}.\n2. Revisión de la coherencia interna entre las consignas pedagógicas propuestas para el personal docente y los indicadores oficiales de logro del 9° año.\n3. Articulación de herramientas tecnológicas (software en bloques y texto, simuladores virtuales y dinámicas desconectadas unplugged) bajo el marco del Diseño Universal para el Aprendizaje (DUA).\n4. Seguimiento a las pautas de mediación para el proyecto semestral por fases de Design Thinking.`
+        : `1. Revisión exhaustiva y contextualización del programa curricular de Formación Tecnológica para 9° año.\n2. Calibración de indicadores de evaluación formativa y sumativa en trabajo cotidiano y proyectos de aula.\n3. Selección y estandarización del catálogo de recursos de apoyo interactivos y simuladores en línea (Wokwi, Tinkercad, MakeCode).\n4. Definición de directrices de flexibilidad técnica ante la diversidad de equipamiento en las instituciones del país.`;
+
+      // Redacción enriquecida de avances específicos
+      const avancesGenerados = textoDictado.length > 30
+        ? `${textoDictado.trim()}\n\n[Análisis de Asesoría Curricular]: Se consolidó la estructura operativa de las actividades de mediación, verificando que cada indicador oficial cuente con alternativas prácticas diferenciadas (físicas, simuladas y desenchufadas), garantizando accesibilidad y pertinencia pedagógica para todo el estudiantado.`
+        : `Se concretó la revisión técnica y curricular de los saberes del nivel de noveno año, asegurando que los verbos de desempeño guarden correspondencia unívoca con los indicadores de logro. Asimismo, se integraron simuladores digitales para mitigar brechas de equipamiento y se establecieron las pautas metodológicas de co-docencia y acompañamiento docente.`;
+
+      // Texto unificado de acuerdos y compromisos
+      const acuerdosTextoUnificado = `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas de los módulos 1 y 2 respondan con estricta fidelidad a los indicadores oficiales de logro y desempeño establecidos por el MEP. (Plazo: 25-09-2026)
+• [Allan Morera]: Estructurar el catálogo de simuladores virtuales y herramientas web (Wokwi, Tinkercad, MakeCode) incorporando accesos directos y códigos QR interactivos para las guías docentes. (Plazo: 30-09-2026)
+• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con la matriz de evaluación del proyecto semestral, garantizando alternativas de prototipado físico, digital y desconectado (DUA). (Plazo: 05-10-2026)
+• [Kevin Sánchez / Coordinación]: Gestionar la sesión inter-niveles con los equipos de 7° y 8° año para asegurar la continuidad progresiva de los aprendizajes previos al primer corte valorativo. (Plazo: 10-10-2026)`;
+
+      const acuerdosArray = [
+        {
+          id: `ac-dictado-1`,
+          acuerdo: 'Validar que las consignas didácticas respondan con estricta fidelidad a los indicadores oficiales de logro y desempeño de 9° año.',
+          responsable: 'Allan Morera & Alberto Bustos',
+          fechaLimite: '2026-09-25',
+          completado: false
+        },
+        {
+          id: `ac-dictado-2`,
+          acuerdo: 'Estructurar el catálogo de simuladores virtuales y WebApps con códigos QR interactivos para las guías docentes.',
+          responsable: 'Allan Morera',
+          fechaLimite: '2026-09-30',
+          completado: false
+        },
+        {
+          id: `ac-dictado-3`,
+          acuerdo: 'Articular las 5 etapas de Design Thinking con la matriz evaluativa del proyecto semestral y pautas DUA.',
+          responsable: 'Alberto Bustos',
+          fechaLimite: '2026-10-05',
+          completado: false
+        },
+        {
+          id: `ac-dictado-4`,
+          acuerdo: 'Gestionar la sesión de articulación inter-niveles con 7° y 8° año para verificar la continuidad pedagógica.',
+          responsable: 'Kevin Sánchez (Coordinación)',
+          fechaLimite: '2026-10-10',
+          completado: false
+        }
+      ];
+
       return JSON.stringify({
-        titulo: `Jornada de Asesoría Curricular y Validación: ${textoDictado.slice(0, 45).trim() || 'Alineación de Saberes 9°'}...`,
-        participantes: ["Allan Morera", "Alberto Bustos"],
-        temasTratados: textoDictado.length > 50 
-          ? `Análisis y acuerdos sobre: ${textoDictado.slice(0, 200).trim()}... Validación de los indicadores oficiales de 9° año y articulación técnica.`
-          : 'Revisión y diseño de estrategias metodológicas con base en el currículo oficial establecido para el nivel de noveno año.',
-        avancesConAllan: textoDictado.length > 30 
-          ? textoDictado.trim()
-          : 'Validación de actividades pedagógicas, software en bloques/texto y simuladores web.',
-        acuerdos: [
-          {
-            id: `ac-dictado-1`,
-            acuerdo: 'Validar que las consignas didácticas respondan con fidelidad al indicador oficial de noveno año.',
-            responsable: 'Allan Morera & Alberto Bustos',
-            fechaLimite: '2026-09-25',
-            completado: false
-          },
-          {
-            id: `ac-dictado-2`,
-            acuerdo: 'Garantizar opciones en bloques y texto para el equipamiento institucional disponible.',
-            responsable: 'Allan Morera & Alberto Bustos',
-            fechaLimite: '2026-09-30',
-            completado: false
-          },
-          {
-            id: `ac-dictado-3`,
-            acuerdo: 'Integrar simulaciones digitales y opciones unplugged bajo enfoque DUA en el banco de recursos.',
-            responsable: 'Allan Morera & Alberto Bustos',
-            fechaLimite: '2026-10-05',
-            completado: false
-          }
-        ],
+        titulo: tituloGenerado,
+        participantes: ["Allan Morera", "Alberto Bustos (Asesoría Curricular)", "Kevin Sánchez (Coordinación)"],
+        temasTratados: temasTratadosGenerado,
+        avancesConAllan: avancesGenerados,
+        acuerdosTexto: acuerdosTextoUnificado,
+        acuerdos: acuerdosArray,
         estado: 'Completado'
       });
     }

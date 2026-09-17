@@ -434,6 +434,7 @@ export interface ReunionEquipoNivel {
   participantes: string[];
   temasTratados: string;
   acuerdos: AcuerdoReunion[];
+  acuerdosTexto?: string; // Texto unificado de acuerdos y compromisos
   avancesConAllan?: string; // Bitácora específica de co-trabajo con Allan
   sintesisIA?: string;
   audioUrl?: string; // Grabación de audio vinculada al acta
