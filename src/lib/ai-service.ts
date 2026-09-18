@@ -61,6 +61,17 @@ export interface AIRequestPayload {
     aspectosPuntuales?: string;
     faseDesignThinking?: string;
     rolSecuencia?: string;
+    competenciaTexto?: string;
+    rdaTexto?: string;
+    ejeTransversalNombre?: string;
+    ejeTransversalDimension?: string;
+    ejeTransversalDescriptor?: string;
+    saberesProcedimentales?: string[];
+    saberesActitudinales?: string[];
+    etapaDesignThinking?: string;
+    accionesEtapaDT?: string[];
+    entregablesDT?: string[];
+    numeroSemana?: number;
   };
 }
 
@@ -286,6 +297,100 @@ void ejecutarValidacion() {
 1. **Etapa 1 (Síntesis Metacognitiva):** Reflexión sobre el error: *"¿Qué fallo imprevisto tuvimos en el código o circuito y qué aprendimos al depurarlo?"*.
 2. **Etapa 2 (Demostración y Puesta en Común):** Tres parejas voluntarias exhiben el comportamiento de su prototipo ante el grupo.
 3. **Etapa 3 (Registro de Evidencias y Puente):** Registro de la evidencia en la lista de cotejo y enlace anticipatorio con la siguiente sesión.`;
+
+    case 'mediacion_inicio_desarrollo_cierre': {
+      const saber = payload.contexto?.saberNombre || tema;
+      const ind = payload.contexto?.indicadorTexto || indicadores;
+      const comp = payload.contexto?.competenciaTexto || "Desarrolla prototipos automatizados y sistemas robóticos integrando hardware y software con responsabilidad.";
+      const rda = payload.contexto?.rdaTexto || "Aplica fundamentos de robótica, computación física, electrónica, mecánica y algoritmos en prototipos contextualizados.";
+      const ejeNom = payload.contexto?.ejeTransversalNombre || "Pensamiento Computacional y Ética Digital";
+      const ejeDim = payload.contexto?.ejeTransversalDimension || "Apropiación Tecnológica y Resolución de Problemas";
+      const ejeDesc = payload.contexto?.ejeTransversalDescriptor || "Aplica el pensamiento computacional para resolver situaciones de la vida cotidiana.";
+      const procList = payload.contexto?.saberesProcedimentales?.join(", ") || "Modulariza, Depura, Programa, Reconoce patrones";
+      const actList = payload.contexto?.saberesActitudinales?.join(", ") || "Gusto por la precisión, Aprender del error, Tolerancia a la frustración";
+      const etapaDT = payload.contexto?.etapaDesignThinking || "";
+      const accionesDT = payload.contexto?.accionesEtapaDT?.join("; ") || "";
+      const entregablesDT = payload.contexto?.entregablesDT?.join(", ") || "";
+      const semanaNum = payload.contexto?.numeroSemana || 1;
+
+      // Generar contexto y acciones aplicadas según la naturaleza técnica del saber
+      let retoAplicado = `un reto práctico sobre cómo implementar ${saber.toLowerCase()} para resolver una necesidad técnica real en el colegio o la comunidad`;
+      let accionAplicadaDesarrollo = `conectan los componentes y escriben el código para que el sistema responda con exactitud`;
+      let reflexionAplicadaCierre = `revisan cómo calibraron las señales y ajustaron los parámetros técnicos`;
+
+      const saberLower = saber.toLowerCase();
+      if (saberLower.includes('actuador') || saberLower.includes('motor') || saberLower.includes('mecanismo')) {
+        retoAplicado = `un caso real donde se requiere accionar físicamente una compuerta, alarma o mecanismo móvil mediante ${saber.toLowerCase()}`;
+        accionAplicadaDesarrollo = `ensamblan el mecanismo móvil, conectan las señales de control y calibran el rango de movimiento o activación en el código`;
+        reflexionAplicadaCierre = `analizan cómo resolvieron la caída de tensión o la fricción mecánica al accionar la carga`;
+      } else if (saberLower.includes('sensor')) {
+        retoAplicado = `una situación del entorno donde se necesita medir en tiempo real variables físicas (como luz, presencia o temperatura) para tomar decisiones automáticas`;
+        accionAplicadaDesarrollo = `conectan el sensor a pines analógicos o digitales, calibran el umbral de disparo y programan la lectura continua de datos`;
+        reflexionAplicadaCierre = `evalúan cómo filtraron el ruido en las lecturas analógicas y fijaron el umbral de activación`;
+      } else if (saberLower.includes('microcontrolador')) {
+        retoAplicado = `el diseño del cerebro electrónico de una solución domótica, identificando cómo gestionar entradas sensoriales y salidas de potencia`;
+        accionAplicadaDesarrollo = `mapean los pines digitales y analógicos, configuran la alimentación eléctrica segura y cargan el programa de control`;
+        reflexionAplicadaCierre = `contrastan el consumo de recursos, la distribución de pines y la sincronización del bucle principal`;
+      } else if (saberLower.includes('algoritmo') || saberLower.includes('estructura') || saberLower.includes('programación') || saberLower.includes('entorno')) {
+        retoAplicado = `un problema de toma de decisiones automatizada donde se requiere estructurar la lógica antes de codificar`;
+        accionAplicadaDesarrollo = `diseñan el diagrama de flujo condicional, declaran variables y programan las funciones en el entorno de desarrollo`;
+        reflexionAplicadaCierre = `examinan cómo depuraron bucles infinitos y optimizaron la legibilidad del código`;
+      } else if (saberLower.includes('base de datos') || saberLower.includes('dato') || saberLower.includes('gestor')) {
+        retoAplicado = `la necesidad de registrar y consultar información comunitaria de manera estructurada y segura`;
+        accionAplicadaDesarrollo = `diseñan las tablas con sus llaves primarias, ingresan registros de prueba y ejecutan consultas condicionales`;
+        reflexionAplicadaCierre = `verifican la integridad referencial y las medidas de privacidad de la información almacenada`;
+      } else if (saberLower.includes('3d') || saberLower.includes('modelado')) {
+        retoAplicado = `el diseño del soporte físico o carcasa protectora para albergar el circuito del proyecto`;
+        accionAplicadaDesarrollo = `toman medidas exactas de los componentes con calibrador y modelan la pieza paramétrica en el software de diseño tridimensional`;
+        reflexionAplicadaCierre = `analizan la resistencia estructural, las tolerancias de encastre y la optimización del filamento`;
+      } else if (saberLower.includes('ia') || saberLower.includes('inteligencia') || saberLower.includes('generativa')) {
+        retoAplicado = `un dilema sobre cómo aprovechar modelos de inteligencia artificial para procesar información y resolver problemas éticos`;
+        accionAplicadaDesarrollo = `diseñan prompts estructurados con criterios de verificación, contrastan las respuestas y depuran sesgos algorítmicos`;
+        reflexionAplicadaCierre = `debaten sobre la veracidad de las fuentes y el uso responsable de contenidos generados`;
+      }
+
+      let ejeContextoAplicado = `(ética y tecnología) al dialogar sobre cómo usar esta herramienta de forma responsable para beneficiar a la comunidad`;
+      if (saberLower.includes('actuador') || saberLower.includes('motor') || saberLower.includes('mecanismo')) {
+        ejeContextoAplicado = `(seguridad y accesibilidad) al reflexionar sobre cómo automatizar accesos o alertas para proteger a las personas y facilitar el paso en el colegio`;
+      } else if (saberLower.includes('sensor')) {
+        ejeContextoAplicado = `(cuidado ambiental y ahorro de energía) al dialogar sobre cómo medir la luz o temperatura ambiental para evitar el desperdicio de electricidad en las aulas`;
+      } else if (saberLower.includes('microcontrolador')) {
+        ejeContextoAplicado = `(manejo seguro de la tecnología) al operar con precaución la energía y cuidar los componentes electrónicos en el taller`;
+      } else if (saberLower.includes('algoritmo') || saberLower.includes('estructura') || saberLower.includes('programa')) {
+        ejeContextoAplicado = `(pensamiento lógico y ciudadanía) al redactar instrucciones claras que solucionen un problema de forma justa y ordenada`;
+      } else if (saberLower.includes('dato') || saberLower.includes('base')) {
+        ejeContextoAplicado = `(privacidad y ética digital) al proteger la confidencialidad de la información y cuidar los datos personales de las y los usuarios`;
+      } else if (saberLower.includes('3d') || saberLower.includes('modelado')) {
+        ejeContextoAplicado = `(innovación y sostenibilidad) al diseñar piezas ergonómicas optimizando el uso de material para no generar residuos`;
+      } else if (saberLower.includes('ia') || saberLower.includes('inteligencia')) {
+        ejeContextoAplicado = `(ética digital) al verificar la veracidad de la información y utilizar las herramientas de IA con honestidad`;
+      } else if (saberLower.includes('red') || saberLower.includes('ciberseguridad') || saberLower.includes('huella')) {
+        ejeContextoAplicado = `(ciudadanía digital) al reflexionar sobre la importancia de contraseñas seguras y la protección de la identidad en línea`;
+      }
+
+      // Momento 1: Inicio (Focalización y Activación) en prosa viva y aplicada
+      const inicioNarrativa = `Se presenta el reto: ${retoAplicado}. El estudiantado comparte experiencias previas y dialoga sobre situaciones similares en su entorno escolar. Se promueve (comunica) al formular preguntas y compartir ideas iniciales sobre el problema; ${ejeContextoAplicado}; y (gusto por la precisión) al anticipar con entusiasmo y cuidado los requerimientos técnicos de la sesión.${etapaDT ? ` En articulación con la etapa de proyecto (${etapaDT}), se orienta la indagación inicial hacia necesidades reales del centro educativo.` : ''}`;
+
+      // Momento 2: Desarrollo (Exploración, Construcción y Aplicación) en prosa viva y aplicada
+      const desarrolloNarrativa = `En parejas de trabajo colaborativo, las y los estudiantes abordan la actividad práctica: ${accionAplicadaDesarrollo} para dar cumplimiento al indicador de aprendizaje: ${ind}. Utilizan el entorno de simulación (Wokwi / Tinkercad Circuits / IDE) y recursos desconectados bajo enfoque DUA. Se promueve (colabora) mediante el trabajo coordinado en parejas; (modulariza) al descomponer el sistema y estructurar el conexionado; (programa) al codificar las instrucciones y estructuras condicionales en el entorno de desarrollo; (depura) al probar el funcionamiento y corregir las fallas detectadas en el código o circuito; y (aprender del error) al persistir pacientemente ante los desajustes técnicos hasta lograr la respuesta esperada.${etapaDT ? ` Como parte del proyecto semestral en la etapa (${etapaDT}), realizan: ${accionesDT}.` : ''}`;
+
+      // Momento 3: Cierre (Sistematización, Reflexión y Evaluación) en prosa viva y aplicada
+      const cierreNarrativa = `Los equipos registran en su bitácora técnica el diagrama esquemático, el código validado y los resultados del funcionamiento. En plenaria, comparten sus principales hallazgos y ${reflexionAplicadaCierre}. Se promueve (aprender del error) al reflexionar sobre la raíz de los problemas y las lecciones aprendidas; y (gusto por la precisión) al verificar el cumplimiento del indicador oficial de logro: "${ind}".${entregablesDT ? ` Se valida el avance del entregable: ${entregablesDT} para el proyecto.` : ''}`;
+
+      const jsonResponse = {
+        inicio: inicioNarrativa,
+        desarrollo: desarrolloNarrativa,
+        cierre: cierreNarrativa,
+        evidenciaAprendizaje: `Bitácora técnica con esquema del circuito, código depurado de ${saber}, simulación validada y reflexión metacognitiva sobre el error (Semana ${semanaNum}).`,
+        recursoConectado: `Simulador interactivo Wokwi / Tinkercad Circuits, IDE de programación, microcontrolador y sensores virtuales.`,
+        recursoDesconectado: `Ficha técnica impresa, diagramas de flujo en papel milimetrado, tarjetas de depuración y material concreto DUA.`,
+        componenteProyecto: etapaDT ? `Avance estructurado en ${etapaDT}: ${accionesDT}. Verificación de entregables: ${entregablesDT || 'Bitácora técnica'}.` : 'Integración continua de subsistemas hacia la maqueta del proyecto semestral.',
+        componenteCotidiano: `Observación directa del desempeño individual y en parejas al aplicar ${procList} en la resolución del reto de ${saber}.`,
+        componenteTareasAsistencia: `Registro en bitácora estudiantil, puntualidad en la entrega de reportes y demostración de ${actList.toLowerCase()}.`
+      };
+
+      return JSON.stringify(jsonResponse);
+    }
 
     case 'mediacion_proyecto_etapas':
       return `### Mediación Didáctica para Proyecto Trimestral (Design Thinking)

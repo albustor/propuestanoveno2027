@@ -1,6 +1,7 @@
 import { PlaneamientoGlobalNoveno, SemanaPlaneamiento, RegistroSistematizacion, WebAppRecurso, EstrategiaMetodologicaIndicador } from '../types';
 import { EQUIPO_NOVENO_INFO } from '../data/sistematizacionData';
 import { WEBAPPS_NOVENO_CATALOGO } from '../data/webappsNovenoData';
+import { syncSistematizacionWithDB, syncNotaWithDB, deleteSistematizacionFromDBAPI } from './db-client';
 
 const KEY_SISTEMATIZACION = 'mep_noveno_sistematizacion_2026';
 const KEY_WEBAPPS_CUSTOM = 'mep_noveno_webapps_custom_2026';
@@ -196,6 +197,7 @@ export const saveNotaForSaber = (saberId: string, nota: string): void => {
       all[saberId] = nota;
     }
     localStorage.setItem(KEY_NOTAS_SABERES, JSON.stringify(all));
+    syncNotaWithDB(saberId, nota).catch(() => {});
   } catch (e) {
     console.error('Error saving nota for saber', e);
   }

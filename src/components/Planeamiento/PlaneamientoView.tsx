@@ -39,10 +39,14 @@ import {
   BookOpen,
   Compass,
   Zap,
-  Target
+  Target,
+  Database,
+  RefreshCw,
+  Cloud
 } from 'lucide-react';
 import { useWebApps } from '../../lib/useWebApps';
 import { getCustomEstrategiaForSaber } from '../../lib/storage';
+import { syncPlaneamientoWithDB, syncSemanaWithDB, fetchPlaneamientoFromDB, checkDBHealth } from '../../lib/db-client';
 import { MomentoWebAppsSection } from '../WebApps/MomentoWebAppsSection';
 import { WebAppQRModal } from '../WebApps/WebAppQRModal';
 import { WebAppAddEditModal } from '../WebApps/WebAppAddEditModal';
@@ -59,6 +63,8 @@ export const PlaneamientoView: React.FC = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [generandoIA, setGenerandoIA] = useState(false);
   const [mostrarModalPerfiles, setMostrarModalPerfiles] = useState(false);
+  const [toastIA, setToastIA] = useState<string | null>(null);
+  const [dbSincronizada, setDbSincronizada] = useState<boolean>(true);
 
   const { getWebapps, saveWebapp, deleteWebapp } = useWebApps();
 
@@ -115,40 +121,89 @@ export const PlaneamientoView: React.FC = () => {
       };
     }
 
-    const nombresProcedimentales = distM1?.saberesProcedimentalesIds
-      ?.map((id: string) => DICCIONARIO_PROCEDIMENTALES[id]?.nombre || id)
-      ?.join(', ') || 'Modulariza, Depura, Programa, Reconoce patrones';
+    const procMap: Record<string, string> = {
+      modulariza: '(modulariza) al descomponer el sistema y estructurar el conexionado por bloques',
+      depura: '(depura) al rastrear y corregir fallas de conexión o errores en el código',
+      programa: '(programa) al codificar las instrucciones y estructuras condicionales en el entorno de desarrollo',
+      reconoce_patrones: '(reconoce patrones) al identificar regularidades en el comportamiento de las señales y datos',
+      abstrae: '(abstrae) al seleccionar únicamente los parámetros y variables esenciales para la solución',
+      formula_algoritmos: '(formula algoritmos) al diseñar la secuencia lógica de pasos para resolver el reto',
+      remezcla: '(remezcla) al combinar librerías, bloques de código y componentes existentes',
+      transfiere: '(transfiere) al aplicar conocimientos y estrategias previas en esta nueva práctica',
+      comunica: '(comunica) al formular preguntas, registrar hallazgos y explicar la solución',
+      colabora: '(colabora) mediante el trabajo coordinado en equipo y la distribución de roles',
+      creativo: '(piensa de forma creativa) al idear respuestas ingeniosas e innovadoras ante el reto',
+      etica_seguridad: '(maneja las tecnologías de forma ética y segura) al operar los componentes con cuidado y considerar la privacidad del dato'
+    };
 
-    const nombresActitudinales = distM1?.saberesActitudinalesIds
-      ?.map((id: string) => DICCIONARIO_ACTITUDINALES[id]?.nombre || id)
-      ?.join(', ') || 'Gusto por la precisión, Tolerancia a la frustración, Aprender del error';
+    const actMap: Record<string, string> = {
+      precision: '(gusto por la precisión) al calibrar minuciosamente los valores y registrar con exactitud los datos',
+      aprender_error: '(aprender del error) al convertir los fallos de prueba en oportunidades de aprendizaje y mejora',
+      tolerancia_frustracion: '(tolerancia a la frustración) al mantener la perseverancia y el autocontrol ante los desajustes técnicos',
+      flexibilidad: '(flexibilidad para manejar problemas) al adaptarse a situaciones imprevistas durante el montaje o la programación'
+    };
 
-    const descEje = ejeInfo
-      ? `${ejeInfo.ejeConfig.nombre} (Dimensión: ${ejeInfo.detalle.dimensionNombre}) — "${ejeInfo.detalle.descriptorOficial}"`
-      : 'Pensamiento Computacional y Ética Digital';
+    // Conectar el eje transversal de forma práctica al contexto real de la actividad
+    const getEjeAplicadoContexto = () => {
+      const sId = saber.id?.toLowerCase() || '';
+      const sNom = saber.nombre?.toLowerCase() || '';
 
-    const rdaTexto = area?.rdaCiclo || area?.rda || 'Aplica fundamentos de robótica, computación física, electrónica, mecánica y algoritmos en prototipos contextualizados.';
-    const compTexto = area?.competenciaArea || 'Desarrolla prototipos automatizados y sistemas robóticos integrando hardware y software con responsabilidad.';
+      if (sId.includes('actuador') || sNom.includes('actuador') || sNom.includes('mecanismo') || sNom.includes('domótica')) {
+        return '(seguridad y accesibilidad) al reflexionar sobre cómo automatizar alertas o compuertas para proteger a las personas y facilitar el paso en el colegio';
+      }
+      if (sId.includes('sensor') || sNom.includes('sensor')) {
+        return '(cuidado ambiental y ahorro de energía) al dialogar sobre cómo medir la luz o temperatura ambiental para evitar el desperdicio de electricidad en las aulas';
+      }
+      if (sId.includes('microcontrolador') || sNom.includes('microcontrolador')) {
+        return '(manejo seguro de la tecnología) al operar con precaución la energía y cuidar los componentes electrónicos en el taller';
+      }
+      if (sId.includes('algoritmo') || sNom.includes('algoritmo') || sNom.includes('estructura') || sNom.includes('programa')) {
+        return '(pensamiento lógico y ciudadanía) al redactar instrucciones claras que solucionen un problema de forma justa y ordenada';
+      }
+      if (sId.includes('dato') || sNom.includes('dato') || sNom.includes('base')) {
+        return '(privacidad y ética digital) al proteger la confidencialidad de la información y cuidar los datos personales de las y los usuarios';
+      }
+      if (sId.includes('3d') || sNom.includes('modelado')) {
+        return '(innovación y sostenibilidad) al diseñar piezas ergonómicas optimizando el uso de material para no generar residuos';
+      }
+      if (sId.includes('ia') || sNom.includes('inteligencia') || sNom.includes('generativa')) {
+        return '(ética digital) al verificar la veracidad de la información y utilizar las herramientas de IA con honestidad';
+      }
+      if (sId.includes('red') || sNom.includes('ciberseguridad') || sNom.includes('huella')) {
+        return '(ciudadanía digital) al reflexionar sobre la importancia de contraseñas seguras y la protección de la identidad en línea';
+      }
 
-    // Momento 1: Inicio (Focalización y Activación)
-    const inicio = `[MOMENTO 1: INICIO (FOCALIZACIÓN Y ACTIVACIÓN)]
-🎯 Focalización & Reto Detonante: ${saber.estrategiaMetodologica.inicio.descripcion}
-🛡️ Integración del Eje Transversal: ${descEje}.
-💡 Activación de Actitudes: Estimular la curiosidad técnica, apertura mental y ${nombresActitudinales.toLowerCase()} ante el reto planteado.
-❓ Preguntas Generadoras: ${(saber.estrategiaMetodologica.inicio.preguntasGeneradoras || []).join(' ')} ${etapaObjMatch ? `(Enfoque DT: ${etapaObjMatch.actividadEnriquecida?.inicio || ''})` : ''}`;
+      return ejeInfo
+        ? `(${ejeInfo.ejeConfig.nombreCorto.toLowerCase()}) al reflexionar sobre cómo aplicar "${ejeInfo.detalle.descriptorOficial}" para beneficiar a la comunidad escolar`
+        : '(ética y tecnología) al reflexionar sobre el uso responsable de las herramientas para ayudar a la comunidad';
+    };
 
-    // Momento 2: Desarrollo (Exploración, Construcción y Aplicación)
-    const desarrollo = `[MOMENTO 2: DESARROLLO (EXPLORACIÓN, CONSTRUCCIÓN Y APLICACIÓN)]
-🏆 Movilización de Competencia & RdA: ${compTexto} | RdA de III Ciclo: ${rdaTexto}.
-⚙️ Pensamiento Computacional (Saberes Procedimentales): Prácticas de ${nombresProcedimentales}. ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}
-🚀 Exploración y Construcción Técnica: ${saber.estrategiaMetodologica.desarrollo.descripcion}
-💻 Recursos y Laboratorio: Trabajo en simulador interactivo (${saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ')}) o recursos desconectados (${saber.estrategiaMetodologica.recursosSugeridos.desconectado.join(', ')}). ${etapaObjMatch ? `(Etapa DT - ${etapaObjMatch.nombre}: ${etapaObjMatch.accionesClave.join(' ')})` : ''}`;
+    const procDesarrolloTags = (distM1?.saberesProcedimentalesIds || ['modulariza', 'programa', 'depura'])
+      .map((id: string) => procMap[id] || `(${id}) al aplicar este saber procedimental en la tarea`)
+      .join('; ');
 
-    // Momento 3: Cierre (Sistematización, Reflexión y Evaluación)
-    const cierre = `[MOMENTO 3: CIERRE (SISTEMATIZACIÓN, REFLEXIÓN Y EVALUACIÓN)]
-📝 Sistematización en Bitácora: ${saber.estrategiaMetodologica.cierre.descripcion} Registro de esquemas, código y evidencias técnicas de aula.
-💡 Reflexión Metacognitiva & Actitudes: Valoración de ${nombresActitudinales.toLowerCase()}, análisis constructivo del error y coevaluación del trabajo en equipo.
-📊 Evaluación Formativa & Criterios: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')} Indicador de logro a evaluar: "${saber.indicador}" ${etapaObjMatch ? `(Entregables DT: ${etapaObjMatch.entregablesSugeridos.join(', ')})` : ''}`;
+    const act1 = actMap[distM1?.saberesActitudinalesIds?.[0] || 'precision'] || '(gusto por la precisión) al anticipar con cuidado los requerimientos de la sesión';
+    const act2 = actMap[distM1?.saberesActitudinalesIds?.[1] || distM1?.saberesActitudinalesIds?.[0] || 'aprender_error'] || '(aprender del error) al superar los obstáculos técnicos';
+
+    const preguntasGeneradoras = (saber.estrategiaMetodologica?.inicio?.preguntasGeneradoras || []).join(' ');
+    const descInicio = saber.estrategiaMetodologica?.inicio?.descripcion || `¿Cómo podemos aprovechar ${saber.nombre} para resolver una necesidad del entorno escolar?`;
+
+    const descDesarrollo = saber.estrategiaMetodologica?.desarrollo?.descripcion || `Construcción y validación práctica de ${saber.nombre}`;
+    const accionesEstDesarrollo = saber.estrategiaMetodologica?.desarrollo?.accionesEstudiante?.join(' ') || `construyen el circuito y programan el algoritmo para ${saber.indicador.toLowerCase()}`;
+    const conectados = saber.estrategiaMetodologica?.recursosSugeridos?.conectado?.join(', ') || 'Simulador Wokwi, Tinkercad Circuits, IDE';
+    const desconectados = saber.estrategiaMetodologica?.recursosSugeridos?.desconectado?.join(', ') || 'Guías impresas, material concreto, diagramas';
+
+    const descCierre = saber.estrategiaMetodologica?.cierre?.descripcion || `Sistematización del funcionamiento de ${saber.nombre} y evaluación formativa`;
+    const accionEstCierre = saber.estrategiaMetodologica?.cierre?.accionesEstudiante?.join(' ') || `socializan su prototipo ante el grupo y coevalúan la precisión del resultado`;
+
+    // Momento 1: Inicio (Focalización y Activación - 15 min)
+    const inicio = `Se presenta el reto: ${descInicio} El estudiantado comparte experiencias previas y dialoga a partir de las preguntas generadoras: ${preguntasGeneradoras}. Se promueve (comunica) al formular preguntas y expresar ideas iniciales sobre el problema; ${getEjeAplicadoContexto()}; y ${act1}.${etapaObjMatch ? ` En articulación con la etapa de proyecto (${etapaObjMatch.nombre}), se orienta la indagación inicial hacia necesidades reales del centro educativo.` : ''}`;
+
+    // Momento 2: Desarrollo (Exploración, Construcción y Aplicación - 50 min)
+    const desarrollo = `En parejas de trabajo colaborativo, las y los estudiantes abordan la actividad práctica: ${descDesarrollo}. Para dar cumplimiento al indicador de aprendizaje, ${accionesEstDesarrollo.toLowerCase()}. Utilizan el entorno de simulación (${conectados}) y recursos desconectados (${desconectados}) bajo enfoque DUA. Se promueve (colabora) mediante el trabajo en equipo; ${procDesarrolloTags}; y ${act2}.${etapaObjMatch ? ` Como parte del proyecto semestral en la etapa (${etapaObjMatch.nombre}), realizan: ${etapaObjMatch.accionesClave.join(' ')}.` : ''}`;
+
+    // Momento 3: Cierre (Sistematización, Reflexión y Evaluación - 15 min)
+    const cierre = `Los equipos registran en su bitácora técnica el diagrama esquemático, el código validado y los resultados del funcionamiento (${descCierre}). En plenaria, ${accionEstCierre.toLowerCase()} y reflexionan sobre los errores surgidos y cómo lograron superarlos. Se promueve (aprender del error) al reflexionar sobre la raíz de los problemas y las lecciones aprendidas; y (gusto por la precisión) al verificar el cumplimiento del indicador oficial de logro: "${saber.indicador}".${etapaObjMatch ? ` Se valida el avance del entregable: ${etapaObjMatch.entregablesSugeridos.join(', ')}.` : ''}`;
 
     return { inicio, desarrollo, cierre };
   };
@@ -246,9 +301,9 @@ export const PlaneamientoView: React.FC = () => {
     return list;
   };
 
-  // Inicializar o cargar semanas
+  // Inicializar o cargar semanas (Local + Base de Datos)
   useEffect(() => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_practico_v7`;
     const saved = localStorage.getItem(storageKey);
 
     if (saved) {
@@ -262,6 +317,8 @@ export const PlaneamientoView: React.FC = () => {
           parsed[0]?.saberesProcedimentales
         ) {
           setSemanas(parsed);
+          // Sincronizar en segundo plano con la base de datos
+          syncPlaneamientoWithDB(selectedModuloId, parsed).then((ok) => setDbSincronizada(ok));
           return;
         }
       } catch (e) {
@@ -269,17 +326,29 @@ export const PlaneamientoView: React.FC = () => {
       }
     }
 
-    // Si no hay datos guardados o son de una versión anterior incompleta, generar la mediación oficial
-    const initial = generarSemanasCompletas();
-    setSemanas(initial);
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(initial));
-    } catch (e) {}
+    // Cargar desde Base de Datos o generar nuevo oficial
+    fetchPlaneamientoFromDB(selectedModuloId).then((dbSemanas) => {
+      if (dbSemanas && dbSemanas.length === 18) {
+        setSemanas(dbSemanas);
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(dbSemanas));
+        } catch (e) {}
+        setDbSincronizada(true);
+      } else {
+        const initial = generarSemanasCompletas();
+        setSemanas(initial);
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(initial));
+        } catch (e) {}
+        syncPlaneamientoWithDB(selectedModuloId, initial).then((ok) => setDbSincronizada(ok));
+      }
+    });
   }, [selectedModuloId]);
 
   const handleSave = () => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_practico_v7`;
     localStorage.setItem(storageKey, JSON.stringify(semanas));
+    syncPlaneamientoWithDB(selectedModuloId, semanas).then((ok) => setDbSincronizada(ok));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
   };
@@ -287,8 +356,9 @@ export const PlaneamientoView: React.FC = () => {
   const handleRestablecerOficial = () => {
     const fresh = generarSemanasCompletas();
     setSemanas(fresh);
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_practico_v7`;
     localStorage.setItem(storageKey, JSON.stringify(fresh));
+    syncPlaneamientoWithDB(selectedModuloId, fresh).then((ok) => setDbSincronizada(ok));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
   };
@@ -296,9 +366,18 @@ export const PlaneamientoView: React.FC = () => {
   const currentSemana = semanas.find((s) => s.numeroSemana === selectedSemanaNum);
 
   const updateCurrentSemana = (updater: (prev: SemanaPlaneamiento) => SemanaPlaneamiento) => {
-    setSemanas((prev) =>
-      prev.map((s) => (s.numeroSemana === selectedSemanaNum ? updater(s) : s))
-    );
+    setSemanas((prev) => {
+      const next = prev.map((s) => (s.numeroSemana === selectedSemanaNum ? updater(s) : s));
+      try {
+        const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_practico_v7`;
+        localStorage.setItem(storageKey, JSON.stringify(next));
+      } catch (e) {}
+      const targetSem = next.find((s) => s.numeroSemana === selectedSemanaNum);
+      if (targetSem) {
+        syncSemanaWithDB(selectedModuloId, targetSem).then((ok) => setDbSincronizada(ok));
+      }
+      return next;
+    });
   };
 
   // Asistente IA para regenerar y enriquecer actividades de la semana
@@ -308,26 +387,83 @@ export const PlaneamientoView: React.FC = () => {
 
     const saberSelId = currentSemana.saberesSeleccionados[0];
     const saberSelObj = allSaberes.find((s) => s.id === saberSelId);
+    const areaSelObj = modulo?.areas.find((a) => a.saberes.some((s) => s.id === saberSelId));
+    const distSel = saberSelId ? DISTRIBUCION_SABERES_M1[saberSelId] : null;
+    const ejeSel = saberSelId ? getEjeEspecificoParaSaber(saberSelId) : null;
+    const etapaObj = proyecto?.etapas.find((et) => et.id === currentSemana.etapaProyectoAsociada);
+
+    const procNombres = distSel?.saberesProcedimentalesIds.map((id) => DICCIONARIO_PROCEDIMENTALES[id]?.nombre || id) || [
+      'Modulariza',
+      'Depura',
+      'Programa',
+      'Reconoce patrones'
+    ];
+    const actNombres = distSel?.saberesActitudinalesIds.map((id) => DICCIONARIO_ACTITUDINALES[id]?.nombre || id) || [
+      'Gusto por la precisión',
+      'Aprender del error',
+      'Tolerancia a la frustración'
+    ];
 
     try {
       const resp = await processAICascade({
-        tipo: 'recurso_apoyo_maestro_4_pilares',
-        prompt: `Genera la mediación didáctica oficial para la semana ${currentSemana.numeroSemana} sobre el saber "${saberSelObj?.nombre || currentSemana.tituloSemana}". Indicador: "${saberSelObj?.indicador || ''}". Asegura integrar los 3 momentos didácticos, saberes procedimentales, actitudinales y los 3 componentes de evaluación MEP (Proyecto, Cotidiano, Tareas).`,
+        tipo: 'mediacion_inicio_desarrollo_cierre',
+        prompt: `Regenerar las actividades de mediación didáctica en 3 momentos para la semana ${currentSemana.numeroSemana} sobre el saber "${saberSelObj?.nombre || currentSemana.tituloSemana}". Indicador oficial: "${saberSelObj?.indicador || ''}". Integrar explícitamente: 1. Competencia del Área (${areaSelObj?.competenciaArea || ''}), 2. RdA (${areaSelObj?.rdaCiclo || areaSelObj?.rda || ''}), 3. Eje Transversal (${ejeSel?.ejeConfig.nombre || ''} - ${ejeSel?.detalle.dimensionNombre || ''}), 4. Pensamiento Computacional (Saberes Procedimentales: ${procNombres.join(', ')} y Actitudinales: ${actNombres.join(', ')}), 5. Etapa DT (${etapaObj ? etapaObj.nombre : 'Trabajo Cotidiano'}).`,
         contexto: {
           modulo: selectedModuloId,
           saberId: saberSelObj?.id,
           saberNombre: saberSelObj?.nombre,
           indicadorTexto: saberSelObj?.indicador,
-          tema: saberSelObj?.nombre
+          tema: saberSelObj?.nombre,
+          competenciaTexto: areaSelObj?.competenciaArea,
+          rdaTexto: areaSelObj?.rdaCiclo || areaSelObj?.rda,
+          ejeTransversalNombre: ejeSel?.ejeConfig.nombre,
+          ejeTransversalDimension: ejeSel?.detalle.dimensionNombre,
+          ejeTransversalDescriptor: ejeSel?.detalle.descriptorOficial,
+          saberesProcedimentales: procNombres,
+          saberesActitudinales: actNombres,
+          etapaDesignThinking: etapaObj ? etapaObj.nombre : undefined,
+          accionesEtapaDT: etapaObj ? etapaObj.accionesClave : undefined,
+          entregablesDT: etapaObj ? etapaObj.entregablesSugeridos : undefined,
+          numeroSemana: currentSemana.numeroSemana
         }
       });
 
       if (resp && resp.success) {
-        // Enriquecer campos con sugerencias pedagógicas
-        updateCurrentSemana(prev => ({
-          ...prev,
-          evidenciaAprendizaje: `Bitácora técnica, circuito/algoritmo probado y análisis metacognitivo sobre ${saberSelObj?.nombre || 'la sesión'}.`
-        }));
+        try {
+          const parsed = JSON.parse(resp.content);
+          updateCurrentSemana((prev) => ({
+            ...prev,
+            momentoInicio: {
+              ...prev.momentoInicio,
+              estrategia: parsed.inicio || prev.momentoInicio.estrategia
+            },
+            momentoDesarrollo: {
+              ...prev.momentoDesarrollo,
+              estrategia: parsed.desarrollo || prev.momentoDesarrollo.estrategia
+            },
+            momentoCierre: {
+              ...prev.momentoCierre,
+              estrategia: parsed.cierre || prev.momentoCierre.estrategia
+            },
+            evidenciaAprendizaje: parsed.evidenciaAprendizaje || prev.evidenciaAprendizaje,
+            escenarioConectado: parsed.recursoConectado || prev.escenarioConectado,
+            escenarioDesconectado: parsed.recursoDesconectado || prev.escenarioDesconectado,
+            componentesEvaluacion: {
+              proyecto: parsed.componenteProyecto || prev.componentesEvaluacion?.proyecto || '',
+              cotidiano: parsed.componenteCotidiano || prev.componentesEvaluacion?.cotidiano || '',
+              tareasAsistencia: parsed.componenteTareasAsistencia || prev.componentesEvaluacion?.tareasAsistencia || ''
+            }
+          }));
+          setToastIA(`✨ ¡Actividades en 3 momentos regeneradas exitosamente con IA para la Semana ${currentSemana.numeroSemana}!`);
+          setTimeout(() => setToastIA(null), 4000);
+        } catch (jsonErr) {
+          updateCurrentSemana((prev) => ({
+            ...prev,
+            evidenciaAprendizaje: `Bitácora técnica, circuito/algoritmo probado y análisis metacognitivo sobre ${saberSelObj?.nombre || 'la sesión'}.`
+          }));
+          setToastIA(`✨ ¡Mediación enriquecida con IA para la Semana ${currentSemana.numeroSemana}!`);
+          setTimeout(() => setToastIA(null), 4000);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -356,6 +492,10 @@ export const PlaneamientoView: React.FC = () => {
               </span>
               <span className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-zinc-100 text-zinc-700 border border-zinc-200">
                 III Ciclo • 9° Año • 18 Semanas Lectivas
+              </span>
+              <span className={`px-2.5 py-0.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${dbSincronizada ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'}`}>
+                <Database className={`w-3.5 h-3.5 ${dbSincronizada ? 'text-emerald-600' : 'text-amber-600 animate-spin'}`} />
+                <span>{dbSincronizada ? 'Base de Datos Sincronizada' : 'Guardando en Base de Datos...'}</span>
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
@@ -780,14 +920,40 @@ export const PlaneamientoView: React.FC = () => {
 
           {/* Actividades Didácticas Creadas en los 3 Momentos (Inicio, Desarrollo, Cierre) */}
           <div className="space-y-3">
+            {toastIA && (
+              <div className="p-3.5 bg-gradient-to-r from-purple-600 via-indigo-600 to-sky-600 text-white rounded-2xl text-xs font-semibold flex items-center justify-between shadow-md">
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  {toastIA}
+                </span>
+                <button
+                  onClick={() => setToastIA(null)}
+                  className="px-2 py-0.5 rounded-lg bg-white/20 hover:bg-white/30 text-white text-[11px]"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold text-zinc-900 uppercase tracking-wider flex items-center gap-1.5">
                 <BookOpen className="w-4 h-4 text-indigo-600" />
                 Actividades de Mediación a Desarrollar (Los 3 Momentos Didácticos)
               </h3>
-              <span className="text-[11px] text-zinc-500 font-medium">
-                80 min lectivos totales
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleMejorarActividadesConIA}
+                  disabled={generandoIA}
+                  className="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                  title="Regenerar y enriquecer los 3 momentos integrando Competencia, RdA, Eje Transversal, Pensamiento Computacional y DT"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-pulse" />
+                  <span>{generandoIA ? 'Generando con IA...' : '✨ Regenerar 3 Momentos con IA'}</span>
+                </button>
+                <span className="text-[11px] text-zinc-500 font-medium">
+                  80 min lectivos totales
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
