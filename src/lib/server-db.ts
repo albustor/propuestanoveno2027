@@ -66,6 +66,19 @@ const initDB = (): DatabaseState => {
     }
 
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
+    if (!raw || !raw.trim()) {
+      const initialState: DatabaseState = {
+        version: '2026.1.0',
+        lastSync: new Date().toISOString(),
+        planeamiento: {},
+        sistematizacion: {},
+        notas: {},
+        evaluacion: {},
+        documentos: {}
+      };
+      fs.writeFileSync(DB_FILE, JSON.stringify(initialState, null, 2), 'utf-8');
+      return initialState;
+    }
     return JSON.parse(raw);
   } catch (error) {
     console.error('Error inicializando base de datos:', error);
