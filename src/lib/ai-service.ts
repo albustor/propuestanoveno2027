@@ -659,89 +659,137 @@ ${acuerdos.length > 0
     }
 
     case 'analizar_dictado_sesion_ia': {
-      const textoDictado = payload.prompt || payload.contexto?.avancesEspecificos || "";
+      const textoDictado = (payload.prompt || payload.contexto?.avancesEspecificos || "").trim();
       const fechaHoy = payload.contexto?.fecha || new Date().toISOString().split('T')[0];
-      const horaActual = payload.contexto?.hora || "08:30";
+      const horaActual = payload.contexto?.hora || new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
       
-      // Construir título descriptivo institucional
-      let tituloGenerado = `Jornada de Asesoría Curricular y Validación Técnica de Saberes (9° Año MEP)`;
-      if (textoDictado.toLowerCase().includes('robotica') || textoDictado.toLowerCase().includes('algoritmo')) {
-        tituloGenerado = `Validación Pedagógica y Técnica de Algoritmos y Computación Física (9° Año MEP)`;
-      } else if (textoDictado.toLowerCase().includes('proyecto') || textoDictado.toLowerCase().includes('design thinking')) {
-        tituloGenerado = `Articulación Metodológica del Proyecto por Design Thinking e Indicadores de Logro (9° Año MEP)`;
-      } else if (textoDictado.toLowerCase().includes('evaluacion') || textoDictado.toLowerCase().includes('rubrica')) {
-        tituloGenerado = `Alineación de Criterios Evaluativos, Rúbricas y Pautas DUA (9° Año MEP)`;
-      } else if (textoDictado.length > 20) {
-        const resumen = textoDictado.slice(0, 55).replace(/\[.*?\]/g, '').trim();
-        if (resumen) tituloGenerado = `Sesión de Asesoría Curricular: ${resumen}`;
+      // Limpiar prefijos de metadatos de audio para análisis de contenido
+      const lineas = textoDictado
+        .split('\n')
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0 && !l.startsWith('=== 🎙️') && !l.startsWith('---'));
+
+      const parrafosRelevantes = lineas.filter((l) => !l.startsWith('[Audio') && !l.startsWith('[Grabación'));
+      const textoLimpio = (parrafosRelevantes.length > 0 ? parrafosRelevantes.join(' ') : textoDictado).replace(/\[.*?\]/g, '').trim();
+
+      // Detección de participantes mencionados en el texto
+      const participantesDetectados: string[] = [];
+      const textoLower = textoDictado.toLowerCase();
+      if (textoLower.includes('allan') || textoLower.includes('morera')) participantesDetectados.push('Allan Morera');
+      if (textoLower.includes('alberto') || textoLower.includes('bustos')) participantesDetectados.push('Alberto Bustos (Asesoría Curricular)');
+      if (textoLower.includes('kevin') || textoLower.includes('sánchez') || textoLower.includes('sanchez')) participantesDetectados.push('Kevin Sánchez (Coordinación)');
+      if (participantesDetectados.length === 0) {
+        participantesDetectados.push('Allan Morera', 'Alberto Bustos (Asesoría Curricular)');
       }
 
-      // Redacción profunda de temas tratados
-      const temasTratadosGenerado = textoDictado.length > 40
-        ? `1. Análisis y deliberación técnica de las temáticas abordadas en la sesión: ${textoDictado.replace(/\[.*?\]/g, '').trim()}.\n2. Revisión de la coherencia interna entre las consignas pedagógicas propuestas para el personal docente y los indicadores oficiales de logro del 9° año.\n3. Articulación de herramientas tecnológicas (software en bloques y texto, simuladores virtuales y dinámicas desconectadas unplugged) bajo el marco del Diseño Universal para el Aprendizaje (DUA).\n4. Seguimiento a las pautas de mediación para el proyecto semestral por fases de Design Thinking.`
-        : `1. Revisión exhaustiva y contextualización del programa curricular de Formación Tecnológica para 9° año.\n2. Calibración de indicadores de evaluación formativa y sumativa en trabajo cotidiano y proyectos de aula.\n3. Selección y estandarización del catálogo de recursos de apoyo interactivos y simuladores en línea (Wokwi, Tinkercad, MakeCode).\n4. Definición de directrices de flexibilidad técnica ante la diversidad de equipamiento en las instituciones del país.`;
+      // Extracción de oraciones y temas clave reales de la conversación
+      const oraciones = textoLimpio
+        .split(/(?<=[.?!;])\s+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 8);
 
-      // Redacción enriquecida de avances específicos
-      const avancesGenerados = textoDictado.length > 30
-        ? `${textoDictado.trim()}\n\n[Análisis de Asesoría Curricular]: Se consolidó la estructura operativa de las actividades de mediación, verificando que cada indicador oficial cuente con alternativas prácticas diferenciadas (físicas, simuladas y desenchufadas), garantizando accesibilidad y pertinencia pedagógica para todo el estudiantado.`
-        : `Se concretó la revisión técnica y curricular de los saberes del nivel de noveno año, asegurando que los verbos de desempeño guarden correspondencia unívoca con los indicadores de logro. Asimismo, se integraron simuladores digitales para mitigar brechas de equipamiento y se establecieron las pautas metodológicas de co-docencia y acompañamiento docente.`;
+      // Generar título específico y fiel al contenido
+      let tituloGenerado = '';
+      if (oraciones.length > 0) {
+        const primeraOracion = oraciones[0].replace(/^(en la jornada|se discutió|hablamos de|revisamos|tratamos sobre|se analizó|hoy vimos)\s+/i, '');
+        const resumenTitulo = primeraOracion.length > 60 ? primeraOracion.substring(0, 57) + '...' : primeraOracion;
+        tituloGenerado = `Sesión de Trabajo: ${resumenTitulo}`;
+      } else {
+        tituloGenerado = `Sesión de Asesoría Curricular y Validación Técnica (${fechaHoy})`;
+      }
 
-      // Aspectos puntuales abordados (generales y por viñeta)
-      const aspectosPuntualesGenerado = `Resumen General:
-Se consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, garantizando la articulación entre el programa oficial de Formación Tecnológica y los recursos didácticos de apoyo para las personas docentes.
+      // Temas tratados estructurados fielmente a partir de las frases del audio
+      const listaTemas: string[] = [];
+      if (oraciones.length >= 2) {
+        oraciones.slice(0, 6).forEach((oracion, idx) => {
+          listaTemas.push(`${idx + 1}. ${oracion}`);
+        });
+      } else if (textoLimpio.length > 0) {
+        listaTemas.push(`1. Análisis y deliberación sobre: ${textoLimpio}`);
+      } else {
+        listaTemas.push(`1. Revisión de los acuerdos y avances técnicos de la jornada.`);
+      }
 
-Aspectos Abordados por Viñeta:
-• Calibración Curricular: Verificación de que las consignas didácticas cumplan con los verbos operativos y descriptores oficiales de 9° año.
-• Flexibilidad de Entornos de Programación: Inclusión de alternativas en bloques y texto para atender la diversidad de equipamiento institucional.
-• Simuladores Web y WebApps: Incorporación de laboratorios virtuales interactivos (Wokwi, Tinkercad, MakeCode) con códigos QR directos.
-• Inclusión y Pautas DUA: Creación de secuencias desconectadas (unplugged) y formatos multinivel para eliminar barreras de aprendizaje.
-• Metodología Design Thinking: Articulación de las 5 fases del proyecto semestral con la matriz evaluativa del Tercer Ciclo.
-• Coordinación Inter-Niveles: Seguimiento y alineación de la progresión de saberes con los equipos de 7° y 8° año.`;
+      // Avances específicos fieles a lo hablado
+      const avancesFieles = textoLimpio.length > 0
+        ? `Transcripción y contenido abordado en la sesión:\n"${textoLimpio}"\n\n[Síntesis del equipo de asesoría]: Se abordaron los puntos expuestos en el diálogo técnico, consolidando las decisiones y los requerimientos manifestados durante la grabación.`
+        : `Se registraron los intercambios de la sesión de trabajo para dar seguimiento a los requerimientos de la asesoría curricular.`;
 
-      // Texto unificado de acuerdos y compromisos
-      const acuerdosTextoUnificado = `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas de los módulos 1 y 2 respondan con estricta fidelidad a los indicadores oficiales de logro y desempeño establecidos por el MEP. (Plazo: 25-09-2026)
-• [Allan Morera]: Estructurar el catálogo de simuladores virtuales y herramientas web (Wokwi, Tinkercad, MakeCode) incorporando accesos directos y códigos QR interactivos para las guías docentes. (Plazo: 30-09-2026)
-• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con la matriz de evaluación del proyecto semestral, garantizando alternativas de prototipado físico, digital y desconectado (DUA). (Plazo: 05-10-2026)
-• [Kevin Sánchez / Coordinación]: Gestionar la sesión inter-niveles con los equipos de 7° y 8° año para asegurar la continuidad progresiva de los aprendizajes previos al primer corte valorativo. (Plazo: 10-10-2026)`;
+      // Aspectos puntuales desglosados directamente de lo conversado
+      const aspectosViñetas: string[] = [];
+      if (oraciones.length > 0) {
+        oraciones.slice(0, 5).forEach((or) => {
+          const palabras = or.split(' ');
+          const clave = palabras.slice(0, 3).join(' ');
+          aspectosViñetas.push(`• ${clave}: ${or}`);
+        });
+      } else {
+        aspectosViñetas.push(`• Puntos tratados: Deliberaciones registradas en el audio de la sesión.`);
+      }
 
-      const acuerdosArray = [
-        {
-          id: `ac-dictado-1`,
-          acuerdo: 'Validar que las consignas didácticas respondan con estricta fidelidad a los indicadores oficiales de logro y desempeño de 9° año.',
-          responsable: 'Allan Morera & Alberto Bustos',
-          fechaLimite: '2026-09-25',
+      const aspectosPuntualesGenerado = `Resumen General de la Conversación:\n${oraciones.slice(0, 2).join(' ') || textoLimpio || 'Se llevó a cabo la sesión de trabajo y asesoría curricular.'}\n\nAspectos Abordados en el Audio:\n${aspectosViñetas.join('\n')}`;
+
+      // Detección y extracción de acuerdos específicos del audio
+      const acuerdosArray: Array<{ id: string; acuerdo: string; responsable: string; fechaLimite?: string; completado: boolean }> = [];
+      
+      // Buscar frases de compromiso en el texto
+      const frasesAcuerdo = oraciones.filter((o) => {
+        const l = o.toLowerCase();
+        return (
+          l.includes('acord') ||
+          l.includes('quedam') ||
+          l.includes('compromis') ||
+          l.includes('revisar') ||
+          l.includes('subir') ||
+          l.includes('preparar') ||
+          l.includes('hacer') ||
+          l.includes('validar') ||
+          l.includes('entregar') ||
+          l.includes('ajustar') ||
+          l.includes('definir')
+        );
+      });
+
+      if (frasesAcuerdo.length > 0) {
+        frasesAcuerdo.slice(0, 4).forEach((frase, idx) => {
+          let resp = 'Allan Morera & Alberto Bustos';
+          const fLower = frase.toLowerCase();
+          if (fLower.includes('allan') && !fLower.includes('alberto')) resp = 'Allan Morera';
+          else if (fLower.includes('alberto') && !fLower.includes('allan')) resp = 'Alberto Bustos';
+          else if (fLower.includes('kevin')) resp = 'Kevin Sánchez (Coordinación)';
+
+          acuerdosArray.push({
+            id: `ac-audio-${Date.now()}-${idx + 1}`,
+            acuerdo: frase,
+            responsable: resp,
+            fechaLimite: fechaHoy,
+            completado: false
+          });
+        });
+      }
+
+      // Si no se detectaron frases de acuerdo explícitas, usar las ideas principales del diálogo
+      if (acuerdosArray.length === 0 && oraciones.length > 0) {
+        acuerdosArray.push({
+          id: `ac-audio-${Date.now()}-1`,
+          acuerdo: `Dar seguimiento al punto tratado: ${oraciones[0].length > 100 ? oraciones[0].substring(0, 97) + '...' : oraciones[0]}`,
+          responsable: participantesDetectados.join(' & '),
+          fechaLimite: fechaHoy,
           completado: false
-        },
-        {
-          id: `ac-dictado-2`,
-          acuerdo: 'Estructurar el catálogo de simuladores virtuales y WebApps con códigos QR interactivos para las guías docentes.',
-          responsable: 'Allan Morera',
-          fechaLimite: '2026-09-30',
-          completado: false
-        },
-        {
-          id: `ac-dictado-3`,
-          acuerdo: 'Articular las 5 etapas de Design Thinking con la matriz evaluativa del proyecto semestral y pautas DUA.',
-          responsable: 'Alberto Bustos',
-          fechaLimite: '2026-10-05',
-          completado: false
-        },
-        {
-          id: `ac-dictado-4`,
-          acuerdo: 'Gestionar la sesión de articulación inter-niveles con 7° y 8° año para verificar la continuidad pedagógica.',
-          responsable: 'Kevin Sánchez (Coordinación)',
-          fechaLimite: '2026-10-10',
-          completado: false
-        }
-      ];
+        });
+      }
+
+      const acuerdosTextoUnificado = acuerdosArray
+        .map((a) => `• [${a.responsable}]: ${a.acuerdo}`)
+        .join('\n');
 
       return JSON.stringify({
         titulo: tituloGenerado,
-        participantes: ["Allan Morera", "Alberto Bustos (Asesoría Curricular)", "Kevin Sánchez (Coordinación)"],
-        temasTratados: temasTratadosGenerado,
-        avancesConAllan: avancesGenerados,
+        participantes: participantesDetectados,
+        temasTratados: listaTemas.join('\n'),
+        avancesConAllan: avancesFieles,
         aspectosPuntuales: aspectosPuntualesGenerado,
-        acuerdosTexto: acuerdosTextoUnificado,
+        acuerdosTexto: acuerdosTextoUnificado || `• [${participantesDetectados.join(' & ')}]: Seguimiento a los temas abordados en la grabación.`,
         acuerdos: acuerdosArray,
         estado: 'Completado'
       });

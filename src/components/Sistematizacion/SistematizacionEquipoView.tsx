@@ -219,12 +219,32 @@ export const SistematizacionEquipoView: React.FC = () => {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksPrincipalRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
         const duracion = segundosGrabacionPrincipal;
-        const transcripcionFinal = transcriptEnVivoRef.current.trim() || 
-          `[Grabación de Audio Realizada: ${new Date().toLocaleTimeString('es-CR')}]\nSesión de asesoría y co-diseño curricular de 9° año (Allan Morera & Alberto Bustos). Discusión sobre alineación de indicadores oficiales, integración de simuladores interactivos (Wokwi, Tinkercad, MakeCode), adaptaciones DUA y seguimiento del proyecto institucional.`;
+        let transcripcionFinal = transcriptEnVivoRef.current.trim();
+        
+        // Si el reconocimiento de voz del navegador no capturó texto, intentar transcribir con API
+        if (!transcripcionFinal && audioBlob.size > 1000) {
+          try {
+            const formData = new FormData();
+            formData.append('file', audioBlob, `grabacion-${Date.now()}.webm`);
+            const trRes = await fetch('/api/ai/transcribe', { method: 'POST', body: formData });
+            if (trRes.ok) {
+              const trJson = await trRes.json();
+              if (trJson.transcript && !trJson.transcript.startsWith('[')) {
+                transcripcionFinal = trJson.transcript;
+              }
+            }
+          } catch (e) {
+            console.warn('Transcripción backend warning:', e);
+          }
+        }
+
+        if (!transcripcionFinal) {
+          transcripcionFinal = `[Audio grabado: ${duracion} segundos]\n(Por favor complete o dicte aquí los temas específicos conversados en este audio antes de generar el acta).`;
+        }
         
         agregarGrabacionAJornada(url, `Grabación #${grabacionesJornada.length + 1} (${new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' })})`, duracion, transcripcionFinal);
         stream.getTracks().forEach((track) => track.stop());
@@ -302,22 +322,49 @@ export const SistematizacionEquipoView: React.FC = () => {
     notificar('⏹️ Grabación finalizada y agregada al borrador unificado del día.');
   };
 
-  // Subir archivo de audio externo y acumularlo en la jornada
-  const handleSubirArchivoAudioPrincipal = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Subir archivo de audio externo y procesar transcripción real
+  const handleSubirArchivoAudioPrincipal = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setProcesandoAudioPrincipal(true);
     const audioUrl = URL.createObjectURL(file);
 
-    setTimeout(() => {
-      const fragmentoAudio = `[Archivo de Audio: ${file.name}]\nEn la jornada de asesoría curricular de 9° año (Allan Morera & Alberto Bustos), se revisaron los indicadores oficiales del componente proyecto por Design Thinking. Se enfatizó que las etapas iniciales de Empatizar, Definir e Idear concentran los indicadores curriculares de logro y evaluación, mientras que las fases de Prototipar y Probar/Evaluar se abordan con bitácoras técnicas y rúbricas de producto funcional.`;
-      
-      agregarGrabacionAJornada(audioUrl, file.name, 0, fragmentoAudio);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      notificar(`⏳ Transcribiendo archivo de audio "${file.name}"...`);
+      const resp = await fetch('/api/ai/transcribe', {
+        method: 'POST',
+        body: formData
+      });
+
+      let textoTranscrito = '';
+      if (resp.ok) {
+        const data = await resp.json();
+        textoTranscrito = data.transcript || '';
+      }
+
+      if (!textoTranscrito) {
+        textoTranscrito = `[Audio Cargado: ${file.name}]\nPor favor revise o ingrese el texto de lo conversado en esta grabación para asegurar un acta 100% fiel.`;
+      }
+
+      agregarGrabacionAJornada(audioUrl, file.name, 0, textoTranscrito);
+      notificar(`✅ Archivo "${file.name}" cargado y transcrito exitosamente.`);
+    } catch (err: any) {
+      console.error('Error procesando audio:', err);
+      agregarGrabacionAJornada(
+        audioUrl,
+        file.name,
+        0,
+        `[Audio: ${file.name}]\n(Transcripción manual: ingrese los puntos tratados en este archivo de audio).`
+      );
+      notificar(`✅ Archivo "${file.name}" anexado a la jornada.`);
+    } finally {
       setProcesandoAudioPrincipal(false);
-      notificar(`✅ Archivo de audio "${file.name}" cargado y anexado al borrador.`);
       if (fileInputPrincipalRef.current) fileInputPrincipalRef.current.value = '';
-    }, 1200);
+    }
   };
 
   // Eliminar un audio individual de la jornada
@@ -377,17 +424,20 @@ export const SistematizacionEquipoView: React.FC = () => {
       try {
         datosActa = JSON.parse(res.content);
       } catch (e) {
+        const lineasFuente = fuente.split('\n').filter((l) => l.trim().length > 0 && !l.startsWith('==='));
+        const oracionPrincipal = lineasFuente[0] || 'Sesión de Asesoría Curricular';
         datosActa = {
-          titulo: `Jornada de Asesoría Curricular y Validación Técnica (9° Año MEP)`,
+          titulo: `Sesión de Trabajo: ${oracionPrincipal.substring(0, 60)}`,
           tipo: 'trabajo_allan',
-          participantes: ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
+          participantes: ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)'],
           temasTratados: fuente,
           avancesConAllan: fuente,
-          acuerdosTexto: `• [Allan Morera & Alberto Bustos]: Consolidar y validar que las consignas didácticas respondan al indicador oficial de 9° año.\n• [Allan Morera]: Estructurar el catálogo de simuladores virtuales.\n• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con evaluación DUA.`,
+          aspectosPuntuales: `Resumen General:\n${oracionPrincipal}\n\nAspectos Abordados:\n${lineasFuente.map((l) => `• ${l}`).join('\n')}`,
+          acuerdosTexto: `• [Equipo]: Dar seguimiento a los puntos tratados en la grabación.`,
           acuerdos: [
             {
               id: `ac-${Date.now()}-1`,
-              acuerdo: 'Validar consignas didácticas contra indicadores de logro',
+              acuerdo: `Seguimiento a lo acordado en la sesión: ${oracionPrincipal.substring(0, 80)}`,
               responsable: 'Allan Morera & Alberto Bustos',
               completado: false
             }
@@ -401,11 +451,11 @@ export const SistematizacionEquipoView: React.FC = () => {
         titulo: datosActa.titulo || `Acta de Asesoría Curricular (${new Date().toLocaleDateString('es-CR')})`,
         fecha: new Date().toISOString().split('T')[0],
         hora: new Date().toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' }),
-        participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)', 'Kevin Sánchez (Coordinación)'],
+        participantes: datosActa.participantes || ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)'],
         temasTratados: datosActa.temasTratados || fuente,
         avancesConAllan: datosActa.avancesConAllan || fuente,
-        aspectosPuntuales: datosActa.aspectosPuntuales || `Resumen General:\nSe consolidaron los acuerdos técnico-pedagógicos para la mediación curricular de 9° año, asegurando la correspondencia con los indicadores oficiales de logro del MEP.\n\nAspectos Abordados por Viñeta:\n• Calibración Curricular: Verificación de consignas didácticas contra indicadores de logro.\n• Flexibilidad de Software: Alternativas en bloques y texto.\n• Simuladores Web: Integración de laboratorios virtuales interactivos.\n• Enfoque DUA: Actividades desconectadas unplugged y multiescenario.`,
-        acuerdosTexto: datosActa.acuerdosTexto || `• [Allan Morera & Alberto Bustos]: Validación y consolidación de acuerdos de la sesión.`,
+        aspectosPuntuales: datosActa.aspectosPuntuales || `Resumen General:\n${fuente.substring(0, 150)}`,
+        acuerdosTexto: datosActa.acuerdosTexto || `• [Equipo]: Seguimiento a los temas acordados.`,
         acuerdos: datosActa.acuerdos || [],
         audioUrl: grabacionesJornada.length > 0 ? grabacionesJornada[0].url : undefined,
         audioNombre: grabacionesJornada.length > 0 ? grabacionesJornada[0].nombre : undefined,
