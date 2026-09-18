@@ -57,7 +57,8 @@ import {
   Play,
   Pause,
   Square,
-  Radio
+  Radio,
+  ClipboardList
 } from 'lucide-react';
 
 export const SistematizacionEquipoView: React.FC = () => {
@@ -1185,37 +1186,33 @@ export const SistematizacionEquipoView: React.FC = () => {
                     <span className="font-semibold text-zinc-900">Temas y Discusión:</span> {r.temasTratados}
                   </div>
 
-                  {/* Lista de Acuerdos y Checkbox */}
-                  {r.acuerdos.length > 0 && (
+                  {/* Acuerdos y Compromisos como Texto Anotado (Extraídos fielmente del audio y texto) */}
+                  {(r.acuerdosTexto || r.acuerdos.length > 0) && (
                     <div className="mt-4 pt-3.5 border-t border-zinc-100">
-                      <h4 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">
-                        Acuerdos y Compromisos ({r.acuerdos.filter((a) => a.completado).length}/{r.acuerdos.length} cumplidos):
+                      <h4 className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <ClipboardList className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Acuerdos y Compromisos Registrados en la Sesión:</span>
                       </h4>
-                      <div className="space-y-1.5">
-                        {r.acuerdos.map((ac) => (
-                          <div 
-                            key={ac.id}
-                            onClick={() => handleToggleAcuerdo(r.id, ac.id)}
-                            className={`flex items-start space-x-2.5 p-2 rounded-lg cursor-pointer transition-colors ${
-                              ac.completado ? 'bg-zinc-50 text-zinc-500' : 'bg-white border border-zinc-200/70 hover:border-purple-300 text-zinc-900'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={ac.completado}
-                              onChange={() => {}}
-                              className="mt-0.5 rounded text-purple-600 focus:ring-0"
-                            />
-                            <div className="text-xs flex-1">
-                              <span className={ac.completado ? 'line-through text-zinc-400' : 'font-medium'}>
-                                {ac.acuerdo}
-                              </span>
-                              <span className="text-[11px] text-zinc-400 ml-2">
-                                (Resp: <strong>{ac.responsable}</strong>{ac.fechaLimite ? ` • Límite: ${ac.fechaLimite}` : ''})
-                              </span>
-                            </div>
+                      <div className="bg-purple-50/40 rounded-xl p-3 border border-purple-100 text-xs text-zinc-800 font-sans leading-relaxed whitespace-pre-line">
+                        {r.acuerdosTexto ? (
+                          r.acuerdosTexto
+                        ) : (
+                          <div className="space-y-1">
+                            {r.acuerdos.map((ac) => (
+                              <div key={ac.id} className="flex items-start gap-1.5">
+                                <span className="text-purple-600 font-bold">•</span>
+                                <div>
+                                  <span className="font-medium text-zinc-900">{ac.acuerdo}</span>
+                                  {ac.responsable && (
+                                    <span className="text-[11px] text-zinc-500 ml-1.5">
+                                      (Resp: <strong>{ac.responsable}</strong>{ac.fechaLimite ? ` • Plazo: ${ac.fechaLimite}` : ''})
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
                   )}
@@ -1387,36 +1384,33 @@ export const SistematizacionEquipoView: React.FC = () => {
                     <span className="font-semibold text-zinc-900">Temas Abordados:</span> {r.temasTratados}
                   </div>
 
-                  {r.acuerdos.length > 0 && (
+                  {/* Acuerdos y Compromisos como Texto Anotado */}
+                  {(r.acuerdosTexto || r.acuerdos.length > 0) && (
                     <div className="mt-4 pt-3.5 border-t border-zinc-100">
-                      <h4 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-2">
-                        Acuerdos ({r.acuerdos.filter((a) => a.completado).length}/{r.acuerdos.length} completados):
+                      <h4 className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <ClipboardList className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Acuerdos y Compromisos Registrados en la Sesión:</span>
                       </h4>
-                      <div className="space-y-1.5">
-                        {r.acuerdos.map((ac) => (
-                          <div 
-                            key={ac.id}
-                            onClick={() => handleToggleAcuerdo(r.id, ac.id)}
-                            className={`flex items-start space-x-2.5 p-2 rounded-lg cursor-pointer transition-colors ${
-                              ac.completado ? 'bg-zinc-50 text-zinc-500' : 'bg-white border border-zinc-200/70 hover:border-zinc-300 text-zinc-900'
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={ac.completado}
-                              onChange={() => {}}
-                              className="mt-0.5 rounded text-indigo-600 focus:ring-0"
-                            />
-                            <div className="text-xs flex-1">
-                              <span className={ac.completado ? 'line-through text-zinc-400' : 'font-medium'}>
-                                {ac.acuerdo}
-                              </span>
-                              <span className="text-[11px] text-zinc-400 ml-2">
-                                (Resp: <strong>{ac.responsable}</strong>{ac.fechaLimite ? ` • Límite: ${ac.fechaLimite}` : ''})
-                              </span>
-                            </div>
+                      <div className="bg-indigo-50/40 rounded-xl p-3 border border-indigo-100 text-xs text-zinc-800 font-sans leading-relaxed whitespace-pre-line">
+                        {r.acuerdosTexto ? (
+                          r.acuerdosTexto
+                        ) : (
+                          <div className="space-y-1">
+                            {r.acuerdos.map((ac) => (
+                              <div key={ac.id} className="flex items-start gap-1.5">
+                                <span className="text-indigo-600 font-bold">•</span>
+                                <div>
+                                  <span className="font-medium text-zinc-900">{ac.acuerdo}</span>
+                                  {ac.responsable && (
+                                    <span className="text-[11px] text-zinc-500 ml-1.5">
+                                      (Resp: <strong>{ac.responsable}</strong>{ac.fechaLimite ? ` • Plazo: ${ac.fechaLimite}` : ''})
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
                   )}
