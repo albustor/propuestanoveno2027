@@ -2,7 +2,62 @@
   "version": "2026.1.0",
   "lastSync": "2026-09-18T19:20:38.365Z",
   "planeamiento": {},
-  "sistematizacion": {},
+  "sistematizacion": {
+    "reunion-allan-3-viernes": {
+      "id": "reunion-allan-3-viernes",
+      "tipo": "trabajo_allan",
+      "fecha": "2026-09-18",
+      "titulo": "Jornada de Trabajo: Estructuración de Rúbricas Analíticas y Blindaje Evaluativo (Módulo 1)",
+      "data": {
+        "id": "reunion-allan-3-viernes",
+        "tipo": "trabajo_allan",
+        "titulo": "Jornada de Trabajo: Estructuración de Rúbricas Analíticas y Blindaje Evaluativo (Módulo 1)",
+        "fecha": "2026-09-18",
+        "hora": "07:30",
+        "participantes": [
+          "Allan Morera",
+          "Alberto Bustos (Asesoría Curricular)"
+        ],
+        "temasTratados": "1. Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1.\\n2. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.",
+        "avancesConAllan": "Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.",
+        "aspectosPuntuales": "Resumen General:\\nSe definieron los criterios para estructurar las rúbricas analíticas de proceso y las escalas de desempeño correspondientes a los 10 saberes del Módulo 1, estableciendo el blindaje de saberes del proyecto semestral para prevenir duplicidad evaluativa.\\n\\nAspectos Abordados:\\n• Rúbricas Analíticas de Proceso: Diseño de escalas de desempeño para los 10 saberes del Módulo 1.\\n• Blindaje Evaluativo: Delimitación de saberes del proyecto semestral para evitar duplicidad de evaluación.",
+        "acuerdosTexto": "• [Allan Morera & Alberto Bustos]: Elaborar las rúbricas analíticas y escalas de desempeño para los 10 saberes del Módulo 1.\\n• [Allan Morera & Alberto Bustos]: Blindar los saberes del proyecto semestral para evitar duplicidad evaluativa.",
+        "acuerdos": [
+          {
+            "id": "ac-v18-1",
+            "acuerdo": "Elaborar las rúbricas analíticas y escalas de desempeño para los 10 saberes del Módulo 1.",
+            "responsable": "Allan Morera & Alberto Bustos",
+            "fechaLimite": "2026-09-22",
+            "completado": false
+          },
+          {
+            "id": "ac-v18-2",
+            "acuerdo": "Blindar los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.",
+            "responsable": "Allan Morera & Alberto Bustos",
+            "fechaLimite": "2026-09-25",
+            "completado": false
+          }
+        ],
+        "audioNombre": "Grabación Sesión Viernes 18 - Rúbricas y Blindaje M1.webm",
+        "audiosMultiples": [
+          {
+            "id": "audio-v18-recuperado-1",
+            "nombre": "Grabación Sesión Viernes 18 - Rúbricas y Blindaje M1",
+            "url": "",
+            "hora": "07:30",
+            "duracionSegundos": 120,
+            "transcripcion": "Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.",
+            "timestamp": "2026-09-18T07:30:00.000Z"
+          }
+        ],
+        "sintesisIA": "Sesión de viernes completada: Rúbricas analíticas del Módulo 1 estructuradas y blindaje de evaluación de proyecto establecido.",
+        "estado": "Completado",
+        "adjuntosOEnlaces": "Rúbricas Analíticas M1 y Matriz de Blindaje",
+        "timestamp": "2026-09-18T07:30:00.000Z"
+      },
+      "updatedAt": "2026-09-18T19:31:24.211Z"
+    }
+  },
   "notas": {},
   "evaluacion": {},
   "documentos": {}

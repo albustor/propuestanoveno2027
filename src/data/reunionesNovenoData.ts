@@ -4,50 +4,52 @@ export const REUNIONES_INICIALES_NOVENO: ReunionEquipoNivel[] = [
   {
     id: 'reunion-allan-3-viernes',
     tipo: 'trabajo_allan',
-    titulo: 'Jornada de Cierre Semanal: Consolidación Evaluativa y Saberes Procedimentales/Actitudinales',
+    titulo: 'Jornada de Trabajo: Estructuración de Rúbricas Analíticas y Blindaje Evaluativo (Módulo 1)',
     fecha: '2026-09-18',
     hora: '07:30',
     participantes: ['Allan Morera', 'Alberto Bustos (Asesoría Curricular)'],
-    temasTratados: 'Consolidación de la matriz evaluativa del Tercer Ciclo. Integración de los saberes procedimentales (habilidades observables en circuitos, algoritmos y depuración) y saberes actitudinales (ética digital, trabajo colaborativo y resiliencia). Revisión de la distribución porcentual oficial: Trabajo Cotidiano (45-50%), Proyecto DT (30-40%) y Tareas/Evidencias (10%).',
+    temasTratados: '1. Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1.\n2. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.',
     avancesConAllan: 'Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.',
     aspectosPuntuales: `Resumen General:
-Se consolidó la estructura de evaluación formativa y sumativa para noveno año, asegurando que cada saber cuente con sus observables procedimentales y actitudinales articulados con las pautas DUA y el Reglamento de Evaluación de los Aprendizajes (REA MEP).
+Se definieron los criterios para estructurar las rúbricas analíticas de proceso y las escalas de desempeño correspondientes a los 10 saberes del Módulo 1, estableciendo el blindaje de saberes del proyecto semestral para prevenir duplicidad evaluativa.
 
-Aspectos Abordados por Viñeta:
-• Matriz de Tres Componentes: Definición clara de Trabajo Cotidiano (45-50%), Proyecto Design Thinking (30-40%) y Tareas / Evidencias Cortas (10%).
-• Integración de Saberes Procedimentales: Descriptores de desempeño para montaje de circuitos, programación de microcontroladores y algoritmos.
-• Integración de Saberes Actitudinales: Criterios de perseverancia ante el error, seguridad de datos y respeto a la autoría digital.
-• Bloqueo de Indicadores de Proyecto: Salvaguarda técnica de los saberes de prototipado para evaluación integrada por fases.
-• Cierre de Bitácora Semanal: Sincronización de telemetría y resúmenes ejecutivos para la jefatura curricular.`,
-    acuerdosTexto: `• [Allan Morera & Alberto Bustos]: Finalizar el banco de instrumentos de evaluación formativa para los 10 saberes del Módulo 1. (Plazo: 2026-09-22)
-• [Allan Morera]: Validar la integración de los simuladores Wokwi y Tinkercad en las guías didácticas del docente. (Plazo: 2026-09-25)
-• [Alberto Bustos]: Articular las 5 etapas de Design Thinking con la base documental de proyecto y pautas DUA. (Plazo: 2026-09-28)`,
+Aspectos Abordados:
+• Rúbricas Analíticas de Proceso: Diseño de escalas de desempeño para los 10 saberes del Módulo 1.
+• Blindaje Evaluativo: Delimitación de saberes del proyecto semestral para evitar duplicidad de evaluación.
+• Saberes Procedimentales y Actitudinales: Observación continua y registro técnico sin sobrecargar al docente.`,
+    acuerdosTexto: `• [Allan Morera & Alberto Bustos]: Elaborar las rúbricas analíticas y escalas de desempeño para los 10 saberes del Módulo 1.
+• [Allan Morera & Alberto Bustos]: Blindar los saberes del proyecto semestral para evitar duplicidad evaluativa.`,
     acuerdos: [
       {
         id: 'ac-v18-1',
-        acuerdo: 'Finalizar el banco de instrumentos de evaluación formativa para los 10 saberes del Módulo 1.',
+        acuerdo: 'Elaborar las rúbricas analíticas y escalas de desempeño para los 10 saberes del Módulo 1.',
         responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-22',
         completado: false
       },
       {
         id: 'ac-v18-2',
-        acuerdo: 'Validar la integración de los simuladores Wokwi y Tinkercad en las guías didácticas del docente.',
-        responsable: 'Allan Morera',
+        acuerdo: 'Blindar los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.',
+        responsable: 'Allan Morera & Alberto Bustos',
         fechaLimite: '2026-09-25',
-        completado: false
-      },
-      {
-        id: 'ac-v18-3',
-        acuerdo: 'Articular las 5 etapas de Design Thinking con la base documental de proyecto y pautas DUA.',
-        responsable: 'Alberto Bustos',
-        fechaLimite: '2026-09-28',
         completado: false
       }
     ],
-    sintesisIA: 'Jornada de viernes completada exitosamente. Se alcanza la correlación total entre mediación pedagógica, recursos de simulación y evaluación por componentes.',
+    audioNombre: 'Grabación Sesión Viernes 18 - Rúbricas y Blindaje M1.webm',
+    audiosMultiples: [
+      {
+        id: 'audio-v18-recuperado-1',
+        nombre: 'Grabación Sesión Viernes 18 - Rúbricas y Blindaje M1',
+        url: '',
+        hora: '07:30',
+        duracionSegundos: 120,
+        transcripcion: 'Estructuración de las rúbricas analíticas de proceso y escalas de desempeño para los 10 saberes del Módulo 1. Blindaje de los saberes asignados al proyecto semestral para evitar duplicidad evaluativa.',
+        timestamp: '2026-09-18T07:30:00.000Z'
+      }
+    ],
+    sintesisIA: 'Sesión de viernes completada: Rúbricas analíticas del Módulo 1 estructuradas y blindaje de evaluación de proyecto establecido.',
     estado: 'Completado',
-    adjuntosOEnlaces: 'Matriz Evaluativa Noveno 2026 y Guía de Tareas',
+    adjuntosOEnlaces: 'Rúbricas Analíticas M1 y Matriz de Blindaje',
     timestamp: '2026-09-18T07:30:00.000Z'
   },
   {
