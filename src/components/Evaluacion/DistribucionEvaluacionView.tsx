@@ -53,7 +53,8 @@ import {
   Users,
   HeartPulse,
   ShieldCheck,
-  Award
+  Award,
+  Lock
 } from 'lucide-react';
 
 export const DistribucionEvaluacionView: React.FC = () => {
@@ -678,6 +679,16 @@ export const DistribucionEvaluacionView: React.FC = () => {
               </span>
             </div>
 
+            {/* Lineamiento Normativo para Tareas (10% REA) */}
+            <div className="bg-amber-100/70 border border-amber-300/80 rounded-2xl p-2.5 text-[11px] text-amber-950 leading-relaxed space-y-1">
+              <div className="font-bold flex items-center gap-1 text-amber-900">
+                <span>📝</span> Lineamiento de Tareas (10% REA):
+              </div>
+              <p className="text-zinc-700">
+                Tareas formativas de corta duración: fichas diagnósticas, bitácora desconectada, análisis ético de casos y diagramación de algoritmos.
+              </p>
+            </div>
+
             <div className="space-y-3 max-h-[750px] overflow-y-auto pr-1">
               {saberesTareas.length === 0 ? (
                 <div className="p-8 text-center text-xs text-amber-400 font-medium border border-dashed border-amber-200 rounded-2xl bg-white/60">
@@ -786,8 +797,24 @@ export const DistribucionEvaluacionView: React.FC = () => {
                         </div>
                       </td>
 
-                      <td className="p-3 text-zinc-700 max-w-xs leading-relaxed">
-                        {saber.indicador}
+                      <td className="p-3 text-zinc-700 max-w-sm leading-relaxed space-y-1.5">
+                        <p className="text-xs text-zinc-800">{saber.indicador}</p>
+                        
+                        <div className="text-[10px] space-y-0.5 bg-zinc-50 p-2 rounded-lg border border-zinc-100">
+                          <div className="text-sky-900 font-semibold">
+                            <span className="font-bold">⚙️ Procedimental:</span> {saber.estrategiaMetodologica?.practicasComputacionales?.join(' • ') || 'Montaje técnico y aplicación algorítmica'}
+                          </div>
+                          <div className="text-emerald-900 font-semibold">
+                            <span className="font-bold">💡 Actitudinal:</span> {saber.estrategiaMetodologica?.actitudesComputacionales?.join(' • ') || 'Gusto por la precisión y trabajo ético'}
+                          </div>
+                        </div>
+
+                        {tieneProyecto && (
+                          <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded text-[9px] font-bold">
+                            <Lock className="w-2.5 h-2.5 text-emerald-600" />
+                            <span>Vinculado a Proyecto Semestral (Design Thinking)</span>
+                          </div>
+                        )}
                       </td>
 
                       <td className="p-3 text-center">
@@ -1156,6 +1183,39 @@ const TarjetaIndicadorKanban: React.FC<TarjetaIndicadorKanbanProps> = ({
           );
         })}
       </div>
+
+      {/* Integración Explícita de Saberes Procedimentales y Actitudinales */}
+      <div className="bg-zinc-50/80 border border-zinc-200/80 rounded-xl p-2.5 space-y-1.5 text-[10px]">
+        <div>
+          <span className="font-bold text-sky-900 flex items-center gap-1">
+            <span>⚙️</span> <strong>Saber Procedimental:</strong>
+          </span>
+          <span className="text-zinc-600 block pl-3.5 mt-0.5">
+            {saber.estrategiaMetodologica?.practicasComputacionales?.join(' • ') || 'Montaje técnico, depuración algorítmica y aplicación práctica.'}
+          </span>
+        </div>
+        <div className="pt-1 border-t border-zinc-200/60">
+          <span className="font-bold text-emerald-900 flex items-center gap-1">
+            <span>💡</span> <strong>Saber Actitudinal:</strong>
+          </span>
+          <span className="text-zinc-600 block pl-3.5 mt-0.5">
+            {saber.estrategiaMetodologica?.actitudesComputacionales?.join(' • ') || 'Gusto por la precisión, perseverancia ante el error y ética digital.'}
+          </span>
+        </div>
+      </div>
+
+      {/* Badge de Bloqueo a Proyecto si está asignado */}
+      {tieneProyecto && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2 flex items-center justify-between text-[10px] font-bold text-emerald-950">
+          <span className="flex items-center gap-1.5">
+            <Lock className="w-3 h-3 text-emerald-600" />
+            <span>Vinculado a Proyecto Design Thinking</span>
+          </span>
+          <span className="bg-emerald-200/80 text-emerald-900 px-1.5 py-0.2 rounded text-[9px]">
+            🔒 Fases 1-2-3
+          </span>
+        </div>
+      )}
 
       {/* Toggles Rápidos de Componentes */}
       <div className="pt-2 border-t border-zinc-100 flex flex-wrap items-center gap-1.5">

@@ -1,16 +1,25 @@
 import { EventoTelemetria, ModuloTelemetria } from '../types';
+import { TELEMETRIA_INICIAL_NOVENO } from '../data/telemetriaInicialData';
 
 const KEY_TELEMETRIA = 'mep_noveno_telemetria_eventos_2026';
 const MAX_EVENTOS_TELEMETRIA = 500;
 
 export const getHistorialTelemetria = (): EventoTelemetria[] => {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return TELEMETRIA_INICIAL_NOVENO;
   try {
     const raw = localStorage.getItem(KEY_TELEMETRIA);
-    if (!raw) return [];
-    return JSON.parse(raw);
+    if (!raw) {
+      localStorage.setItem(KEY_TELEMETRIA, JSON.stringify(TELEMETRIA_INICIAL_NOVENO));
+      return TELEMETRIA_INICIAL_NOVENO;
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(KEY_TELEMETRIA, JSON.stringify(TELEMETRIA_INICIAL_NOVENO));
+      return TELEMETRIA_INICIAL_NOVENO;
+    }
+    return parsed;
   } catch (e) {
-    return [];
+    return TELEMETRIA_INICIAL_NOVENO;
   }
 };
 

@@ -407,7 +407,30 @@ export const getAllReunionesLocal = (): ReunionEquipoNivel[] => {
       localStorage.setItem(KEY_REUNIONES_EQUIPO, JSON.stringify(REUNIONES_INICIALES_NOVENO));
       return REUNIONES_INICIALES_NOVENO;
     }
-    return JSON.parse(raw);
+    const parsed: ReunionEquipoNivel[] = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(KEY_REUNIONES_EQUIPO, JSON.stringify(REUNIONES_INICIALES_NOVENO));
+      return REUNIONES_INICIALES_NOVENO;
+    }
+
+    // Merge any missing initial meetings by ID
+    const existingIds = new Set(parsed.map((r) => r.id));
+    let hasNew = false;
+    const merged = [...parsed];
+    REUNIONES_INICIALES_NOVENO.forEach((initReunion) => {
+      if (!existingIds.has(initReunion.id)) {
+        merged.push(initReunion);
+        hasNew = true;
+      }
+    });
+
+    if (hasNew) {
+      // Sort descending by date
+      merged.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+      localStorage.setItem(KEY_REUNIONES_EQUIPO, JSON.stringify(merged));
+    }
+
+    return merged;
   } catch (e) {
     return REUNIONES_INICIALES_NOVENO;
   }
