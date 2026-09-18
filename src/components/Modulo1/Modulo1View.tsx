@@ -208,7 +208,7 @@ export const Modulo1View: React.FC = () => {
               <div className="bg-gradient-to-br from-sky-50 to-blue-50/70 border border-sky-200/80 rounded-xl p-2.5 shadow-2xs">
                 <div className="text-[9.5px] font-bold text-sky-800 uppercase tracking-wider flex items-center gap-1">
                   <Sparkles className="w-3 h-3 text-sky-600" />
-                  Eje del Proyecto Semestral (ABP)
+                  Eje del Proyecto Semestral (Design Thinking / DT)
                 </div>
                 <div className="text-[11.5px] font-bold text-sky-950 mt-0.5 leading-snug">
                   {modulo1.ejeProyectoSemestral}

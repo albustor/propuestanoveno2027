@@ -183,7 +183,7 @@ export const EditorActividadMediacionModal: React.FC<EditorActividadMediacionMod
   };
 
   // Re-planteamiento rápido con Presets Pedagógicos
-  const aplicarPresetReformulacion = (tipo: 'desconectado' | 'depuracion' | 'dua' | 'gamificacion' | 'abp') => {
+  const aplicarPresetReformulacion = (tipo: 'desconectado' | 'depuracion' | 'dua' | 'gamificacion' | 'dt') => {
     const current = buildEstrategiaFromInputs();
     let updated = { ...current };
 
@@ -253,11 +253,11 @@ export const EditorActividadMediacionModal: React.FC<EditorActividadMediacionMod
         titulo: `Podio de Eficiencia y Conquista de Insignias Digitales`,
         descripcion: `Los equipos que lograron optimizar su solución con menos líneas de código o menor consumo de pines obtienen la insignia de 'Maestría Técnica 9°'.`,
       };
-    } else if (tipo === 'abp') {
+    } else if (tipo === 'dt') {
       updated.desarrollo = {
         ...updated.desarrollo,
-        titulo: `Articulación ABP: Prototipado para la Solución Comunitaria`,
-        descripcion: `Los estudiantes integran directamente este saber conceptual en el prototipo funcional de su proyecto semestral de Design Thinking.`,
+        titulo: `Articulación DT: Prototipado para la Solución Comunitaria (Design Thinking)`,
+        descripcion: `Los estudiantes integran directamente este saber conceptual en el prototipo funcional de su proyecto semestral de Design Thinking (DT).`,
       };
     }
 
@@ -385,10 +385,10 @@ Proporciona una versión mejorada en formato Markdown estructurado, enfatizando:
               🏆 Reto Gamificado
             </button>
             <button
-              onClick={() => aplicarPresetReformulacion('abp')}
+              onClick={() => aplicarPresetReformulacion('dt')}
               className="px-2.5 py-1 rounded-lg bg-white border border-amber-200 text-amber-800 hover:bg-amber-50 text-[11px] font-semibold transition-all shadow-2xs"
             >
-              🚀 Articular con ABP
+              🚀 Articular con DT
             </button>
           </div>
         </div>

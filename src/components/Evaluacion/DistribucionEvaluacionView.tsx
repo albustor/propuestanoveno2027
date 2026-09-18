@@ -631,7 +631,7 @@ export const DistribucionEvaluacionView: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-extrabold text-sm text-emerald-950">Proyecto Semestral</h3>
-                  <p className="text-[11px] text-emerald-700 font-medium">30% - 40% (ABP / Design Thinking)</p>
+                  <p className="text-[11px] text-emerald-700 font-medium">30% - 40% (Design Thinking / DT)</p>
                 </div>
               </div>
               <span className="px-2.5 py-0.5 bg-emerald-600 text-white rounded-full text-xs font-black">

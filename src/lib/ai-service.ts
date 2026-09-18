@@ -143,7 +143,7 @@ function generatePedagogicalResponse2027(payload: AIRequestPayload): string {
 ### **Alineamiento Curricular:**
 - 🏆 **Competencia del Área:** ${mod === 1 ? 'Desarrolla prototipos automatizados y sistemas robóticos integrando hardware programable, sensores, actuadores y cinemática mecánica.' : 'Combina herramientas digitales, diseño tridimensional y gestores de bases de datos relacionales con ética digital.'}
 - 🎯 **Resultado de Aprendizaje (RdA de III Ciclo):** ${mod === 1 ? 'Aplica fundamentos de robótica, computación física, electrónica, mecánica y sistemas robóticos autónomos en la programación y construcción de prototipos que resuelven un problema.' : 'Combina herramientas digitales, tomando en cuenta fundamentos de tecnología, impacto de las TIC, seguridad y privacidad para la creación de soluciones digitales.'}
-- 🎓 **Perfil de Salida (III Ciclo):** Pensamiento computacional autónomo, formulación algorítmica modular y prototipado ABP de impacto contextual.
+- 🎓 **Perfil de Salida (III Ciclo):** Pensamiento computacional autónomo, formulación algorítmica modular y prototipado Design Thinking (DT) de impacto contextual.
 
 ---
 

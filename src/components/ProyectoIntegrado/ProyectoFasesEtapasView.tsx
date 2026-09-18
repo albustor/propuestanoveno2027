@@ -59,13 +59,20 @@ const DOCUMENTOS_INICIALES_PROYECTO: DocumentoProyectoItem[] = [
   }
 ];
 
+import { getDistribucionEvaluacionLocal } from '../../lib/storage';
+
 export const ProyectoFasesEtapasView: React.FC = () => {
   const [selectedModulo, setSelectedModulo] = useState<1 | 2>(1);
   const [selectedEtapaId, setSelectedEtapaId] = useState<string>('etapa1_empatizar');
   const [documentos, setDocumentos] = useState<DocumentoProyectoItem[]>([]);
   const [subiendoDoc, setSubiendoDoc] = useState<boolean>(false);
   const [notificacion, setNotificacion] = useState<string | null>(null);
+  const [matrizEval, setMatrizEval] = useState(() => getDistribucionEvaluacionLocal());
   const fileInputDocRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setMatrizEval(getDistribucionEvaluacionLocal());
+  }, [selectedModulo]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -142,9 +149,13 @@ export const ProyectoFasesEtapasView: React.FC = () => {
 
   const activeEtapa = proyecto.etapas.find((e) => e.id === selectedEtapaId) || proyecto.etapas[0];
 
-  // Saberes del módulo actual
+  // Saberes del módulo actual seleccionados para el Proyecto Semestral
   const moduloInfo = MODULOS_NOVENO_OFICIAL.find((m) => m.id === selectedModulo);
-  const saberesProyecto = moduloInfo?.areas.flatMap((a) => a.saberes) || [];
+  const todosSaberesModulo = moduloInfo?.areas.flatMap((a) => a.saberes) || [];
+  const saberesProyecto = todosSaberesModulo.filter((s) => {
+    const asig = matrizEval.asignaciones[s.id];
+    return asig?.componentes?.includes('proyecto');
+  });
 
   const getEtapaIcon = (num: number) => {
     switch (num) {
@@ -509,31 +520,42 @@ export const ProyectoFasesEtapasView: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs text-zinc-500 font-medium">
-            {saberesProyecto.length} saberes articulados con Design Thinking
+            {saberesProyecto.length} saberes articulados con Design Thinking (DT)
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {saberesProyecto.map((saber, idx) => (
-            <div
-              key={saber.id || idx}
-              className="bg-zinc-50/70 border border-zinc-200/80 hover:border-emerald-300 rounded-xl p-3.5 space-y-2 transition-all shadow-2xs"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full">
-                  Saber #{idx + 1}
-                </span>
-                <span className="text-[10px] font-semibold text-zinc-400 flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-emerald-600" /> Proyecto DT
-                </span>
+        {saberesProyecto.length === 0 ? (
+          <div className="p-8 text-center bg-zinc-50 border border-dashed border-zinc-200 rounded-xl space-y-1.5">
+            <p className="text-xs font-semibold text-zinc-700">
+              No hay saberes asignados al Proyecto Semestral en el Módulo {selectedModulo}.
+            </p>
+            <p className="text-[11px] text-zinc-500">
+              Active la casilla "Proyecto" en la <strong>Matriz y Tablero de Evaluación Curricular</strong> para vincularlos a las 5 etapas de Design Thinking.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {saberesProyecto.map((saber, idx) => (
+              <div
+                key={saber.id || idx}
+                className="bg-zinc-50/70 border border-zinc-200/80 hover:border-emerald-300 rounded-xl p-3.5 space-y-2 transition-all shadow-2xs"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                    Saber #{idx + 1}
+                  </span>
+                  <span className="text-[10px] font-semibold text-zinc-500 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-emerald-600" /> Proyecto DT
+                  </span>
+                </div>
+                <h4 className="font-bold text-xs text-zinc-900 leading-tight">{saber.nombre}</h4>
+                <p className="text-[11px] text-zinc-600 leading-relaxed line-clamp-3">
+                  <strong className="text-zinc-700">Indicador:</strong> {saber.indicador}
+                </p>
               </div>
-              <h4 className="font-bold text-xs text-zinc-900 leading-tight">{saber.nombre}</h4>
-              <p className="text-[11px] text-zinc-600 leading-relaxed line-clamp-3">
-                <strong className="text-zinc-700">Indicador:</strong> {saber.indicador}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -97,7 +97,7 @@ export const EJES_TRANSVERSALES_OFICIALES: Record<EjeTransversalTipo, EjeTransve
         descriptor: 'Integra el uso de diversas herramientas de productividad y programación para generar soluciones innovadoras a los problemas que debe resolver.'
       }
     ],
-    aplicacionEnNoveno: 'Desarrollo de proyectos ABP en equipos con roles rotativos, prototipado de maquetas funcionales y diseño de soluciones automatizadas para retos comunitarios.',
+    aplicacionEnNoveno: 'Desarrollo de proyectos Design Thinking (DT) en equipos con roles rotativos, prototipado de maquetas funcionales y diseño de soluciones automatizadas para retos comunitarios.',
     ejemplosProyectos: [
       'Prototipo automatizado e inclusivo desarrollado en equipo con metodología Design Thinking',
       'Integración innovadora de modelado 3D y bases de datos para optimizar recursos del colegio',
@@ -244,7 +244,7 @@ export const MAPEO_EJE_ESPECIFICO_DETALLE: Record<string, EjeEspecificoDetalle> 
     dimensionNombre: 'Emprendimiento',
     descriptorOficial: 'Desarrolla habilidades de liderazgo trabajando en equipo donde tenga que asumir roles de liderazgo, tomar decisiones y delegar responsabilidades.',
     justificacion: 'Liderazgo y trabajo en equipo para la construcción, integración y prueba de prototipos funcionales.',
-    aplicacionAula: 'Distribución de roles técnicos (diseño, armado, programación, pruebas) durante el prototipado ABP.'
+    aplicacionAula: 'Distribución de roles técnicos (diseño, armado, programación, pruebas) durante el prototipado DT (Design Thinking).'
   },
   algoritmo: {
     ejePrincipal: 'pensamiento_computacional',

@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
         <div className="flex items-center space-x-4 text-[11px] text-zinc-400">
           <span>Guía Docente 2026</span>
           <span>•</span>
-          <span>Design Thinking / ABP (3 Fases, 5 Etapas)</span>
+          <span>Design Thinking / DT (3 Fases, 5 Etapas)</span>
           <span>•</span>
           <span>Estrategias en 3 Momentos Didácticos</span>
         </div>

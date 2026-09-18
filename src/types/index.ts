@@ -205,7 +205,7 @@ export interface RegistroSeguimientoSaber {
 export type MapaSeguimientoSaberes = Record<string, Record<string, EstadoSeguimientoSaber>>;
 
 // -------------------------------------------------------------
-// MODELO DEL PROYECTO: 3 FASES Y 5 ETAPAS (Design Thinking / ABP)
+// MODELO DEL PROYECTO: 3 FASES Y 5 ETAPAS (Design Thinking / DT)
 // -------------------------------------------------------------
 export type FaseProyectoTipo = 'fase1_investigacion' | 'fase2_desarrollo' | 'fase3_evaluacion';
 

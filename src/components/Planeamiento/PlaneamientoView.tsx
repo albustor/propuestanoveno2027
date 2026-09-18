@@ -110,13 +110,15 @@ export const PlaneamientoView: React.FC = () => {
       let etapaAsoc: EtapaProyectoTipo | undefined;
       let esSemanaProyecto = false;
       let actProyecto = '';
+      let etapaObjMatch: any = null;
 
       if (proyecto) {
         for (const etapa of proyecto.etapas) {
           const semanasSugeridas = selectedModuloId === 1 ? etapa.semanaSugeridaModulo1 : etapa.semanaSugeridaModulo2;
           if (semanasSugeridas.includes(i)) {
             etapaAsoc = etapa.id;
-            actProyecto = `${etapa.nombre}: ${etapa.proposito}`;
+            etapaObjMatch = etapa;
+            actProyecto = `[DT - ${etapa.nombre}]: ${etapa.proposito}. Acciones: ${etapa.accionesClave.join(' ')}`;
             if (i === 17 || i === 18) {
               esSemanaProyecto = true;
             }
@@ -128,25 +130,38 @@ export const PlaneamientoView: React.FC = () => {
       const distM1 = saber ? DISTRIBUCION_SABERES_M1[saber.id] : null;
       const ejeInfo = saber ? getEjeEspecificoParaSaber(saber.id) : null;
 
+      // Integración enriquecida de actividades de Design Thinking (DT) si la semana corresponde a proyecto
+      const descInicio = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.inicio
+        ? `${etapaObjMatch.actividadEnriquecida.inicio} Contextualización: ${saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de saberes y análisis del problema.'}`
+        : saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de conocimientos previos y planteamiento de reto detonante contextualizado.';
+
+      const descDesarrollo = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.desarrollo
+        ? `${etapaObjMatch.actividadEnriquecida.desarrollo} Acciones clave de la etapa DT: ${etapaObjMatch.accionesClave.join(' ')} Desarrollo técnico: ${saber ? saber.estrategiaMetodologica.desarrollo.descripcion : 'Construcción y depuración.'}`
+        : saber ? `${saber.estrategiaMetodologica.desarrollo.descripcion} Acciones del estudiante: ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : 'Construcción guiada, laboratorio práctico, depuración colaborativa y ensamblaje de prototipo.';
+
+      const descCierre = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.cierre
+        ? `${etapaObjMatch.actividadEnriquecida.cierre} Entregables esperados de la etapa DT: ${etapaObjMatch.entregablesSugeridos.join(', ')}.`
+        : saber ? `${saber.estrategiaMetodologica.cierre.descripcion} Evaluación docente: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : 'Sistematización de aprendizajes en bitácora digital, coevaluación y reflexión metacognitiva.';
+
       list.push({
         id: `sem_${selectedModuloId}_${i}`,
         numeroSemana: i,
         moduloId: selectedModuloId,
-        tituloSemana: `Semana ${i}: ${saber ? saber.nombre : 'Consolidación y Prototipado'}`,
+        tituloSemana: `Semana ${i}: ${saber ? saber.nombre : 'Consolidación y Prototipado'} ${etapaObjMatch ? `(DT - ${etapaObjMatch.nombre.split(':')[1]?.trim() || etapaObjMatch.nombre})` : ''}`,
         saberesSeleccionados: saber ? [saber.id] : [],
         esSemanaDedicadaAProyecto: esSemanaProyecto,
         etapaProyectoAsociada: etapaAsoc,
         actividadProyectoEnSemana: actProyecto,
         momentoInicio: {
-          estrategia: saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de conocimientos previos y planteamiento de reto detonante contextualizado.',
+          estrategia: descInicio,
           tiempo: '15 min'
         },
         momentoDesarrollo: {
-          estrategia: saber ? `${saber.estrategiaMetodologica.desarrollo.descripcion} Acciones del estudiante: ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : 'Construcción guiada, laboratorio práctico, depuración colaborativa y ensamblaje de prototipo.',
+          estrategia: descDesarrollo,
           tiempo: '50 min'
         },
         momentoCierre: {
-          estrategia: saber ? `${saber.estrategiaMetodologica.cierre.descripcion} Evaluación docente: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : 'Sistematización de aprendizajes en bitácora digital, coevaluación y reflexión metacognitiva.',
+          estrategia: descCierre,
           tiempo: '15 min'
         },
         escenarioConectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : 'Simulador Wokwi, Tinkercad Circuits, IDE de programación, microcontrolador físico.',
@@ -155,14 +170,16 @@ export const PlaneamientoView: React.FC = () => {
         // Los 3 Componentes Oficiales de Evaluación MEP
         componentesEvaluacion: {
           proyecto: etapaAsoc 
-            ? `Avance en ${actProyecto}. Verificación de entregables y bitácora de diseño.` 
+            ? `Avance en ${actProyecto}. Verificación de entregables (${etapaObjMatch?.entregablesSugeridos.join(', ') || 'bitácora'}) e indicador de logro DT.` 
             : 'Integración paulatina de los componentes desarrollados hacia la maqueta del proyecto semestral.',
           cotidiano: `Observación sistemática del desempeño práctico en aula: aplicación de ${saber?.nombre || 'saber curricular'} y resolución de retos de clase.`,
           tareasAsistencia: `Bitácora técnica individual, persistencia ante el error, tolerancia a la frustración y entrega puntual del reporte.`
         },
 
-        evidenciaAprendizaje: `Registro de desempeño técnico, código depurado y reporte en bitácora estudiantil de la semana ${i}.`,
-        instrumentoEvaluacion: 'Rúbrica Analítica de Proceso y Escala de Calificación MEP',
+        evidenciaAprendizaje: etapaObjMatch 
+          ? `Evidencia de Etapa DT (${etapaObjMatch.nombre}): ${etapaObjMatch.entregablesSugeridos.join(', ')}. Registro técnico de la semana ${i}.`
+          : `Registro de desempeño técnico, código depurado y reporte en bitácora estudiantil de la semana ${i}.`,
+        instrumentoEvaluacion: etapaObjMatch ? (etapaObjMatch.indicadorLogro ? 'Rúbrica Analítica de Proyecto DT y Escala de Proceso' : 'Escala de Calificación MEP') : 'Rúbrica Analítica de Proceso y Escala de Calificación MEP',
         pautaDUAAplicada: 'Principio de Representación: Opciones múltiples de lenguaje visual/textual. Principio de Acción y Expresión: Uso de simulador interactivo o montaje físico.',
         
         saberesProcedimentales: distM1 ? distM1.saberesProcedimentalesIds : ['modulariza', 'depura', 'programa'],
@@ -363,7 +380,7 @@ export const PlaneamientoView: React.FC = () => {
                 >
                   <span>S{sem.numeroSemana}</span>
                   <span className="text-[9px] opacity-80 font-normal">
-                    {tieneEtapa ? '🎯 ABP' : '📝 Cot.'}
+                    {tieneEtapa ? '🎯 DT' : '📝 Cot.'}
                   </span>
                 </button>
               );
@@ -387,7 +404,7 @@ export const PlaneamientoView: React.FC = () => {
                 {currentSemana.etapaProyectoAsociada ? (
                   <span className="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
                     <span>🎯</span>
-                    <span>Vinculada a Proyecto: {currentSemana.etapaProyectoAsociada.replace('_', ' ').toUpperCase()}</span>
+                    <span>Vinculada a Proyecto DT: {currentSemana.etapaProyectoAsociada.replace('etapa', 'Etapa ').replace('_', ' ').toUpperCase()}</span>
                   </span>
                 ) : (
                   <span className="px-3 py-1 rounded-lg text-xs font-bold bg-sky-50 text-sky-800 border border-sky-200 flex items-center gap-1.5">
@@ -590,12 +607,12 @@ export const PlaneamientoView: React.FC = () => {
             </div>
           </div>
 
-          {/* Bloque de Vinculación con el Proyecto Semestral (ABP) */}
-          <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-4 space-y-3">
+          {/* Bloque de Vinculación con el Proyecto Semestral (Design Thinking - DT) */}
+          <div className="bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white border-2 border-emerald-200/80 rounded-2xl p-4.5 space-y-3.5 shadow-2xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span className="text-xs font-bold text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span className="text-xs font-bold text-emerald-950 uppercase tracking-wider flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
-                Articulación con el Proyecto Semestral (Design Thinking)
+                Articulación con el Proyecto Semestral • Metodología Design Thinking (DT)
               </span>
               <label className="flex items-center space-x-2 text-xs text-zinc-700 cursor-pointer">
                 <input
@@ -607,16 +624,16 @@ export const PlaneamientoView: React.FC = () => {
                       esSemanaDedicadaAProyecto: e.target.checked
                     }))
                   }
-                  className="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+                  className="rounded border-zinc-300 text-emerald-600 focus:ring-emerald-500"
                 />
-                <span className="font-semibold">Semana 100% dedicada a Proyecto (Taller / Feria)</span>
+                <span className="font-semibold text-emerald-900">Semana 100% dedicada a Proyecto DT (Taller / Feria)</span>
               </label>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">
-                  Etapa de Proyecto:
+                <label className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider block mb-1">
+                  Etapa de Proyecto Design Thinking (DT):
                 </label>
                 <select
                   value={currentSemana.etapaProyectoAsociada || ''}
@@ -626,10 +643,10 @@ export const PlaneamientoView: React.FC = () => {
                     updateCurrentSemana((prev) => ({
                       ...prev,
                       etapaProyectoAsociada: val || undefined,
-                      actividadProyectoEnSemana: etapaObj ? `${etapaObj.nombre}: ${etapaObj.proposito}` : ''
+                      actividadProyectoEnSemana: etapaObj ? `[DT - ${etapaObj.nombre}]: ${etapaObj.proposito}` : ''
                     }));
                   }}
-                  className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
+                  className="w-full text-xs bg-white border border-emerald-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 >
                   <option value="">Sin etapa de proyecto específica (Trabajo Cotidiano Regular)</option>
                   {proyecto?.etapas.map((et) => (
@@ -641,8 +658,8 @@ export const PlaneamientoView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider block mb-1">
-                  Acción Concreta en el Proyecto:
+                <label className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider block mb-1">
+                  Acción Concreta en el Proyecto DT:
                 </label>
                 <input
                   type="text"
@@ -654,10 +671,51 @@ export const PlaneamientoView: React.FC = () => {
                       actividadProyectoEnSemana: e.target.value
                     }))
                   }
-                  className="w-full text-xs bg-white border border-zinc-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none"
+                  className="w-full text-xs bg-white border border-emerald-200 rounded-xl p-2.5 text-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 />
               </div>
             </div>
+
+            {/* Ficha Descriptiva de Actividades DT de la Etapa (Del Documento Base del Proyecto) */}
+            {(() => {
+              const etapaObj = proyecto?.etapas.find((et) => et.id === currentSemana.etapaProyectoAsociada);
+              if (!etapaObj) return null;
+              return (
+                <div className="pt-2 border-t border-emerald-100 space-y-2.5 text-xs">
+                  <div className="p-3 bg-white rounded-xl border border-emerald-100 space-y-1">
+                    <span className="font-bold text-emerald-950 block text-[11px] uppercase tracking-wider">
+                      🎯 Propósito Oficial de la Etapa ({etapaObj.nombre}):
+                    </span>
+                    <p className="text-zinc-700 leading-relaxed text-[11px]">{etapaObj.proposito}</p>
+                  </div>
+
+                  <div className="p-3 bg-white rounded-xl border border-emerald-100 space-y-1.5">
+                    <span className="font-bold text-emerald-950 block text-[11px] uppercase tracking-wider">
+                      📋 Actividades y Acciones Clave Desarrolladas para el Proyecto (Documento Base DT):
+                    </span>
+                    <ul className="space-y-1">
+                      {etapaObj.accionesClave.map((acc, aIdx) => (
+                        <li key={aIdx} className="flex items-start space-x-2 text-[11px] text-zinc-700 leading-relaxed">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{acc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div className="p-2.5 bg-white rounded-xl border border-emerald-100">
+                      <span className="font-bold text-zinc-900 block mb-0.5">📦 Entregables Sugeridos:</span>
+                      <span className="text-zinc-600">{etapaObj.entregablesSugeridos.join(' • ')}</span>
+                    </div>
+                    <div className="p-2.5 bg-white rounded-xl border border-emerald-100">
+                      <span className="font-bold text-indigo-900 block mb-0.5">🏆 Indicador de Logro / Evaluación DT:</span>
+                      <span className="text-zinc-600">{etapaObj.indicadorLogro || etapaObj.indicadorEvaluacion}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Actividades Didácticas Creadas en los 3 Momentos (Inicio, Desarrollo, Cierre) */}
@@ -834,7 +892,7 @@ export const PlaneamientoView: React.FC = () => {
                 {/* 1. Proyecto */}
                 <div>
                   <label className="text-[11px] font-bold text-emerald-800 flex items-center gap-1">
-                    <span>🚀 1. Proyecto Semestral (ABP):</span>
+                    <span>🚀 1. Proyecto Semestral (Design Thinking / DT):</span>
                   </label>
                   <input
                     type="text"
