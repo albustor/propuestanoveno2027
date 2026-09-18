@@ -88,8 +88,9 @@ export async function processAICascade(payload: AIRequestPayload): Promise<AIRes
   const contextStr = JSON.stringify(payload.contexto || {});
   const cacheKey = getHash(payload.prompt, `${payload.tipo}:${contextStr}`);
 
-  // 1. Check SHA-256 Memory Cache
-  if (memoryCache.has(cacheKey)) {
+  // 1. Check SHA-256 Memory Cache (except for dynamic transcript / session analysis)
+  const isDynamicType = payload.tipo === 'analizar_dictado_sesion_ia' || payload.tipo === 'informe_pedagogico_sesion_ia';
+  if (!isDynamicType && memoryCache.has(cacheKey)) {
     const cached = memoryCache.get(cacheKey)!;
     return {
       success: true,
@@ -104,12 +105,14 @@ export async function processAICascade(payload: AIRequestPayload): Promise<AIRes
   // Fallback Generation Engine with 2027 Meeting Directives
   const generatedContent = generatePedagogicalResponse2027(payload);
 
-  memoryCache.set(cacheKey, {
-    response: generatedContent,
-    provider: "PÍA Asistente Curricular MEP (Nivel 1 Principal - gemini-3.5-flash)",
-    model: "gemini-3.5-flash",
-    timestamp: Date.now()
-  });
+  if (!isDynamicType) {
+    memoryCache.set(cacheKey, {
+      response: generatedContent,
+      provider: "PÍA Asistente Curricular MEP (Nivel 1 Principal - gemini-3.5-flash)",
+      model: "gemini-3.5-flash",
+      timestamp: Date.now()
+    });
+  }
 
   // Registrar telemetría de IA
   try {
@@ -599,35 +602,21 @@ Desarrollar y validar que la propuesta didáctica, orientaciones metodológicas,
 
 ### 2. Síntesis y fundamentación de las decisiones técnico-pedagógicas
 
+${payload.contexto?.avancesEspecificos ? `* **Deliberaciones y acuerdos específicos de la sesión:**\n  ${payload.contexto.avancesEspecificos}\n` : ''}
 * **Fidelidad al currículo oficial del nivel:**
   Se analizaron los descriptores e indicadores vigentes del programa de Formación Tecnológica para noveno año, asegurando que cada momento didáctico propuesto (inicio, desarrollo y cierre) refleje fielmente el nivel de complejidad requerido sin alterar los objetivos curriculares oficiales.
 
-* **Articulación inter-niveles de asesoría:**
-  Se coordinó la progresión conceptual y técnica entre séptimo, octavo y noveno año, garantizando una transición fluida en el dominio de microcontroladores, lógica condicional, arquitectura de datos y principios éticos de la inteligencia artificial.
-
-* **Flexibilidad en el software de mediación docente:**
-  Se acordó no condicionar la propuesta a una sola herramienta informática. La documentación para los docentes contemplará alternativas tanto en programación por bloques como en código textual (S4AEDU, EV3, Arduino IDE, MakeCode), permitiendo su adaptación al parque tecnológico de cada centro educativo.
-
-* **Continuidad pedagógica mediante simulaciones digitales:**
-  Se validó la incorporación de entornos virtuales interactivos (Wokwi, Tinkercad, PSeInt) para que el personal docente cuente con herramientas que mitiguen la escasez de kits físicos o la pérdida imprevista de lecciones lectivas.
+* **Articulación de los saberes con la evaluación y proyecto:**
+  Se revisó la matriz de evaluación del nivel para asegurar que los saberes procedimentales y actitudinales se evidencien de forma transparente en el trabajo cotidiano y en el proyecto semestral por Design Thinking, evitando duplicidades evaluativas.
 
 * **Inclusión educativa y enfoque DUA:**
-  Se diseñaron alternativas de prototipado físico, digital y desconectado (*unplugged*), asegurando que las personas docentes dispongan de opciones inclusivas para la totalidad del estudiantado.
+  Se diseñaron alternativas de prototipado físico, digital (simuladores Wokwi/Tinkercad) y desconectado (*unplugged*), asegurando opciones inclusivas para la totalidad del estudiantado.
 
 ---
 
 ### 3. Aspectos puntuales abordados (generales y por viñeta)
 
-**Resumen General:**
-${payload.contexto?.aspectosPuntuales || 'Se abordaron de forma focalizada y sistemática los lineamientos curriculares de 9° año, asegurando la correspondencia estricta con los indicadores oficiales de logro del MEP y la provisión de alternativas prácticas adaptadas a los distintos contextos institucionales.'}
-
-**Aspectos Específicos por Viñeta:**
-• **Fidelidad al Currículo Oficial MEP:** Verificación de que cada experiencia de aprendizaje responda de manera idéntica al indicador de logro del nivel.
-• **Flexibilidad y Pluralidad de Software:** Habilitación de propuestas en bloques (S4AEDU, MakeCode) y código textual (Arduino C++, Python) para adaptarse al equipamiento disponible.
-• **Entornos de Simulación Interactiva:** Catalogación y validación de simuladores web (Wokwi, Tinkercad Circuits, PSeInt) con códigos QR en las guías docentes.
-• **Diseño Universal para el Aprendizaje (DUA):** Incorporación de actividades desconectadas (*unplugged*) y dinámicas multinivel para inclusión plena.
-• **Evaluación Integrada por Proyecto (Design Thinking):** Articulación de las 5 fases metodológicas con la matriz de evaluación y el REA MEP.
-• **Articulación Inter-Niveles:** Coordinación de la progresión pedagógica con los equipos de asesoría de 7° y 8° año.
+${payload.contexto?.aspectosPuntuales || `**Resumen General:**\nSe abordaron de forma focalizada los lineamientos curriculares de la sesión.\n\n**Aspectos Específicos por Viñeta:**\n• Calibración Curricular: Verificación de consignas contra indicadores oficiales.\n• Flexibilidad Técnica: Alternativas en bloques y texto.\n• Pautas DUA: Inclusión de opciones conectadas y desconectadas.`}
 
 ---
 
