@@ -99,6 +99,60 @@ export const PlaneamientoView: React.FC = () => {
   const proyecto = PROYECTOS_SEMESTRALES_NOVENO.find((p) => p.moduloId === selectedModuloId);
   const allSaberes = modulo ? modulo.areas.flatMap((a) => a.saberes) : [];
 
+  // Helper para construir la mediación didáctica integrando Competencia, RdA, Eje Transversal y Pensamiento Computacional en los 3 Momentos
+  const construirMomentosMediacionIntegrados = (
+    saber: any,
+    area: any,
+    distM1: any,
+    ejeInfo: any,
+    etapaObjMatch: any
+  ) => {
+    if (!saber) {
+      return {
+        inicio: 'Momento 1: Inicio (Focalización y Activación)\n- Focalización: Activación de conocimientos previos y planteamiento de reto detonante contextualizado.',
+        desarrollo: 'Momento 2: Desarrollo (Exploración, Construcción y Aplicación)\n- Construcción guiada, laboratorio práctico colaborativo y depuración.',
+        cierre: 'Momento 3: Cierre (Sistematización, Reflexión y Evaluación)\n- Sistematización de aprendizajes en bitácora y evaluación formativa.'
+      };
+    }
+
+    const nombresProcedimentales = distM1?.saberesProcedimentalesIds
+      ?.map((id: string) => DICCIONARIO_PROCEDIMENTALES[id]?.nombre || id)
+      ?.join(', ') || 'Modulariza, Depura, Programa, Reconoce patrones';
+
+    const nombresActitudinales = distM1?.saberesActitudinalesIds
+      ?.map((id: string) => DICCIONARIO_ACTITUDINALES[id]?.nombre || id)
+      ?.join(', ') || 'Gusto por la precisión, Tolerancia a la frustración, Aprender del error';
+
+    const descEje = ejeInfo
+      ? `${ejeInfo.ejeConfig.nombre} (Dimensión: ${ejeInfo.detalle.dimensionNombre}) — "${ejeInfo.detalle.descriptorOficial}"`
+      : 'Pensamiento Computacional y Ética Digital';
+
+    const rdaTexto = area?.rdaCiclo || area?.rda || 'Aplica fundamentos de robótica, computación física, electrónica, mecánica y algoritmos en prototipos contextualizados.';
+    const compTexto = area?.competenciaArea || 'Desarrolla prototipos automatizados y sistemas robóticos integrando hardware y software con responsabilidad.';
+
+    // Momento 1: Inicio (Focalización y Activación)
+    const inicio = `[MOMENTO 1: INICIO (FOCALIZACIÓN Y ACTIVACIÓN)]
+🎯 Focalización & Reto Detonante: ${saber.estrategiaMetodologica.inicio.descripcion}
+🛡️ Integración del Eje Transversal: ${descEje}.
+💡 Activación de Actitudes: Estimular la curiosidad técnica, apertura mental y ${nombresActitudinales.toLowerCase()} ante el reto planteado.
+❓ Preguntas Generadoras: ${(saber.estrategiaMetodologica.inicio.preguntasGeneradoras || []).join(' ')} ${etapaObjMatch ? `(Enfoque DT: ${etapaObjMatch.actividadEnriquecida?.inicio || ''})` : ''}`;
+
+    // Momento 2: Desarrollo (Exploración, Construcción y Aplicación)
+    const desarrollo = `[MOMENTO 2: DESARROLLO (EXPLORACIÓN, CONSTRUCCIÓN Y APLICACIÓN)]
+🏆 Movilización de Competencia & RdA: ${compTexto} | RdA de III Ciclo: ${rdaTexto}.
+⚙️ Pensamiento Computacional (Saberes Procedimentales): Prácticas de ${nombresProcedimentales}. ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}
+🚀 Exploración y Construcción Técnica: ${saber.estrategiaMetodologica.desarrollo.descripcion}
+💻 Recursos y Laboratorio: Trabajo en simulador interactivo (${saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ')}) o recursos desconectados (${saber.estrategiaMetodologica.recursosSugeridos.desconectado.join(', ')}). ${etapaObjMatch ? `(Etapa DT - ${etapaObjMatch.nombre}: ${etapaObjMatch.accionesClave.join(' ')})` : ''}`;
+
+    // Momento 3: Cierre (Sistematización, Reflexión y Evaluación)
+    const cierre = `[MOMENTO 3: CIERRE (SISTEMATIZACIÓN, REFLEXIÓN Y EVALUACIÓN)]
+📝 Sistematización en Bitácora: ${saber.estrategiaMetodologica.cierre.descripcion} Registro de esquemas, código y evidencias técnicas de aula.
+💡 Reflexión Metacognitiva & Actitudes: Valoración de ${nombresActitudinales.toLowerCase()}, análisis constructivo del error y coevaluación del trabajo en equipo.
+📊 Evaluación Formativa & Criterios: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')} Indicador de logro a evaluar: "${saber.indicador}" ${etapaObjMatch ? `(Entregables DT: ${etapaObjMatch.entregablesSugeridos.join(', ')})` : ''}`;
+
+    return { inicio, desarrollo, cierre };
+  };
+
   // Helper para armar semanas con actividades preconfiguradas completas
   const generarSemanasCompletas = (): SemanaPlaneamiento[] => {
     const list: SemanaPlaneamiento[] = [];
@@ -106,6 +160,7 @@ export const PlaneamientoView: React.FC = () => {
     for (let i = 1; i <= 18; i++) {
       const saberIndex = (i - 1) % allSaberes.length;
       const saber = allSaberes[saberIndex];
+      const area = modulo?.areas.find((a) => a.saberes.some((s) => s.id === saber?.id));
 
       let etapaAsoc: EtapaProyectoTipo | undefined;
       let esSemanaProyecto = false;
@@ -130,18 +185,13 @@ export const PlaneamientoView: React.FC = () => {
       const distM1 = saber ? DISTRIBUCION_SABERES_M1[saber.id] : null;
       const ejeInfo = saber ? getEjeEspecificoParaSaber(saber.id) : null;
 
-      // Integración enriquecida de actividades de Design Thinking (DT) si la semana corresponde a proyecto
-      const descInicio = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.inicio
-        ? `${etapaObjMatch.actividadEnriquecida.inicio} Contextualización: ${saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de saberes y análisis del problema.'}`
-        : saber ? saber.estrategiaMetodologica.inicio.descripcion : 'Activación de conocimientos previos y planteamiento de reto detonante contextualizado.';
-
-      const descDesarrollo = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.desarrollo
-        ? `${etapaObjMatch.actividadEnriquecida.desarrollo} Acciones clave de la etapa DT: ${etapaObjMatch.accionesClave.join(' ')} Desarrollo técnico: ${saber ? saber.estrategiaMetodologica.desarrollo.descripcion : 'Construcción y depuración.'}`
-        : saber ? `${saber.estrategiaMetodologica.desarrollo.descripcion} Acciones del estudiante: ${saber.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : 'Construcción guiada, laboratorio práctico, depuración colaborativa y ensamblaje de prototipo.';
-
-      const descCierre = etapaObjMatch && etapaObjMatch.actividadEnriquecida?.cierre
-        ? `${etapaObjMatch.actividadEnriquecida.cierre} Entregables esperados de la etapa DT: ${etapaObjMatch.entregablesSugeridos.join(', ')}.`
-        : saber ? `${saber.estrategiaMetodologica.cierre.descripcion} Evaluación docente: ${saber.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : 'Sistematización de aprendizajes en bitácora digital, coevaluación y reflexión metacognitiva.';
+      const { inicio, desarrollo, cierre } = construirMomentosMediacionIntegrados(
+        saber,
+        area,
+        distM1,
+        ejeInfo,
+        etapaObjMatch
+      );
 
       list.push({
         id: `sem_${selectedModuloId}_${i}`,
@@ -153,15 +203,15 @@ export const PlaneamientoView: React.FC = () => {
         etapaProyectoAsociada: etapaAsoc,
         actividadProyectoEnSemana: actProyecto,
         momentoInicio: {
-          estrategia: descInicio,
+          estrategia: inicio,
           tiempo: '15 min'
         },
         momentoDesarrollo: {
-          estrategia: descDesarrollo,
+          estrategia: desarrollo,
           tiempo: '50 min'
         },
         momentoCierre: {
-          estrategia: descCierre,
+          estrategia: cierre,
           tiempo: '15 min'
         },
         escenarioConectado: saber ? saber.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : 'Simulador Wokwi, Tinkercad Circuits, IDE de programación, microcontrolador físico.',
@@ -198,7 +248,7 @@ export const PlaneamientoView: React.FC = () => {
 
   // Inicializar o cargar semanas
   useEffect(() => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
     const saved = localStorage.getItem(storageKey);
 
     if (saved) {
@@ -207,7 +257,7 @@ export const PlaneamientoView: React.FC = () => {
         if (
           Array.isArray(parsed) && 
           parsed.length === 18 && 
-          parsed[0]?.momentoInicio?.actividad &&
+          parsed[0]?.momentoInicio?.estrategia &&
           parsed[0]?.componentesEvaluacion &&
           parsed[0]?.saberesProcedimentales
         ) {
@@ -228,7 +278,7 @@ export const PlaneamientoView: React.FC = () => {
   }, [selectedModuloId]);
 
   const handleSave = () => {
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
     localStorage.setItem(storageKey, JSON.stringify(semanas));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
@@ -237,7 +287,7 @@ export const PlaneamientoView: React.FC = () => {
   const handleRestablecerOficial = () => {
     const fresh = generarSemanasCompletas();
     setSemanas(fresh);
-    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026`;
+    const storageKey = `planeamiento_noveno_modulo_${selectedModuloId}_v2026_mep_dt`;
     localStorage.setItem(storageKey, JSON.stringify(fresh));
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 2500);
@@ -435,23 +485,33 @@ export const PlaneamientoView: React.FC = () => {
                 onChange={(e) => {
                   const sId = e.target.value;
                   const sObj = allSaberes.find((s) => s.id === sId);
+                  const areaObj = modulo?.areas.find((a) => a.saberes.some((s) => s.id === sId));
                   const dist = sId ? DISTRIBUCION_SABERES_M1[sId] : null;
                   const eje = sId ? getEjeEspecificoParaSaber(sId) : null;
+                  const etapaMatch = proyecto?.etapas.find((et) => et.id === currentSemana.etapaProyectoAsociada);
+
+                  const { inicio, desarrollo, cierre } = construirMomentosMediacionIntegrados(
+                    sObj,
+                    areaObj,
+                    dist,
+                    eje,
+                    etapaMatch
+                  );
 
                   updateCurrentSemana((prev) => ({
                     ...prev,
                     saberesSeleccionados: sId ? [sId] : [],
                     tituloSemana: `Semana ${prev.numeroSemana}: ${sObj ? sObj.nombre : 'Sesión de Mediación'}`,
                     momentoInicio: {
-                      estrategia: sObj ? sObj.estrategiaMetodologica.inicio.descripcion : prev.momentoInicio.estrategia,
+                      estrategia: inicio,
                       tiempo: prev.momentoInicio.tiempo
                     },
                     momentoDesarrollo: {
-                      estrategia: sObj ? `${sObj.estrategiaMetodologica.desarrollo.descripcion} Acciones: ${sObj.estrategiaMetodologica.desarrollo.accionesEstudiante.join(' ')}` : prev.momentoDesarrollo.estrategia,
+                      estrategia: desarrollo,
                       tiempo: prev.momentoDesarrollo.tiempo
                     },
                     momentoCierre: {
-                      estrategia: sObj ? `${sObj.estrategiaMetodologica.cierre.descripcion} Evaluación: ${sObj.estrategiaMetodologica.cierre.accionesDocente.join(' ')}` : prev.momentoCierre.estrategia,
+                      estrategia: cierre,
                       tiempo: prev.momentoCierre.tiempo
                     },
                     escenarioConectado: sObj ? sObj.estrategiaMetodologica.recursosSugeridos.conectado.join(', ') : prev.escenarioConectado,
@@ -737,7 +797,7 @@ export const PlaneamientoView: React.FC = () => {
                   <div className="flex items-center justify-between pb-1.5 border-b border-sky-100">
                     <span className="text-xs font-bold text-sky-900 flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-full bg-sky-200/70 text-sky-900 inline-flex items-center justify-center text-[11px] font-bold">1</span>
-                      Momento Inicio (Focalización)
+                      Momento 1: Inicio (Focalización y Activación)
                     </span>
                     <input
                       type="text"
@@ -751,8 +811,13 @@ export const PlaneamientoView: React.FC = () => {
                       className="text-[11px] font-bold text-sky-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-sky-200"
                     />
                   </div>
+                  <div className="flex flex-wrap gap-1 pb-1">
+                    <span className="text-[9px] font-semibold text-sky-800 bg-sky-100/80 px-1.5 py-0.5 rounded">🎯 Focalización</span>
+                    <span className="text-[9px] font-semibold text-indigo-800 bg-indigo-100/80 px-1.5 py-0.5 rounded">🛡️ Eje Transversal</span>
+                    <span className="text-[9px] font-semibold text-amber-800 bg-amber-100/80 px-1.5 py-0.5 rounded">💡 Actitudes</span>
+                  </div>
                   <textarea
-                    rows={5}
+                    rows={6}
                     value={currentSemana.momentoInicio.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
@@ -772,7 +837,7 @@ export const PlaneamientoView: React.FC = () => {
                   <div className="flex items-center justify-between pb-1.5 border-b border-indigo-100">
                     <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-full bg-indigo-200/70 text-indigo-900 inline-flex items-center justify-center text-[11px] font-bold">2</span>
-                      Momento Desarrollo (Construcción)
+                      Momento 2: Desarrollo (Exploración, Construcción y Aplicación)
                     </span>
                     <input
                       type="text"
@@ -786,8 +851,13 @@ export const PlaneamientoView: React.FC = () => {
                       className="text-[11px] font-bold text-indigo-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-indigo-200"
                     />
                   </div>
+                  <div className="flex flex-wrap gap-1 pb-1">
+                    <span className="text-[9px] font-semibold text-sky-800 bg-sky-100/80 px-1.5 py-0.5 rounded">🏆 Competencia & RdA</span>
+                    <span className="text-[9px] font-semibold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded">⚙️ Pensamiento Computacional</span>
+                    <span className="text-[9px] font-semibold text-purple-800 bg-purple-100/80 px-1.5 py-0.5 rounded">🚀 Construcción</span>
+                  </div>
                   <textarea
-                    rows={5}
+                    rows={6}
                     value={currentSemana.momentoDesarrollo.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
@@ -807,7 +877,7 @@ export const PlaneamientoView: React.FC = () => {
                   <div className="flex items-center justify-between pb-1.5 border-b border-emerald-100">
                     <span className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-full bg-emerald-200/70 text-emerald-900 inline-flex items-center justify-center text-[11px] font-bold">3</span>
-                      Momento Cierre (Sistematización)
+                      Momento 3: Cierre (Sistematización, Reflexión y Evaluación)
                     </span>
                     <input
                       type="text"
@@ -821,8 +891,13 @@ export const PlaneamientoView: React.FC = () => {
                       className="text-[11px] font-bold text-emerald-800 w-16 text-right bg-white px-2 py-0.5 rounded-md border border-emerald-200"
                     />
                   </div>
+                  <div className="flex flex-wrap gap-1 pb-1">
+                    <span className="text-[9px] font-semibold text-emerald-800 bg-emerald-100/80 px-1.5 py-0.5 rounded">📝 Sistematización</span>
+                    <span className="text-[9px] font-semibold text-amber-800 bg-amber-100/80 px-1.5 py-0.5 rounded">💡 Reflexión & Error</span>
+                    <span className="text-[9px] font-semibold text-teal-800 bg-teal-100/80 px-1.5 py-0.5 rounded">📊 Evaluación</span>
+                  </div>
                   <textarea
-                    rows={5}
+                    rows={6}
                     value={currentSemana.momentoCierre.estrategia}
                     onChange={(e) =>
                       updateCurrentSemana((prev) => ({
